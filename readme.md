@@ -53,6 +53,38 @@ If you were to route to `/cool/bar/baz`, this will result in the following outpu
 ]
 ```
 
+### `pre` and `post` hooks
+
+Use `pre` and `post` hooks to run before and after a route is rendered to do things like authentication, logging, etc.
+
+> The `pre` and `post` hooks are optional.
+
+```svelte
+const routes: Route[] = [
+  {
+    path: "unprotected",
+    component: Unprotected
+  },
+  {
+    path: "protected",
+    component: Protected,
+    pre: () => {
+      // Crude example of checking if the user is logged in:
+      if (!localStorage.getItem("token")) {
+        alert("You must be logged in to view this page!");
+        // By returning false, the route will not be rendered and the
+        // user will stay at the current route:
+        return false;
+      }
+      return true;
+    },
+    post: () => {
+      console.log("post");
+    }
+  }
+];
+```
+
 ## Example
 
 ```svelte

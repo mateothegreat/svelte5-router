@@ -5,7 +5,7 @@ export interface Route {
   path: RegExp | string;
   component: Component;
   pre?: () => boolean;
-  post?: () => boolean;
+  post?: () => void;
   children?: Route[];
   params?: string[];
 }

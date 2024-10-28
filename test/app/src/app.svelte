@@ -4,8 +4,9 @@
   import A from "./lib/a/a.svelte";
   import Default from "./lib/default.svelte";
   import Params from "./lib/params/params.svelte";
+  import Protected from "./lib/protected/protected.svelte";
 
-  const routes: Route<any>[] = [
+  const routes: Route[] = [
     {
       path: "/",
       component: Default
@@ -17,6 +18,23 @@
     {
       path: "params",
       component: Params
+    },
+    {
+      path: "protected",
+      component: Protected,
+      pre: () => {
+        // Crude example of checking if the user is logged in:
+        if (!localStorage.getItem("token")) {
+          alert("You must be logged in to view this page!");
+          // By returning false, the route will not be rendered and the
+          // user will stay at the current route:
+          return false;
+        }
+        return true;
+      },
+      post: () => {
+        console.log("post");
+      }
     }
   ];
 </script>
