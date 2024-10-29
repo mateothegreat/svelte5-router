@@ -54,11 +54,11 @@ export interface Route {
 
 Hooks are typed as follows:
 
-> As you can see, you can pass an array of hooks or a single hook:
+> As you can see, you can pass an array of hooks or a single hook as a promise or not:
 
 ```ts
-export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Route);
-export type PostHooks = ((route: Route) => void)[] | ((route: Route) => void);
+export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<Route>)[] | ((route: Route) => Route) | ((route: Route) => Promise<Route>);
+export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<void>)[] | ((route: Route) => void) | ((route: Route) => Promise<void>);
 ```
 
 #### Using Components & Snippets

@@ -2,6 +2,7 @@
   import type { Route } from "@mateothegreat/svelte5-router";
   import { goto, route, Router } from "@mateothegreat/svelte5-router";
   import { Github } from "lucide-svelte";
+  import type { Writable } from "svelte/store";
   import A from "./lib/a/a.svelte";
   import Default from "./lib/default.svelte";
   import Params from "./lib/params/params.svelte";
@@ -35,7 +36,7 @@
     },
     {
       path: "logout",
-      pre: (route: Route) => {
+      pre: async (route: Route): Promise<Route> => {
         localStorage.removeItem("token");
         return {
           path: "/",
@@ -48,30 +49,33 @@
       component: Protected,
       // Use a pre hook to simulate a protected route:
       pre: async (route: Route) => {
-        console.log("pre hook #1 fired for route:", route);
-
-        console.log("wait over for route:", route);
-        // Crude example of checking if the user is logged in. A more
-        // sophisticated example would use a real authentication system
-        // and a server-side API.
-        if (!localStorage.getItem("token")) {
-          // By returning a new route, the user will be redirected to the
-          // new route and then the post hook(s) will be executed:
-          return {
-            path: "/login",
-            component: Login
-          };
-        } else {
-          // By returning a new route, the user will be redirected to the
-          // new route and then the post hook(s) will be executed:
-          return {
-            path: "/bankaccount",
-            component: BankAccount
-          };
-        }
+        console.log("pre hook #1 fired for route:", route, navigating);
+        return new Promise((resolve) => {
+          console.log("simulated wait over for route:", route);
+          // Crude example of checking if the user is logged in. A more
+          // sophisticated example would use a real authentication system
+          // and a server-side API.
+          if (!localStorage.getItem("token")) {
+            // By returning a new route, the user will be redirected to the
+            // new route and then the post hook(s) will be executed:
+            resolve({
+              path: "/login",
+              component: Login
+            });
+          } else {
+            setTimeout(() => {
+              // By returning a new route, the user will be redirected to the
+              // new route and then the post hook(s) will be executed:
+              resolve({
+                path: "/bankaccount",
+                component: BankAccount
+              });
+            }, 1500);
+          }
+        });
       },
       post: [
-        async (route: Route): Promise<void> => {
+        (route: Route): void => {
           console.log("post hook #1 fired for route:", route);
         },
         async (route: Route): Promise<void> => {
@@ -81,7 +85,7 @@
     }
   ];
 
-  const globalAuthGuardHook = (route: Route): Route => {
+  const globalAuthGuardHook = async (route: Route): Promise<Route> => {
     // This is a global pre hook that will be applied to all routes.
     // Here you could check if the user is logged in or perform some other
     // authentication checks.
@@ -94,6 +98,12 @@
   const globalLoggerPostHook = async (route: Route): Promise<void> => {
     console.log("globalLoggerPostHook:", await route);
   };
+
+  let navigating: Writable<boolean>;
+
+  $effect(() => {
+    console.log("123123123123123123navigating", navigating);
+  });
 </script>
 
 <div class="absolute flex h-full w-full flex-col items-center gap-4 bg-black">
@@ -120,7 +130,8 @@
   <div class=" w-full flex-1 bg-zinc-900 p-6">
     <div class="flex flex-col gap-4 rounded-lg bg-zinc-950 p-4 shadow-xl">
       <p class="text-center text-xs text-zinc-500">app.svelte</p>
-      <Router {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
+      <p class="text-center text-sm text-pink-500">Navigating: {$navigating ? "navigating..." : "idle"}</p>
+      <Router bind:navigating {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
     </div>
   </div>
 </div>

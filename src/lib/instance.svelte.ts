@@ -1,7 +1,8 @@
 import type { Component, Snippet } from 'svelte';
+import { writable } from 'svelte/store';
 
-export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<Route>)[] | ((route: Route) => Promise<Route>);
-export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<void>)[] | ((route: Route) => Promise<void>);
+export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<Route>)[] | ((route: Route) => Route) | ((route: Route) => Promise<Route>);
+export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<void>)[] | ((route: Route) => void) | ((route: Route) => Promise<void>);
 
 export interface Route {
   path: RegExp | string;
@@ -20,7 +21,8 @@ export class Instance {
   routes: Route[] = [];
   #pre?: PreHooks;
   #post?: PostHooks;
-  #current = $state<Route>();
+  current = $state<Route>();
+  navigating = writable(false);
 
   /**
    * Creates a new router instance.
@@ -30,16 +32,15 @@ export class Instance {
    */
   constructor(routes: Route[], pre?: PreHooks, post?: PostHooks) {
     this.routes = routes;
-    this.#current = get(this, this.routes, location.pathname);
+    this.current = get(this, this.routes, location.pathname);
     this.#pre = pre;
     this.#post = post;
 
-    this.run(this.#current);
+    this.run(this.current);
 
     // Setup a history watcher to navigate to the current route:
     window.addEventListener("pushState", (event: Event) => {
-      const route = get(this, this.routes, location.pathname);
-      this.#current = route;
+      this.run(get(this, this.routes, location.pathname));
     });
   }
 
@@ -49,6 +50,8 @@ export class Instance {
    * @returns {Route} The route that was navigated to.
    */
   async run(route: Route) {
+    this.navigating.set(true);
+
     // First, run the global pre hooks.
     if (this.#pre) {
       if (Array.isArray(this.#pre)) {
@@ -77,10 +80,9 @@ export class Instance {
       }
     }
 
-    console.log("route after pre hooks:", route);
     // Then, set the current route and given `current` is
     // a reactive $state() variable, it will trigger a render:
-    this.#current = route;
+    this.current = route;
 
     // Run the route specific post hooks:
     if (route && route.post) {
@@ -103,7 +105,7 @@ export class Instance {
         await this.#post(route);
       }
     }
-
+    this.navigating.set(false);
   }
 }
 

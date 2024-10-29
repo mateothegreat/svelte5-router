@@ -11,7 +11,6 @@ export function route(node: HTMLAnchorElement) {
     const navigationEvent = new CustomEvent("navigation", {
       detail: { href: node.href },
     });
-    console.log("navigationEvent", navigationEvent);
     window.dispatchEvent(navigationEvent);
   };
 

@@ -1,5 +1,9 @@
 .PHONY: test
 
+install:
+	npm install
+	cd test/app && npm install --legacy-peer-deps
+
 test:
 	if [ ! -d "test/app/node_modules" ]; then \
 	cd test/app && npm install --legacy-peer-deps; \
@@ -7,4 +11,4 @@ test:
 	cd test/app && npm run dev
 
 clean:
-	rm -rf test/app/node_modules
+	rm -rf node_modules test/app/node_modules
