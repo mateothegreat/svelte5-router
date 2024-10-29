@@ -4,6 +4,8 @@
 
 An SPA router for Svelte that allows you to divide & conquer your app with nested routers, snippets, and more.
 
+> Live demo: <https://svelte5-router.vercel.app>
+
 ## Features
 
 - Supports Svelte 5, just one rune baby 🚀!
