@@ -19,11 +19,10 @@ export class Instance {
   routes: Route[] = [];
   current = $state<Route>();
 
-  constructor(base: string, routes: Route[], parent?: ParentRoute) {
-    console.log("Instance constructor", base, routes, parent);
+  constructor(base: string, routes: Route[]) {
     this.base = base;
     this.routes = routes;
-    this.current = get(this, this.base, this.routes, location.pathname, parent);
+    this.current = get(this, this.base, this.routes, location.pathname);
 
     window.addEventListener("pushState", (event: Event) => {
       const customEvent = event as CustomEvent;
@@ -66,6 +65,7 @@ export const get = (
     }
   }
 
+  // If the route has a pre hook, run it:
   if (route?.pre) {
     const newRoute = route.pre();
     if (newRoute) {
@@ -75,11 +75,17 @@ export const get = (
     return route;
   }
 
+  // If the route has a post hook, run it:
   if (route?.post) {
     route.post();
   }
 };
 
+/**
+ * Setup the history watcher for the router instance.
+ * @param base - The base path for the router instance.
+ * @param routerInstance - The router instance to setup the history watcher for.
+ */
 export const setupHistoryWatcher = (base: string, routerInstance: Instance) => {
   console.log("setupHistoryWatcher", base, routerInstance);
   const { pushState } = window.history;

@@ -1,9 +1,12 @@
 # Svelte Routing like a boss
 
-An SPA router for Svelte that allows you to divide & conquer your app with nested routers.
+An SPA router for Svelte that allows you to divide & conquer your app with nested routers, snippets, and more.
+
+## Features
 
 - Supports Svelte 5 🚀!
 - Divide & conquer - use nested routers all over the place.
+- Use components, snippets, or both!
 - Supports regex paths (e.g. `/foo/(.*?)/bar`) 🔥.
 - Supports named parameters.
 
@@ -19,9 +22,11 @@ All you need to do is define your routes and then use the `Router` component wit
 
 To make a link, use the `route` directive with the `href` attribute such as `<a use:route href="/foo">foo</a>`.
 
-### Route Paths
+### Routes
 
 You can simply use static paths like `/foo` or dynamic paths like `/foo/(.*?)` with regex.
+
+Example patterns:
 
 | Pattern             | Description                         |
 | ------------------- | ----------------------------------- |
@@ -29,6 +34,20 @@ You can simply use static paths like `/foo` or dynamic paths like `/foo/(.*?)` w
 | `/foo`              | A static path.                      |
 | `/foo/(.*?)`        | A dynamic path.                     |
 | `/cool/(.*?)/(.*?)` | A dynamic path with two parameters. |
+
+For transparency, here's the type definition for a route:
+
+> Only `path` and `component` is required at a minimum.
+
+```ts
+export interface Route {
+  path: RegExp | string;
+  component: Component<any> | Snippet;
+  props?: Record<string, any>;
+  pre?: () => Route;
+  post?: () => void;
+}
+```
 
 #### Using Components & Snippets
 
