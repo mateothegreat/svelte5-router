@@ -1,5 +1,7 @@
 # Svelte Routing like a boss
 
+![alt text](image.png)
+
 An SPA router for Svelte that allows you to divide & conquer your app with nested routers, snippets, and more.
 
 ## Features

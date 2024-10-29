@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Route } from "@mateothegreat/svelte5-router";
   import { goto, route, Router } from "@mateothegreat/svelte5-router";
+  import { Github } from "lucide-svelte";
   import A from "./lib/a/a.svelte";
   import Default from "./lib/default.svelte";
   import Params from "./lib/params/params.svelte";
@@ -93,9 +94,17 @@
   };
 </script>
 
-<div class="absolute flex h-full w-full flex-col items-center gap-4 bg-zinc-950 p-10">
-  <h1 class="text-center text-sm font-semibold text-indigo-500">Svelte SPA Router Demo</h1>
-  <div class="flex gap-2">
+<div class="absolute flex h-full w-full flex-col items-center gap-4 bg-black">
+  <div class="flex w-full items-center justify-between p-6">
+    <h1 class="text-center font-mono text-lg text-indigo-500">Svelte SPA Router Demo</h1>
+    <div class="">
+      <a href="https://github.com/mateothegreat/svelte5-router" target="_blank">
+        <Github />
+      </a>
+    </div>
+  </div>
+  <span class="flex items-center text-xs text-zinc-500">Navigate to:</span>
+  <div class="flex gap-3 bg-zinc-900">
     <a use:route href="/" class="rounded bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-800">/</a>
     <a use:route href="/a" class="rounded bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-800">/a</a>
     <a use:route href="/props" class="rounded bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-800">/props</a>
@@ -106,8 +115,10 @@
       Call the <span class="rounded bg-black px-2 py-0.5 text-green-500">goto("/a");</span> method
     </button>
   </div>
-  <div class="flex flex-col gap-4 rounded-lg bg-black p-4 shadow-xl">
-    <p class="text-center text-xs text-zinc-500">app.svelte</p>
-    <Router {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
+  <div class=" w-full flex-1 bg-zinc-900 p-6">
+    <div class="flex flex-col gap-4 rounded-lg bg-zinc-950 p-4 shadow-xl">
+      <p class="text-center text-xs text-zinc-500">app.svelte</p>
+      <Router {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
+    </div>
   </div>
 </div>
