@@ -48,7 +48,7 @@
       path: "protected",
       component: Protected,
       // Use a pre hook to simulate a protected route:
-      pre: async (route: Route) => {
+      pre: async (route: Route): Promise<Route> => {
         console.log("pre hook #1 fired for route:", route, navigating);
         return new Promise((resolve) => {
           console.log("simulated wait over for route:", route);
@@ -100,10 +100,6 @@
   };
 
   let navigating: Writable<boolean>;
-
-  $effect(() => {
-    console.log("123123123123123123navigating", navigating);
-  });
 </script>
 
 <div class="absolute flex h-full w-full flex-col items-center gap-4 bg-black">
