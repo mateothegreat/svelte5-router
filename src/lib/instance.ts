@@ -4,7 +4,7 @@ import { writable } from 'svelte/store';
 export interface Route {
   path: RegExp | string;
   component: Component;
-  pre?: () => boolean;
+  pre?: () => Route;
   post?: () => void;
   children?: Route[];
   params?: string[];
@@ -22,45 +22,61 @@ export class Instance {
   constructor(base: string, routes: Route[], parent?: ParentRoute) {
     this.base = base;
     this.routes = routes;
-    this.current.set(getNestedRoute(this, this.base, this.routes, location.pathname, parent));
+    this.current.set(get(this, this.base, this.routes, location.pathname, parent));
 
     window.addEventListener("pushState", (event: Event) => {
       const customEvent = event as CustomEvent;
-      const route = getNestedRoute(this, this.base, this.routes, location.pathname);
+      const route = get(this, this.base, this.routes, location.pathname);
       this.current.set(route);
     });
   }
 }
 
-export const getNestedRoute = (
+export const get = (
   routerInstance: Instance,
   base: string,
   routes: Route[],
   path: string,
   parent?: ParentRoute,
 ): Route => {
+  let route: Route;
+
+  // If the path is the root path, return the root route:
   if (path === "/") {
-    return routes.find((route) => route.path === "/");
+    route = routes.find((route) => route.path === "/");
   }
 
+  // Remove the base from the path before continuing:
   path = path.replace(base, "");
 
+  // Split the path into the first segment and the rest:
   const [first, ...rest] = path.replace(/^\//, "").split("/");
-  const route = routes.find((route) => route.path === first);
+  route = routes.find((route) => route.path === first);
 
+  // If the route is not found, try to find a route that matches the path:
   if (!route) {
-    for (const route of routes) {
-      const regexp = new RegExp(route.path);
+    for (const r of routes) {
+      const regexp = new RegExp(r.path);
       const match = regexp.exec(path);
-      console.log(route.path, path, match);
       if (match) {
-        console.log(path, match);
-        return { ...route, params: match.slice(1) };
+        route = { ...r, params: match.slice(1) };
+        break;
       }
     }
   }
 
-  return route;
+  if (route?.pre) {
+    const newRoute = route.pre();
+    if (newRoute) {
+      return newRoute;
+    }
+  } else {
+    return route;
+  }
+
+  if (route?.post) {
+    route.post();
+  }
 };
 
 export const setupHistoryWatcher = (base: string, routerInstance: Instance) => {
@@ -75,9 +91,11 @@ export const setupHistoryWatcher = (base: string, routerInstance: Instance) => {
 
     window.addEventListener("pushState", (event: Event) => {
       const customEvent = event as CustomEvent;
-      const route = getNestedRoute(routerInstance, base, routerInstance.routes, location.pathname);
-      console.log("pushState:", location.pathname, base, route);
-      routerInstance.current.set(route);
+      const route = get(routerInstance, base, routerInstance.routes, location.pathname);
+      if (route) {
+        console.log("pushState:", location.pathname, base, route);
+        routerInstance.current.set(route);
+      }
     });
 
     (window.history as any)._listenersAdded = true;

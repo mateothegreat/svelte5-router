@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createContext } from "./context";
   import { Instance, setupHistoryWatcher, type ParentRoute, type Route } from "./instance";
 
   type Props = {
@@ -15,10 +14,9 @@
 
   instance = routerInstance;
 
-  const ctx = createContext(routerInstance);
-  const route = ctx.instance.current;
-
   setupHistoryWatcher(base, routerInstance);
+
+  const current = routerInstance.current;
 </script>
 
-<svelte:component this={$route?.component} route={$route} {parent} />
+<svelte:component this={$current?.component} route={$current} {parent} />
