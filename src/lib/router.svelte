@@ -10,7 +10,7 @@
 
   let { base, routes, parent }: Props = $props();
 
-  const routerInstance = new Instance(base, routes, parent);
+  const routerInstance = new Instance(base, routes);
 
   setupHistoryWatcher(base, routerInstance);
 </script>
