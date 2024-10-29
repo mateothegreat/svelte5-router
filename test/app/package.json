@@ -10,6 +10,7 @@
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
+    "@mateothegreat/svelte5-router": "^0.0.8",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
     "@tsconfig/svelte": "^5.0.4",
     "autoprefixer": "^10.4.20",
