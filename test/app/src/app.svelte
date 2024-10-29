@@ -47,8 +47,10 @@
       path: "protected",
       component: Protected,
       // Use a pre hook to simulate a protected route:
-      pre: (route: Route) => {
+      pre: async (route: Route) => {
         console.log("pre hook #1 fired for route:", route);
+
+        console.log("wait over for route:", route);
         // Crude example of checking if the user is logged in. A more
         // sophisticated example would use a real authentication system
         // and a server-side API.
@@ -69,10 +71,10 @@
         }
       },
       post: [
-        (route: Route): void => {
+        async (route: Route): Promise<void> => {
           console.log("post hook #1 fired for route:", route);
         },
-        (route: Route): void => {
+        async (route: Route): Promise<void> => {
           console.log("post hook #2 fired for route:", route);
         }
       ]
@@ -89,8 +91,8 @@
     return route;
   };
 
-  const globalLoggerPostHook = (route: Route): void => {
-    console.log("post hook fired for route:", route);
+  const globalLoggerPostHook = async (route: Route): Promise<void> => {
+    console.log("globalLoggerPostHook:", await route);
   };
 </script>
 
