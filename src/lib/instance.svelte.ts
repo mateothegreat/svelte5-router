@@ -1,9 +1,8 @@
-import type { Component } from 'svelte';
-import { writable } from 'svelte/store';
+import type { Component, Snippet } from 'svelte';
 
 export interface Route {
   path: RegExp | string;
-  component: Component<any>;
+  component: Component<any> | Snippet;
   props?: Record<string, any>;
   pre?: () => Route;
   post?: () => void;
@@ -18,18 +17,18 @@ export interface ParentRoute {
 export class Instance {
   base: string;
   routes: Route[] = [];
-  current = writable<Route>();
+  current = $state<Route>();
 
   constructor(base: string, routes: Route[], parent?: ParentRoute) {
     console.log("Instance constructor", base, routes, parent);
     this.base = base;
     this.routes = routes;
-    this.current.set(get(this, this.base, this.routes, location.pathname, parent));
+    this.current = get(this, this.base, this.routes, location.pathname, parent);
 
     window.addEventListener("pushState", (event: Event) => {
       const customEvent = event as CustomEvent;
       const route = get(this, this.base, this.routes, location.pathname);
-      this.current.set(route);
+      this.current = route;
     });
   }
 }
@@ -94,7 +93,7 @@ export const setupHistoryWatcher = (base: string, routerInstance: Instance) => {
     window.addEventListener("pushState", (event: Event) => {
       const route = get(routerInstance, base, routerInstance.routes, location.pathname);
       if (route) {
-        routerInstance.current.set(route);
+        routerInstance.current = route;
       }
     });
 

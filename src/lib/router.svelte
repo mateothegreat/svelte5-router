@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Instance, setupHistoryWatcher, type ParentRoute, type Route } from "./instance";
+  import { Instance, setupHistoryWatcher, type ParentRoute, type Route } from "./instance.svelte";
 
   type Props = {
     instance?: Instance;
@@ -8,15 +8,13 @@
     parent?: ParentRoute;
   };
 
-  let { instance = $bindable(), base, routes, parent }: Props = $props();
+  let { base, routes, parent }: Props = $props();
 
   const routerInstance = new Instance(base, routes, parent);
 
-  instance = routerInstance;
-
   setupHistoryWatcher(base, routerInstance);
-
-  const current = routerInstance.current;
 </script>
 
-<svelte:component this={$current?.component} route={$current} {...$current?.props} {parent} />
+{#if routerInstance.current}
+  <routerInstance.current.component params={routerInstance.current.params} {...routerInstance.current.props} />
+{/if}

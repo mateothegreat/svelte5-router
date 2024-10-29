@@ -1,7 +1,5 @@
 <script lang="ts">
-  import type { Route } from "@mateothegreat/svelte5-router";
-
-  let { route }: { route: Route } = $props();
+  let { params }: { params: string[] } = $props();
 </script>
 
-<pre>{JSON.stringify(route.params, null, 2)}</pre>
+<pre>{JSON.stringify(params, null, 2)}</pre>

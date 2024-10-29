@@ -30,6 +30,42 @@ You can simply use static paths like `/foo` or dynamic paths like `/foo/(.*?)` w
 | `/foo/(.*?)`        | A dynamic path.                     |
 | `/cool/(.*?)/(.*?)` | A dynamic path with two parameters. |
 
+#### Using Components & Snippets
+
+For the quickest and easiest routes, you can use components:
+
+```svelte
+const routes: Route[] = [
+  {
+    path: "/foo",
+    component: Foo
+  }
+];
+```
+
+For more complex routing needs, you can use snippets:
+
+```svelte
+<script lang="ts">
+  import { route, Router, type Route } from "@mateothegreat/svelte5-router";
+  import All from "./all.svelte";
+
+  const routes: Route[] = [
+    {
+      path: "/snippetsarecool",
+      component: mySnippet
+    }
+  ];
+</script>
+
+{#snippet mySnippet()}
+  <div class="flex flex-col gap-3 bg-green-400 p-4">
+    I'm a snippet!<br />
+    Click on a link above to see the params..
+  </div>
+{/snippet}
+```
+
 #### Accessing Parameters
 
 When your component is rendered, the `route` object will be passed in as a prop. You can then access the parameter(s) of a route using the `route.params` property:
