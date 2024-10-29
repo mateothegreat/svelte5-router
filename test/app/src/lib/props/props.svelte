@@ -1,6 +1,7 @@
 <script lang="ts">
   let { myProp } = $props();
-  console.log("myProp", myProp);
+
+  // For debugging only:
 </script>
 
 <div class="flex flex-col gap-3 bg-gray-400 p-10">

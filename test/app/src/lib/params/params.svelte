@@ -29,6 +29,6 @@
     <a use:route href="/params/bar" class="rounded-lg bg-blue-500 px-2">/params/bar</a>
   </div>
   <div class="rounded-lg bg-black p-4 shadow-xl">
-    <Router base="/params" {routes} />
+    <Router {routes} />
   </div>
 </div>

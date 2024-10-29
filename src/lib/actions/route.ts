@@ -5,14 +5,15 @@
  * @returns - The destroy function.
  */
 export function route(node: HTMLAnchorElement) {
-  function handleClick(event: Event) {
+  const handleClick = (event: Event) => {
     event.preventDefault();
     window.history.pushState({}, "", node.href);
     const navigationEvent = new CustomEvent("navigation", {
       detail: { href: node.href },
     });
+    console.log("navigationEvent", navigationEvent);
     window.dispatchEvent(navigationEvent);
-  }
+  };
 
   node.addEventListener("click", handleClick);
 

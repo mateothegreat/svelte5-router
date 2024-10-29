@@ -17,6 +17,6 @@
     <a use:route href="/a/b" class="rounded-lg bg-blue-500 px-2">/a/b</a>
   </div>
   <div class="rounded-lg bg-black p-4 shadow-xl">
-    <Router base="/a" {routes} />
+    <Router {routes} />
   </div>
 </div>

@@ -1,20 +1,19 @@
 <script lang="ts">
-  import { Instance, setupHistoryWatcher, type ParentRoute, type Route } from "./instance.svelte";
+  import { Instance, setupHistoryWatcher, type PostHooks, type PreHooks, type Route } from "./instance.svelte";
 
   type Props = {
-    instance?: Instance;
-    base: string;
+    pre?: PreHooks;
+    post?: PostHooks;
     routes: Route[];
-    parent?: ParentRoute;
   };
 
-  let { base, routes, parent }: Props = $props();
+  let { routes, pre, post }: Props = $props();
 
-  const routerInstance = new Instance(base, routes);
+  const instance = new Instance(routes, pre, post);
 
-  setupHistoryWatcher(base, routerInstance);
+  setupHistoryWatcher(instance);
 </script>
 
-{#if routerInstance.current}
-  <routerInstance.current.component params={routerInstance.current.params} {...routerInstance.current.props} />
+{#if instance.current}
+  <instance.current.component params={instance.current.params} {...instance.current.props} />
 {/if}

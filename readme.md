@@ -36,16 +36,25 @@ Example patterns:
 
 For transparency, here's the type definition for a route:
 
-> Only `path` and `component` is required at a minimum.
+> Only `path` is required at a minimum with either pre/post hooks or a component/snippet.
 
 ```ts
 export interface Route {
   path: RegExp | string;
-  component: Component<any> | Snippet;
+  component?: Component<any> | Snippet;
   props?: Record<string, any>;
-  pre?: () => Route;
-  post?: () => void;
+  pre?: PreHooks;
+  post?: PostHooks;
 }
+```
+
+Hooks are typed as follows:
+
+> As you can see, you can pass an array of hooks or a single hook:
+
+```ts
+export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Route);
+export type PostHooks = ((route: Route) => void)[] | ((route: Route) => void);
 ```
 
 #### Using Components & Snippets
@@ -92,10 +101,10 @@ When your component is rendered, the `route` object will be passed in as a prop.
 <script lang="ts">
   import type { Route } from "@mateothegreat/svelte5-router";
 
-  let { route }: { route: Route } = $props();
+  let { params }: { params: string[] } = $props();
 </script>
 
-<pre>{JSON.stringify(route.params, null, 2)}</pre>
+<pre>{JSON.stringify(params, null, 2)}</pre>
 ```
 
 If you were to route to `/cool/bar/baz`, this will result in the following output:
@@ -117,7 +126,7 @@ const routes: Route[] = [
     path: "/user/profile",
     component: UserProfile,
     props: {
-      myProp: {
+      myProps: {
         date: new Date(),
         name: "mateothegreat"
       }
@@ -130,17 +139,26 @@ Then, in your component, you can access the prop like this:
 
 ```svelte
 <script lang="ts">
-  let { myProp } = $props();
+  let { myProps } = $props();
 </script>
 
-<pre>{JSON.stringify(myProp, null, 2)}</pre>
+<pre>{JSON.stringify(myProps, null, 2)}</pre>
 ```
 
 ### `pre` and `post` hooks
 
 Use `pre` and `post` hooks to run before and after a route is rendered to do things like authentication, logging, etc.
 
-> The `pre` and `post` hooks are optional.
+#### Hook Syntax
+
+| Syntax                            | Location    | Description                                 |
+| --------------------------------- | ----------- | ------------------------------------------- |
+| `<Router pre={myHooks}>`          | `<Router/>` | Runs before **any** route is rendered.      |
+| `<Router post={myHooks}>`         | `<Router/>` | Runs after **any** route is rendered.       |
+| `{ path: "/", pre: () => {...}}`  | `Route`     | Runs before the specific route is rendered. |
+| `{ path: "/", post: () => {...}}` | `Route`     | Runs after the specific route is rendered.  |
+
+> You can pass an array or single method for the `pre` and `post` hooks.
 
 ```svelte
 const routes: Route[] = [
@@ -154,22 +172,36 @@ const routes: Route[] = [
   {
     path: "protected",
     component: Protected,
-    pre: () => {
-      // Crude example of checking if the user is logged in:
+    // Use a pre hook to simulate a protected route:
+    pre: (route: Route) => {
+      console.log("pre hook #1 fired for route:", route);
+      // Crude example of checking if the user is logged in. A more
+      // sophisticated example would use a real authentication system
+      // and a server-side API.
       if (!localStorage.getItem("token")) {
-        // By returning false, the route will not be rendered and the
-        // user will stay at the current route:
+        // By returning a new route, the user will be redirected to the
+        // new route and then the post hook(s) will be executed:
         return {
           path: "/login",
           component: Login
         };
       } else {
+        // By returning a new route, the user will be redirected to the
+        // new route and then the post hook(s) will be executed:
         return {
-          path: "/protected",
-          component: Logout
+          path: "/bankaccount",
+          component: BankAccount
         };
       }
     },
+    post: [
+      (route: Route): void => {
+        console.log("post hook #1 fired for route:", route);
+      },
+      (route: Route): void => {
+        console.log("post hook #2 fired for route:", route);
+      }
+    ]
   }
 ];
 ```
@@ -182,7 +214,7 @@ const routes: Route[] = [
   import { route, Router } from "@mateothegreat/svelte5-router";
   ...
 
-  const routes: Route<any>[] = [
+  const routes: Route[] = [
     {
       path: "/",
       component: Homepage
