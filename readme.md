@@ -4,11 +4,10 @@ An SPA router for Svelte that allows you to divide & conquer your app with neste
 
 ## Features
 
-- Supports Svelte 5 🚀!
+- Supports Svelte 5, just one rune baby 🚀!
 - Divide & conquer - use nested routers all over the place.
 - Use components, snippets, or both!
-- Supports regex paths (e.g. `/foo/(.*?)/bar`) 🔥.
-- Supports named parameters.
+- Use regex paths (e.g. `/foo/(.*?)/bar`) and/or named parameters together 🔥.
 
 ## Installation
 
@@ -148,6 +147,9 @@ const routes: Route[] = [
   {
     path: "unprotected",
     component: Unprotected
+    post: () => {
+      console.log("post hook fired");
+    }
   },
   {
     path: "protected",
@@ -155,16 +157,19 @@ const routes: Route[] = [
     pre: () => {
       // Crude example of checking if the user is logged in:
       if (!localStorage.getItem("token")) {
-        alert("You must be logged in to view this page!");
         // By returning false, the route will not be rendered and the
         // user will stay at the current route:
-        return false;
+        return {
+          path: "/login",
+          component: Login
+        };
+      } else {
+        return {
+          path: "/protected",
+          component: Logout
+        };
       }
-      return true;
     },
-    post: () => {
-      console.log("post");
-    }
   }
 ];
 ```

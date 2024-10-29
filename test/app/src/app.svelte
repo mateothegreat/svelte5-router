@@ -3,9 +3,10 @@
   import { goto, route, Router } from "@mateothegreat/svelte5-router";
   import A from "./lib/a/a.svelte";
   import Default from "./lib/default.svelte";
-  import Denied from "./lib/denied.svelte";
   import Params from "./lib/params/params.svelte";
   import Props from "./lib/props/props.svelte";
+  import Login from "./lib/protected/login.svelte";
+  import Logout from "./lib/protected/logout.svelte";
   import Protected from "./lib/protected/protected.svelte";
 
   const routes: Route[] = [
@@ -37,12 +38,16 @@
       pre: () => {
         // Crude example of checking if the user is logged in:
         if (!localStorage.getItem("token")) {
-          console.warn("You must be logged in to view this page!");
           // By returning false, the route will not be rendered and the
           // user will stay at the current route:
           return {
-            path: "/denied",
-            component: Denied
+            path: "/login",
+            component: Login
+          };
+        } else {
+          return {
+            path: "/protected",
+            component: Logout
           };
         }
       },
