@@ -3,7 +3,8 @@ import { writable } from 'svelte/store';
 
 export interface Route {
   path: RegExp | string;
-  component: Component;
+  component: Component<any>;
+  props?: Record<string, any>;
   pre?: () => Route;
   post?: () => void;
   children?: Route[];
@@ -20,6 +21,7 @@ export class Instance {
   current = writable<Route>();
 
   constructor(base: string, routes: Route[], parent?: ParentRoute) {
+    console.log("Instance constructor", base, routes, parent);
     this.base = base;
     this.routes = routes;
     this.current.set(get(this, this.base, this.routes, location.pathname, parent));
@@ -81,7 +83,7 @@ export const get = (
 
 export const setupHistoryWatcher = (base: string, routerInstance: Instance) => {
   console.log("setupHistoryWatcher", base, routerInstance);
-  const { pushState, replaceState } = window.history;
+  const { pushState } = window.history;
 
   if (!(window.history as any)._listenersAdded) {
     window.history.pushState = function (...args) {
@@ -90,10 +92,8 @@ export const setupHistoryWatcher = (base: string, routerInstance: Instance) => {
     };
 
     window.addEventListener("pushState", (event: Event) => {
-      const customEvent = event as CustomEvent;
       const route = get(routerInstance, base, routerInstance.routes, location.pathname);
       if (route) {
-        console.log("pushState:", location.pathname, base, route);
         routerInstance.current.set(route);
       }
     });

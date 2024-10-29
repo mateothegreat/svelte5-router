@@ -53,6 +53,35 @@ If you were to route to `/cool/bar/baz`, this will result in the following outpu
 ]
 ```
 
+#### Passing Props
+
+You can pass props to a route by using the `props` property on any route. These props will be passed to the component as a prop:
+
+```svelte
+const routes: Route[] = [
+  {
+    path: "/user/profile",
+    component: UserProfile,
+    props: {
+      myProp: {
+        date: new Date(),
+        name: "mateothegreat"
+      }
+    }
+  }
+];
+```
+
+Then, in your component, you can access the prop like this:
+
+```svelte
+<script lang="ts">
+  let { myProp } = $props();
+</script>
+
+<pre>{JSON.stringify(myProp, null, 2)}</pre>
+```
+
 ### `pre` and `post` hooks
 
 Use `pre` and `post` hooks to run before and after a route is rendered to do things like authentication, logging, etc.

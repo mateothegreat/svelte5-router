@@ -2,7 +2,7 @@
   import { Instance, route, Router, type Route } from "@mateothegreat/svelte5-router";
   import B from "./b/b.svelte";
 
-  const routes: Route<any>[] = [
+  const routes: Route[] = [
     {
       path: "b",
       component: B

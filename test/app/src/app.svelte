@@ -5,6 +5,7 @@
   import Default from "./lib/default.svelte";
   import Denied from "./lib/denied.svelte";
   import Params from "./lib/params/params.svelte";
+  import Props from "./lib/props/props.svelte";
   import Protected from "./lib/protected/protected.svelte";
 
   const routes: Route[] = [
@@ -15,6 +16,16 @@
     {
       path: "a",
       component: A
+    },
+    {
+      path: "props",
+      component: Props,
+      props: {
+        myProp: {
+          date: new Date(),
+          name: "mateothegreat"
+        }
+      }
     },
     {
       path: "params",
@@ -47,11 +58,12 @@
   <div class="flex gap-2">
     <a use:route href="/" class="rounded-lg bg-blue-500 px-2">/</a>
     <a use:route href="/a" class="rounded-lg bg-blue-500 px-2">/a</a>
+    <a use:route href="/props" class="rounded-lg bg-blue-500 px-2">/props</a>
     <a use:route href="/params" class="rounded-lg bg-blue-500 px-2">/params</a>
     <a use:route href="/protected" class="rounded-lg bg-blue-500 px-2">/protected</a>
   </div>
   <button on:click={() => goto("/a")} class="rounded-lg bg-zinc-500 px-2">Call the goto("/a") method..</button>
-  <div class="flex w-96 flex-col gap-4 rounded-lg bg-black p-4 shadow-xl">
+  <div class="flex flex-col gap-4 rounded-lg bg-black p-4 shadow-xl">
     <p class="text-center text-xs text-zinc-500">app.svelte</p>
     <Router base="/" {routes} />
   </div>

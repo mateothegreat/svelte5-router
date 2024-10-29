@@ -19,4 +19,4 @@
   const current = routerInstance.current;
 </script>
 
-<svelte:component this={$current?.component} route={$current} {parent} />
+<svelte:component this={$current?.component} route={$current} {...$current?.props} {parent} />
