@@ -36,8 +36,6 @@ export class Instance {
     this.#pre = pre;
     this.#post = post;
 
-    this.run(this.current);
-
     // Setup a history watcher to navigate to the current route:
     window.addEventListener("pushState", (event: Event) => {
       this.run(get(this, this.routes, location.pathname));

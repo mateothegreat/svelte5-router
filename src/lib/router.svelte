@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Writable } from "svelte/store";
-  import { Instance, setupHistoryWatcher, type PostHooks, type PreHooks, type Route } from "./instance.svelte";
+  import { Instance, setupHistoryWatcher, get, type PostHooks, type PreHooks, type Route } from "./instance.svelte";
 
   type Props = {
     pre?: PreHooks;
@@ -16,6 +16,12 @@
   navigating = instance.navigating;
 
   setupHistoryWatcher(instance);
+
+  // Use the existing get function to find the initial route
+  $effect.pre(() => {
+    const route = get(instance, routes, location.pathname);
+    if (route) instance.run(route);
+  });
 </script>
 
 {#if instance.current}
