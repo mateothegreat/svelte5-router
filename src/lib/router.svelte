@@ -19,5 +19,7 @@
 </script>
 
 {#if instance.current}
-  <instance.current.component params={instance.current.params} {...instance.current.props} />
+  {#key instance.current.component}
+    <instance.current.component params={instance.current.params} {...instance.current.props} />
+  {/key}
 {/if}
