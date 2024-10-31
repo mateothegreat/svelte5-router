@@ -25,6 +25,16 @@ All you need to do is define your routes and then use the `Router` component wit
 
 To make a link, use the `route` directive with the `href` attribute such as `<a use:route href="/foo">foo</a>`.
 
+### Methods
+
+#### `goto(path: string)`
+
+Navigates to the given path.
+
+#### `query(key: string): string | null`
+
+Returns the value of the query parameter for the given key or null if the key does not exist.
+
 ### Routes
 
 You can simply use static paths like `/foo` or dynamic paths like `/foo/(.*?)` with regex.
