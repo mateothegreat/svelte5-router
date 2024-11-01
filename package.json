@@ -1,6 +1,6 @@
 {
   "name": "@mateothegreat/svelte5-router",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "type": "module",
   "svelte": "./index.js",
   "main": "./index.js",
