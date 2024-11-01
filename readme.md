@@ -39,6 +39,15 @@ Returns the value of the query parameter for the given key or null if the key do
 
 A helper class for working with the query string.
 
+> Check it out at [src/lib/query.svelte.ts](./src/lib/query.svelte.ts).
+> or import it with:
+>
+> ```ts
+> import { QueryString } from "@mateothegreat/svelte5-router";
+> ```
+>
+> and start using it now!
+
 ##### Example Usage
 
 Basic usage:
