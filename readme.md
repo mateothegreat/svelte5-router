@@ -261,6 +261,35 @@ const routes: Route[] = [
 ];
 ```
 
+### States
+
+#### Navigation State
+
+```svelte
+<script lang="ts">
+  import { Router } from "@mateothegreat/svelte5-router";
+
+  const routes: Route[] = [
+    {
+      path: "",
+      component: Homepage
+    },
+    {
+      path: "about",
+      component: About
+    }
+  ];
+
+  let navigating: boolean; // This is $state<boolean>
+</script>
+
+<Router bind:navigating {routes} />
+
+<span class="rounded border border-zinc-800 px-1 py-0.5 text-orange-500">
+  {navigating ? "(true) navigating..." : "(false) idle"}
+</span>
+```
+
 ## Example
 
 ```svelte
