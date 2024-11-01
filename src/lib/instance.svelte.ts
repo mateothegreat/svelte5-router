@@ -1,5 +1,4 @@
 import type { Component, Snippet } from 'svelte';
-import { writable } from 'svelte/store';
 
 export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<Route>)[] | ((route: Route) => Route) | ((route: Route) => Promise<Route>);
 export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<void>)[] | ((route: Route) => void) | ((route: Route) => Promise<void>);
@@ -22,7 +21,7 @@ export class Instance {
   #pre?: PreHooks;
   #post?: PostHooks;
   current = $state<Route>();
-  navigating = writable(false);
+  navigating = $state(false);
 
   /**
    * Creates a new router instance.
@@ -36,8 +35,6 @@ export class Instance {
     this.#pre = pre;
     this.#post = post;
 
-    this.run(this.current);
-
     // Setup a history watcher to navigate to the current route:
     window.addEventListener("pushState", (event: Event) => {
       this.run(get(this, this.routes, location.pathname));
@@ -50,7 +47,7 @@ export class Instance {
    * @returns {Route} The route that was navigated to.
    */
   async run(route: Route) {
-    this.navigating.set(true);
+    this.navigating = true;
 
     // First, run the global pre hooks.
     if (this.#pre) {
@@ -86,6 +83,7 @@ export class Instance {
 
     // Run the route specific post hooks:
     if (route && route.post) {
+      console.log("route.post", route.post);
       if (Array.isArray(route.post)) {
         for (const post of route.post) {
           await post(route);
@@ -105,7 +103,8 @@ export class Instance {
         await this.#post(route);
       }
     }
-    this.navigating.set(false);
+
+    this.navigating = false;
   }
 }
 

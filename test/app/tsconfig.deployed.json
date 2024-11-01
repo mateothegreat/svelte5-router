@@ -15,15 +15,7 @@
     "isolatedModules": true,
     "strict": true,
     "noEmit": true,
-    "moduleResolution": "bundler",
-    "paths": {
-      "@mateothegreat/svelte5-router": [
-        "../../src/lib"
-      ],
-      "@mateothegreat/svelte5-router/*": [
-        "../../src/lib/*"
-      ]
-    }
+    "moduleResolution": "bundler"
   },
   "include": [
     "src/**/*.ts",

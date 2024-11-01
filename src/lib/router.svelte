@@ -1,23 +1,35 @@
 <script lang="ts">
-  import type { Writable } from "svelte/store";
-  import { Instance, setupHistoryWatcher, type PostHooks, type PreHooks, type Route } from "./instance.svelte";
+  import { get, Instance, setupHistoryWatcher, type PostHooks, type PreHooks, type Route } from "./instance.svelte";
 
   type Props = {
     pre?: PreHooks;
     post?: PostHooks;
     routes: Route[];
-    navigating?: Writable<boolean>;
+    navigating?: boolean;
+    instance?: Instance;
   };
 
-  let { routes, pre, post, navigating = $bindable() }: Props = $props();
+  let { routes, pre, post, navigating = $bindable(), instance = $bindable() }: Props = $props();
 
-  const instance = new Instance(routes, pre, post);
+  // Initialize the instance
+  instance = new Instance(routes, pre, post);
 
-  navigating = instance.navigating;
-
+  // Setup history watcher which updates the instance's current
+  // route based on `pushState` and `popState` events.
   setupHistoryWatcher(instance);
+
+  // Derive navigating state from instance.navigating so that
+  // the parent component can bind to it.
+  $effect(() => {
+    navigating = instance.navigating;
+  });
+
+  // Set up the initial route so that the component is rendered.
+  instance.run(get(instance, routes, location.pathname));
 </script>
 
 {#if instance.current}
-  <instance.current.component params={instance.current.params} {...instance.current.props} />
+  {#key instance.current.component}
+    <instance.current.component params={instance.current.params} {...instance.current.props} />
+  {/key}
 {/if}

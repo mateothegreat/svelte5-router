@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { Route } from "@mateothegreat/svelte5-router";
   import { goto, route, Router } from "@mateothegreat/svelte5-router";
-  import { Github } from "lucide-svelte";
-  import type { Writable } from "svelte/store";
+  import { Github, Home } from "lucide-svelte";
   import A from "./lib/a/a.svelte";
   import Default from "./lib/default.svelte";
+  import Delayed from "./lib/delayed.svelte";
   import Params from "./lib/params/params.svelte";
   import Props from "./lib/props/props.svelte";
   import BankAccount from "./lib/protected/bank-account.svelte";
@@ -19,6 +19,18 @@
     {
       path: "a",
       component: A
+    },
+    {
+      path: "delayed",
+      component: Delayed,
+      pre: async (route: Route): Promise<Route> => {
+        // Simulate a network delay by returning a promise that resolves after 1.5 seconds:
+        return new Promise((resolve) =>
+          setTimeout(() => {
+            resolve(route);
+          }, 1500)
+        );
+      }
     },
     {
       path: "props",
@@ -99,34 +111,49 @@
     console.log("globalLoggerPostHook:", await route);
   };
 
-  let navigating: Writable<boolean>;
+  let navigating: boolean;
 </script>
 
 <div class="absolute flex h-full w-full flex-col items-center gap-4 bg-black">
   <div class="flex w-full items-center justify-between p-6">
     <h1 class="text-center font-mono text-lg text-indigo-500">Svelte SPA Router Demo</h1>
-    <div class="">
-      <a href="https://github.com/mateothegreat/svelte5-router" target="_blank">
+    <div class="flex items-center gap-2">
+      <a
+        href="https://github.com/mateothegreat/svelte5-router"
+        class="text-slate-500 hover:text-green-500"
+        target="_blank">
         <Github />
+      </a>
+      <a
+        href="https://github.com/mateothegreat/svelte5-router"
+        class="text-indigo-500 hover:text-green-500"
+        target="_blank">
+        <Home />
       </a>
     </div>
   </div>
-  <span class="flex items-center text-xs text-zinc-500">Navigate to:</span>
-  <div class="flex gap-3 bg-zinc-900">
-    <a use:route href="/" class="rounded bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-800">/</a>
-    <a use:route href="/a" class="rounded bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-800">/a</a>
-    <a use:route href="/props" class="rounded bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-800">/props</a>
-    <a use:route href="/params" class="rounded bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-800">/params</a>
-    <a use:route href="/protected" class="rounded bg-pink-600 px-3 py-1 text-xs text-white hover:bg-blue-800"
-      >/protected</a>
-    <button on:click={() => goto("/a")} class="rounded bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-800">
+  <p class="text-center text-sm text-slate-500">
+    <span class="rounded border border-zinc-800 px-1 py-0.5 text-zinc-500">navigating</span>
+    state:
+    <span class="rounded border border-zinc-800 px-1 py-0.5 text-orange-500">
+      {navigating ? "(true) navigating..." : "(false) idle"}
+    </span>
+  </p>
+  <span class="flex items-center text-xs text-zinc-500">Demo links to navigate to:</span>
+  <div class="flex gap-3 bg-zinc-900 text-xs text-white">
+    <a use:route href="/" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/</a>
+    <a use:route href="/a" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/a</a>
+    <a use:route href="/props" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/props</a>
+    <a use:route href="/params" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/params</a>
+    <a use:route href="/delayed" class="rounded bg-blue-600 px-3 py-1 hover:bg-blue-800">/delayed</a>
+    <a use:route href="/protected" class="py-1hover:bg-pink-800 rounded bg-pink-600 px-3 py-1">/protected</a>
+    <button on:click={() => goto("/a")} class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
       Call the <span class="rounded bg-black px-2 py-0.5 text-green-500">goto("/a");</span> method
     </button>
   </div>
   <div class=" w-full flex-1 bg-zinc-900 p-6">
     <div class="flex flex-col gap-4 rounded-lg bg-zinc-950 p-4 shadow-xl">
       <p class="text-center text-xs text-zinc-500">app.svelte</p>
-      <p class="text-center text-sm text-pink-500">Navigating: {$navigating ? "navigating..." : "idle"}</p>
       <Router bind:navigating {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
     </div>
   </div>
