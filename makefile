@@ -12,3 +12,6 @@ test:
 
 clean:
 	rm -rf node_modules test/app/node_modules
+
+test/build:
+	cd test/app && npm run build

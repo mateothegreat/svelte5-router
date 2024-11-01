@@ -35,6 +35,38 @@ Navigates to the given path.
 
 Returns the value of the query parameter for the given key or null if the key does not exist.
 
+#### The `QueryString` class
+
+A helper class for working with the query string.
+
+##### Example Usage
+
+Basic usage:
+
+```ts
+import { QueryString } from "@mateothegreat/svelte5-router";
+
+const query = new QueryString();
+
+query.get("foo", "bar"); // "bar"
+query.set("foo", "baz");
+query.toString();        // "foo=baz"
+```
+
+Using it with navigation:
+
+```ts
+import { QueryString } from "@mateothegreat/svelte5-router";
+
+const query = new QueryString();
+
+// ...
+query.set("foo", "baz");
+// ...
+
+query.goto("/test"); // Navigates to "/test?foo=baz"
+```
+
 ### Routes
 
 You can simply use static paths like `/foo` or dynamic paths like `/foo/(.*?)` with regex.

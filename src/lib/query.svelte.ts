@@ -1,3 +1,5 @@
+import { goto } from "./methods";
+
 export class QueryString {
   params: Record<string, string> = $state();
 
@@ -25,5 +27,9 @@ export class QueryString {
     return Object.entries(this.params)
       .map(([key, value]) => `${key}=${value}`)
       .join("&");
+  }
+
+  goto(path: string) {
+    goto(`${path}?${this.toString()}`);
   }
 }
