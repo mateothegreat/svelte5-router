@@ -12,6 +12,7 @@ An SPA router for Svelte that allows you to divide & conquer your app with neste
 - Divide & conquer - use nested routers all over the place.
 - Use components, snippets, or both!
 - Use regex paths (e.g. `/foo/(.*?)/bar`) and/or named parameters together 🔥.
+- Use async routes simply with `component: async () => import("./my-component.svelte")`.
 
 ## Installation
 
@@ -110,6 +111,23 @@ Hooks are typed as follows:
 ```ts
 export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<Route>)[] | ((route: Route) => Route) | ((route: Route) => Promise<Route>);
 export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<void>)[] | ((route: Route) => void) | ((route: Route) => Promise<void>);
+```
+
+#### Async Routes
+
+Use async routes simply with `component: async () => import("./my-component.svelte")`.
+
+```svelte
+const routes: Route[] = [
+  {
+    path: "simple",
+    component: Simple
+  },
+  {
+    path: "async",
+    component: async () => import("./lib/async/async.svelte")
+  }
+];
 ```
 
 #### Using Components & Snippets
