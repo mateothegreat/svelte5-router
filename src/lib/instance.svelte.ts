@@ -5,7 +5,7 @@ export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<
 
 export interface Route {
   path: RegExp | string;
-  component?: Component<any> | Snippet;
+  component?: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
   props?: Record<string, any>;
   pre?: PreHooks;
   post?: PostHooks;
@@ -36,17 +36,17 @@ export class Instance {
     this.#post = post;
 
     // Setup a history watcher to navigate to the current route:
-    window.addEventListener("pushState", (event: Event) => {
-      this.run(get(this, this.routes, location.pathname));
-    });
+    // window.addEventListener("pushState", (event: Event) => {
+    //   this.run(get(this, this.routes, location.pathname));
+    // });
   }
 
   /**
    * Navigates to a given route, running  the pre and post hooks.
    * @param {Route} route The route to navigate to.
-   * @returns {Route} The route that was navigated to.
+   * @returns {Promise<void>}
    */
-  async run(route: Route) {
+  async run(route: Route): Promise<void> {
     this.navigating = true;
 
     // First, run the global pre hooks.
@@ -83,7 +83,6 @@ export class Instance {
 
     // Run the route specific post hooks:
     if (route && route.post) {
-      console.log("route.post", route.post);
       if (Array.isArray(route.post)) {
         for (const post of route.post) {
           await post(route);

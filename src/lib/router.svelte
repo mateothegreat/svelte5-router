@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { mount, onDestroy, unmount, type Component } from "svelte";
   import { get, Instance, setupHistoryWatcher, type PostHooks, type PreHooks, type Route } from "./instance.svelte";
 
   type Props = {
@@ -25,11 +26,54 @@
   });
 
   // Set up the initial route so that the component is rendered.
-  instance.run(get(instance, routes, location.pathname));
+  const route = get(instance, routes, location.pathname);
+  if (route) {
+    instance.run(route);
+  }
+
+  let wrapper: HTMLDivElement;
+  let component = $state<Component | null>(null);
+  let mounted: Component;
+
+  const loadComponent = async () => {
+    if (instance.current) {
+      if (instance.current.component.constructor.name === "AsyncFunction") {
+        const module = await instance.current.component();
+        component = module.default;
+      } else {
+        component = instance.current.component;
+      }
+    }
+  };
+
+  const mountComponent = () => {
+    if (component && wrapper) {
+      if (mounted) {
+        unmount(mounted);
+      }
+      mounted = mount<any, any>(component, {
+        target: wrapper,
+        props: {
+          params: instance.current?.params,
+          ...instance.current?.props
+        }
+      });
+    }
+  };
+
+  $effect(() => {
+    if (route) {
+      loadComponent().then(() => {
+        mountComponent();
+      });
+    }
+  });
+
+  onDestroy(() => {
+    if (mounted) {
+      unmount(mounted);
+    }
+  });
 </script>
 
-{#if instance.current}
-  {#key instance.current.component}
-    <instance.current.component params={instance.current.params} {...instance.current.props} />
-  {/key}
-{/if}
+<div bind:this={wrapper}></div>

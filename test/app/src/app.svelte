@@ -2,7 +2,6 @@
   import type { Route } from "@mateothegreat/svelte5-router";
   import { goto, route, Router } from "@mateothegreat/svelte5-router";
   import { Github, Home } from "lucide-svelte";
-  import A from "./lib/a/a.svelte";
   import Default from "./lib/default.svelte";
   import Delayed from "./lib/delayed.svelte";
   import Params from "./lib/params/params.svelte";
@@ -17,8 +16,8 @@
       component: Default
     },
     {
-      path: "a",
-      component: A
+      path: "async",
+      component: async () => import("./lib/async/async.svelte")
     },
     {
       path: "delayed",
@@ -108,7 +107,7 @@
   };
 
   const globalLoggerPostHook = async (route: Route): Promise<void> => {
-    console.log("globalLoggerPostHook:", await route);
+    console.log("globalLoggerPostHook:", route);
   };
 
   let navigating: boolean;
@@ -142,7 +141,7 @@
   <span class="flex items-center text-xs text-zinc-500">Demo links to navigate to:</span>
   <div class="flex gap-3 bg-zinc-900 text-xs text-white">
     <a use:route href="/" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/</a>
-    <a use:route href="/a" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/a</a>
+    <a use:route href="/async" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/async</a>
     <a use:route href="/props" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/props</a>
     <a use:route href="/params" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/params</a>
     <a use:route href="/delayed" class="rounded bg-blue-600 px-3 py-1 hover:bg-blue-800">/delayed</a>
