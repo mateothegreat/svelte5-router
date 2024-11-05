@@ -343,3 +343,13 @@ const routes: Route[] = [
 ```
 
 > For a real world example, check out the [test app](./test/app/src/app.svelte).
+
+## Deploying
+
+To deploy to Vercel, add the following to your `vercel.json`:
+
+```json
+{
+  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }]
+}
+```
