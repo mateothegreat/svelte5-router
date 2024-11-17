@@ -17,6 +17,7 @@ export interface Route {
  * A router instance that each <Router/> component creates.
  */
 export class Instance {
+  basePath?: string;
   routes: Route[] = [];
   #pre?: PreHooks;
   #post?: PostHooks;
@@ -25,20 +26,17 @@ export class Instance {
 
   /**
    * Creates a new router instance.
+   * @param {string} basePath (optional) The base path to navigate to.
    * @param {Route[]} routes The routes to navigate to.
    * @param {PreHooks} pre (optional) The pre hooks to run before navigating to a route.
    * @param {PostHooks} post (optional) The post hooks to run after navigating to a route.
    */
-  constructor(routes: Route[], pre?: PreHooks, post?: PostHooks) {
+  constructor(basePath: string, routes: Route[], pre?: PreHooks, post?: PostHooks) {
+    this.basePath = basePath;
     this.routes = routes;
     this.current = get(this, this.routes, location.pathname);
     this.#pre = pre;
     this.#post = post;
-
-    // Setup a history watcher to navigate to the current route:
-    // window.addEventListener("pushState", (event: Event) => {
-    //   this.run(get(this, this.routes, location.pathname));
-    // });
   }
 
   /**
@@ -122,13 +120,19 @@ export const get = (
 ): Route => {
   let route: Route;
 
-  // If the path is the root path, return the root route:
-  if (path === "/") {
-    route = routes.find((route) => route.path === "/");
+  let pathToMatch = path;
+  if (routerInstance.basePath && routerInstance.basePath !== "/") {
+    pathToMatch = routerInstance.basePath + pathToMatch;
   }
+  // If the path is the root path, return the root route:
+  if (pathToMatch === "/") {
+    route = routes.find((route) => route.path === "/");
+    console.log("route", route);
 
+  }
+  console.log("pathToMatch", pathToMatch);
   // Split the path into the first segment and the rest:
-  const [first, ...rest] = path.replace(/^\//, "").split("/");
+  const [first, ...rest] = pathToMatch.replace(/^\//, "").split("/");
   route = routes.find((route) => route.path === first);
 
   // If the route is not found, try to find a route that matches the path:

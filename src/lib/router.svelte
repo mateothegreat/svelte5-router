@@ -3,6 +3,7 @@
   import { get, Instance, setupHistoryWatcher, type PostHooks, type PreHooks, type Route } from "./instance.svelte";
 
   type Props = {
+    basePath?: string;
     pre?: PreHooks;
     post?: PostHooks;
     routes: Route[];
@@ -10,10 +11,10 @@
     instance?: Instance;
   };
 
-  let { routes, pre, post, navigating = $bindable(), instance = $bindable() }: Props = $props();
+  let { basePath, routes, pre, post, navigating = $bindable(), instance = $bindable() }: Props = $props();
 
   // Initialize the instance
-  instance = new Instance(routes, pre, post);
+  instance = new Instance(basePath, routes, pre, post);
 
   // Setup history watcher which updates the instance's current
   // route based on `pushState` and `popState` events.
