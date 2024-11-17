@@ -166,16 +166,16 @@ export const setupHistoryWatcher = (instance: Instance) => {
 
     // Listen for custom pushState and replaceState events
     window.addEventListener("pushState", () => {
-      instance.run(get(instance, instance.routes, location.pathname));
+      instance.run(instance.get(location.pathname));
     });
 
     window.addEventListener("replaceState", () => {
-      instance.run(get(instance, instance.routes, location.pathname));
+      instance.run(instance.get(location.pathname));
     });
 
     // Listen for popstate event to detect forward and backward navigation
     window.addEventListener("popstate", () => {
-      instance.run(get(instance, instance.routes, location.pathname));
+      instance.run(instance.get(location.pathname));
     });
 
     (window.history as any)._listenersAdded = true;
