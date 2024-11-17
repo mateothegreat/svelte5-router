@@ -13,6 +13,7 @@ An SPA router for Svelte that allows you to divide & conquer your app with neste
 - Use components, snippets, or both!
 - Use regex paths (e.g. `/foo/(.*?)/bar`) and/or named parameters together 🔥.
 - Use async routes simply with `component: async () => import("./my-component.svelte")`.
+- Base path support.
 
 ## Installation
 
