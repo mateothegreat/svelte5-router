@@ -4,7 +4,6 @@
   import { Github, Home } from "lucide-svelte";
   import Default from "./lib/default.svelte";
   import Delayed from "./lib/delayed.svelte";
-  import Bar from "./lib/foo/bar.svelte";
   import Params from "./lib/params/params.svelte";
   import Props from "./lib/props/props.svelte";
   import BankAccount from "./lib/protected/bank-account.svelte";
@@ -154,25 +153,7 @@
   <div class=" w-full flex-1 bg-zinc-900 p-6">
     <div class="flex flex-col gap-4 rounded-lg bg-zinc-950 p-4 shadow-xl">
       <p class="text-center text-xs text-zinc-500">app.svelte</p>
-      <Router basePath="/" bind:navigating {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
-    </div>
-  </div>
-  <p class="text-center text-lg text-green-500">Base path router example.</p>
-  <h1>Base path: /foo</h1>
-  <div class=" w-full flex-1 bg-zinc-900 p-6">
-    <div class="flex flex-col gap-4 rounded-lg bg-zinc-950 p-4 shadow-xl">
-      <div class="w-52">
-        <a use:route href="/foo/bar" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/foo/bar</a>
-      </div>
-      <Router
-        basePath="/foo"
-        bind:navigating
-        routes={[
-          {
-            path: "bar",
-            component: Bar
-          }
-        ]} />
+      <Router basePath="/mybasepath" bind:navigating {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
     </div>
   </div>
 </div>

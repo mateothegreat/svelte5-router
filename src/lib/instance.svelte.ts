@@ -17,6 +17,7 @@ export interface Route {
  * A router instance that each <Router/> component creates.
  */
 export class Instance {
+  id = crypto.randomUUID();
   basePath?: string;
   routes: Route[] = [];
   #pre?: PreHooks;
@@ -30,13 +31,51 @@ export class Instance {
    * @param {Route[]} routes The routes to navigate to.
    * @param {PreHooks} pre (optional) The pre hooks to run before navigating to a route.
    * @param {PostHooks} post (optional) The post hooks to run after navigating to a route.
+   * @param {string} currentPath (optional) The current path to automaticallynavigate to.
    */
-  constructor(basePath: string, routes: Route[], pre?: PreHooks, post?: PostHooks) {
+  constructor(basePath: string, routes: Route[], pre?: PreHooks, post?: PostHooks, currentPath?: string) {
     this.basePath = basePath;
     this.routes = routes;
-    this.current = get(this, this.routes, location.pathname);
+    if (currentPath) {
+      this.current = this.get(currentPath);
+    }
     this.#pre = pre;
     this.#post = post;
+  }
+
+  /**
+   * Get the route for a given path.
+   * @returns { Route } The route for the given path.
+   */
+  get(path: string): Route | undefined {
+    let route: Route | undefined;
+
+    let pathToMatch = path;
+    if (this.basePath && this.basePath !== "/") {
+      pathToMatch = path.replace(this.basePath, "");
+    }
+    // If the path is the root path, return the root route:
+    if (pathToMatch === "/") {
+      route = this.routes.find((route) => route.path === "/");
+    }
+    console.log(pathToMatch);
+    // Split the path into the first segment and the rest:
+    const [first, ...rest] = pathToMatch.replace(/^\//, "").split("/");
+    route = this.routes.find((route) => route.path === first);
+
+    // If the route is not found, try to find a route that matches at least part of the path:
+    if (!route) {
+      for (const r of this.routes) {
+        const regexp = new RegExp(r.path);
+        const match = regexp.exec(path);
+        if (match) {
+          route = { ...r, params: match.slice(1) };
+          break;
+        }
+      }
+    }
+
+    return route;
   }
 
   /**
@@ -106,51 +145,6 @@ export class Instance {
 }
 
 /**
- * Get the route for a given path.
- * @param {Instance} routerInstance The router instance to get the route for.
- * @param {Route[]} routes The routes to get the route for.
- * @param {string} path The path to get the route for.
- * @param {ParentRoute} parent The parent route to get the route for.
- * @returns {Route} The route for the given path.
- */
-export const get = (
-  routerInstance: Instance,
-  routes: Route[],
-  path: string,
-): Route => {
-  let route: Route;
-
-  let pathToMatch = path;
-  if (routerInstance.basePath && routerInstance.basePath !== "/") {
-    pathToMatch = routerInstance.basePath + pathToMatch;
-  }
-  // If the path is the root path, return the root route:
-  if (pathToMatch === "/") {
-    route = routes.find((route) => route.path === "/");
-    console.log("route", route);
-
-  }
-  console.log("pathToMatch", pathToMatch);
-  // Split the path into the first segment and the rest:
-  const [first, ...rest] = pathToMatch.replace(/^\//, "").split("/");
-  route = routes.find((route) => route.path === first);
-
-  // If the route is not found, try to find a route that matches the path:
-  if (!route) {
-    for (const r of routes) {
-      const regexp = new RegExp(r.path);
-      const match = regexp.exec(path);
-      if (match) {
-        route = { ...r, params: match.slice(1) };
-        break;
-      }
-    }
-  }
-
-  return route;
-};
-
-/**
  * Sets up a new history watcher for a router instance.
  * @param {Instance} instance The router instance to setup the history watcher for.
  */
@@ -164,7 +158,7 @@ export const setupHistoryWatcher = (instance: Instance) => {
     };
 
     window.addEventListener("pushState", (event: Event) => {
-      instance.run(get(instance, instance.routes, location.pathname));
+      instance.run(instance.get(location.pathname));
     });
 
     (window.history as any)._listenersAdded = true;

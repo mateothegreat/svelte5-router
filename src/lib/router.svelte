@@ -1,6 +1,6 @@
 <script lang="ts">
   import { mount, onDestroy, unmount, type Component } from "svelte";
-  import { get, Instance, setupHistoryWatcher, type PostHooks, type PreHooks, type Route } from "./instance.svelte";
+  import { Instance, setupHistoryWatcher, type PostHooks, type PreHooks, type Route } from "./instance.svelte";
 
   type Props = {
     basePath?: string;
@@ -27,7 +27,7 @@
   });
 
   // Set up the initial route so that the component is rendered.
-  const route = get(instance, routes, location.pathname);
+  const route = instance.get(location.pathname);
   if (route) {
     instance.run(route);
   }
