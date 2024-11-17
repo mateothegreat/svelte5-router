@@ -149,16 +149,33 @@ export class Instance {
  * @param {Instance} instance The router instance to setup the history watcher for.
  */
 export const setupHistoryWatcher = (instance: Instance) => {
-  const { pushState } = window.history;
+  const { pushState, replaceState } = window.history;
 
   if (!(window.history as any)._listenersAdded) {
+    // Override pushState to dispatch a custom event
     window.history.pushState = function (...args) {
       pushState.apply(window.history, args);
       window.dispatchEvent(new Event("pushState"));
     };
 
-    window.addEventListener("pushState", (event: Event) => {
-      instance.run(instance.get(location.pathname));
+    // Override replaceState to dispatch a custom event
+    window.history.replaceState = function (...args) {
+      replaceState.apply(window.history, args);
+      window.dispatchEvent(new Event("replaceState"));
+    };
+
+    // Listen for custom pushState and replaceState events
+    window.addEventListener("pushState", () => {
+      instance.run(get(instance, instance.routes, location.pathname));
+    });
+
+    window.addEventListener("replaceState", () => {
+      instance.run(get(instance, instance.routes, location.pathname));
+    });
+
+    // Listen for popstate event to detect forward and backward navigation
+    window.addEventListener("popstate", () => {
+      instance.run(get(instance, instance.routes, location.pathname));
     });
 
     (window.history as any)._listenersAdded = true;
