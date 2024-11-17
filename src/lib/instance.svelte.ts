@@ -17,6 +17,8 @@ export interface Route {
  * A router instance that each <Router/> component creates.
  */
 export class Instance {
+  id = crypto.randomUUID();
+  basePath?: string;
   routes: Route[] = [];
   #pre?: PreHooks;
   #post?: PostHooks;
@@ -25,20 +27,55 @@ export class Instance {
 
   /**
    * Creates a new router instance.
+   * @param {string} basePath (optional) The base path to navigate to.
    * @param {Route[]} routes The routes to navigate to.
    * @param {PreHooks} pre (optional) The pre hooks to run before navigating to a route.
    * @param {PostHooks} post (optional) The post hooks to run after navigating to a route.
+   * @param {string} currentPath (optional) The current path to automaticallynavigate to.
    */
-  constructor(routes: Route[], pre?: PreHooks, post?: PostHooks) {
+  constructor(basePath: string, routes: Route[], pre?: PreHooks, post?: PostHooks, currentPath?: string) {
+    this.basePath = basePath;
     this.routes = routes;
-    this.current = get(this, this.routes, location.pathname);
+    if (currentPath) {
+      this.current = this.get(currentPath);
+    }
     this.#pre = pre;
     this.#post = post;
+  }
 
-    // Setup a history watcher to navigate to the current route:
-    // window.addEventListener("pushState", (event: Event) => {
-    //   this.run(get(this, this.routes, location.pathname));
-    // });
+  /**
+   * Get the route for a given path.
+   * @returns { Route } The route for the given path.
+   */
+  get(path: string): Route | undefined {
+    let route: Route | undefined;
+
+    let pathToMatch = path;
+    if (this.basePath && this.basePath !== "/") {
+      pathToMatch = path.replace(this.basePath, "");
+    }
+    // If the path is the root path, return the root route:
+    if (pathToMatch === "/") {
+      route = this.routes.find((route) => route.path === "/");
+    }
+    console.log(pathToMatch);
+    // Split the path into the first segment and the rest:
+    const [first, ...rest] = pathToMatch.replace(/^\//, "").split("/");
+    route = this.routes.find((route) => route.path === first);
+
+    // If the route is not found, try to find a route that matches at least part of the path:
+    if (!route) {
+      for (const r of this.routes) {
+        const regexp = new RegExp(r.path);
+        const match = regexp.exec(path);
+        if (match) {
+          route = { ...r, params: match.slice(1) };
+          break;
+        }
+      }
+    }
+
+    return route;
   }
 
   /**
@@ -106,45 +143,6 @@ export class Instance {
     this.navigating = false;
   }
 }
-
-/**
- * Get the route for a given path.
- * @param {Instance} routerInstance The router instance to get the route for.
- * @param {Route[]} routes The routes to get the route for.
- * @param {string} path The path to get the route for.
- * @param {ParentRoute} parent The parent route to get the route for.
- * @returns {Route} The route for the given path.
- */
-export const get = (
-  routerInstance: Instance,
-  routes: Route[],
-  path: string,
-): Route => {
-  let route: Route;
-
-  // If the path is the root path, return the root route:
-  if (path === "/") {
-    route = routes.find((route) => route.path === "/");
-  }
-
-  // Split the path into the first segment and the rest:
-  const [first, ...rest] = path.replace(/^\//, "").split("/");
-  route = routes.find((route) => route.path === first);
-
-  // If the route is not found, try to find a route that matches the path:
-  if (!route) {
-    for (const r of routes) {
-      const regexp = new RegExp(r.path);
-      const match = regexp.exec(path);
-      if (match) {
-        route = { ...r, params: match.slice(1) };
-        break;
-      }
-    }
-  }
-
-  return route;
-};
 
 /**
  * Sets up a new history watcher for a router instance.

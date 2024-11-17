@@ -153,7 +153,7 @@
   <div class=" w-full flex-1 bg-zinc-900 p-6">
     <div class="flex flex-col gap-4 rounded-lg bg-zinc-950 p-4 shadow-xl">
       <p class="text-center text-xs text-zinc-500">app.svelte</p>
-      <Router bind:navigating {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
+      <Router basePath="/mybasepath" bind:navigating {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
     </div>
   </div>
 </div>
