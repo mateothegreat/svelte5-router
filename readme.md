@@ -27,6 +27,18 @@ All you need to do is define your routes and then use the `Router` component wit
 
 To make a link, use the `route` directive with the `href` attribute such as `<a use:route href="/foo">foo</a>`.
 
+## Base Paths
+
+In some cases you may not be able to use the base path of your app as the root path. For example, if you are using a nested router, you may want to use a base path of `/foo` instead of `/`.
+
+Simply pass the `basePath` prop to the `Router` component and it will handle the rest:
+
+> No need to update your routes either, it will support both `/mybasepath/foo` and `/foo` just fine.
+
+```svelte
+<Router basePath="/mybasepath" {routes} />
+```
+
 ### Methods
 
 #### `goto(path: string)`
