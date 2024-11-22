@@ -38,5 +38,8 @@
   },
   "peerDependencies": {
     "svelte": "^5.0.0"
+  },
+  "dependencies": {
+    "@changesets/cli": "^2.27.10"
   }
 }
