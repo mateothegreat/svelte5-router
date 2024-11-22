@@ -26,3 +26,6 @@ jobs:
           commit: "chore(release): version package"
           title: "chore(release): version package"
           publish: npm run release
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
