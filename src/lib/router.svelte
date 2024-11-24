@@ -48,6 +48,7 @@
   };
 
   const mountComponent = () => {
+    console.log("mounting component", instance.current?.params);
     if (component && wrapper) {
       if (mounted) {
         unmount(mounted);

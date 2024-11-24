@@ -10,7 +10,7 @@ export interface Route {
   pre?: PreHooks;
   post?: PostHooks;
   children?: Route[];
-  params?: string[];
+  params?: string[] | Record<string, string>;
 }
 
 /**
@@ -58,7 +58,7 @@ export class Instance {
     if (pathToMatch === "/") {
       route = this.routes.find((route) => route.path === "/");
     }
-    console.log(pathToMatch);
+
     // Split the path into the first segment and the rest:
     const [first, ...rest] = pathToMatch.replace(/^\//, "").split("/");
     route = this.routes.find((route) => route.path === first);
@@ -69,7 +69,7 @@ export class Instance {
         const regexp = new RegExp(r.path);
         const match = regexp.exec(path);
         if (match) {
-          route = { ...r, params: match.slice(1) };
+          route = { ...r, params: match.groups || match.slice(1) };
           break;
         }
       }
