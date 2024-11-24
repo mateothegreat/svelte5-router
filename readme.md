@@ -96,12 +96,13 @@ You can simply use static paths like `/foo` or dynamic paths like `/foo/(.*?)` w
 
 Example patterns:
 
-| Pattern             | Description                         |
-| ------------------- | ----------------------------------- |
-| `/`                 | The root path.                      |
-| `/foo`              | A static path.                      |
-| `/foo/(.*?)`        | A dynamic path.                     |
-| `/cool/(.*?)/(.*?)` | A dynamic path with two parameters. |
+| Pattern             | Description                            |
+| ------------------- | -------------------------------------- |
+| `/`                 | The root path.                         |
+| `/foo`              | A static path.                         |
+| `/foo/(.*?)`        | A dynamic path.                        |
+| `/cool/(.*?)/(.*?)` | A dynamic path with two parameters.    |
+| `(?<myRoute>.*)`    | A dynamic path with a named parameter. |
 
 For transparency, here's the type definition for a route:
 
