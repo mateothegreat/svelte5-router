@@ -17,7 +17,7 @@
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "build": "npm run check && rimraf dist && cpx 'src/lib/**/*' dist && cpx package.json dist",
-    "release": "npm run check && rm -rf dist; npm version from-git && cp -r src/lib dist && cp package.json dist"
+    "release": "npm run check && rm -rf dist; cp package.json dist/package.json && cp -r src/lib dist && cp package.json dist"
   },
   "devDependencies": {
     "@sveltejs/package": "^2.3.7",
