@@ -5,7 +5,8 @@ export const goto = (path: string, searchParams?: Record<string, string>) => {
       url.searchParams.set(key, value);
     });
   }
-  window.history.pushState({}, "", url.toString());
+  console.log(`${window.location.origin}/${url.toString()}`);
+  window.history.replaceState({}, "", `${window.location.origin}/${url.toString()}`);
 };
 
 export const query = (key: string): string | null => {
