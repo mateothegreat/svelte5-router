@@ -2,19 +2,22 @@
   "name": "@mateothegreat/svelte5-router",
   "version": "0.1.9",
   "type": "module",
-  "svelte": "./index.js",
-  "main": "./index.js",
-  "module": "./index.js",
-  "types": "./index.d.ts",
+  "main": "./src/lib/index.ts",
+  "module": "./src/lib/index.ts",
+  "svelte": "./src/lib/index.ts",
   "exports": {
     ".": {
-      "import": "./index.js"
+      "svelte": "./src/lib/index.ts",
+      "types": "./src/lib/types.ts"
     }
   },
+  "files": [
+    "src"
+  ],
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "build": "npm run check && rimraf dist && cpx 'src/lib/**/*' dist && cpx package.json dist",
-    "release": "svelte-package && cp package.json dist/package.json && cd dist && npm publish --access public"
+    "release": "npm run check && rm -rf dist; npm version from-git && cp -r src/lib dist && cp package.json dist"
   },
   "devDependencies": {
     "@sveltejs/package": "^2.3.7",
