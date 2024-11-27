@@ -1,6 +1,6 @@
 {
   "name": "@mateothegreat/svelte5-router",
-  "version": "0.1.11",
+  "version": "0.1.9",
   "type": "module",
   "main": "./src/lib/index.ts",
   "module": "./src/lib/index.ts",
@@ -17,7 +17,7 @@
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "build": "npm run check && rimraf dist && cpx 'src/lib/**/*' dist && cpx package.json dist",
-    "release": "npm run check && rm -rf dist; cp package.json dist/package.json && cp -r src/lib dist && cp package.json dist"
+    "release": "npm run check && npm publish --access public"
   },
   "devDependencies": {
     "@sveltejs/package": "^2.3.7",
