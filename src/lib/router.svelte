@@ -7,11 +7,14 @@
     pre?: PreHooks;
     post?: PostHooks;
     routes: Route[];
-    navigating?: boolean;
     instance?: Instance;
   };
 
-  let { basePath, routes, pre, post, navigating = $bindable(), instance = $bindable() }: Props = $props();
+  let { basePath, routes, pre, post, instance = $bindable() }: Props = $props();
+
+  // Derive navigating state from instance.navigating so that
+  // the parent component can bind to it.
+  let navigating = $derived(instance.navigating);
 
   // Initialize the instance
   instance = new Instance(basePath, routes, pre, post);
@@ -20,10 +23,13 @@
   // route based on `pushState` and `popState` events.
   setupHistoryWatcher(instance);
 
-  // Derive navigating state from instance.navigating so that
-  // the parent component can bind to it.
   $effect(() => {
-    navigating = instance.navigating;
+    $inspect("instance", instance);
+    if (route) {
+      loadComponent().then(() => {
+        mountComponent();
+      });
+    }
   });
 
   // Set up the initial route so that the component is rendered.
@@ -48,7 +54,6 @@
   };
 
   const mountComponent = () => {
-    console.log("mounting component", instance.current?.params);
     if (component && wrapper) {
       if (mounted) {
         unmount(mounted);
@@ -62,14 +67,6 @@
       });
     }
   };
-
-  $effect(() => {
-    if (route) {
-      loadComponent().then(() => {
-        mountComponent();
-      });
-    }
-  });
 
   onDestroy(() => {
     if (mounted) {

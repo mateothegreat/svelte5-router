@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Route } from "@mateothegreat/svelte5-router";
+  import type { Instance, Route } from "@mateothegreat/svelte5-router";
   import { goto, route, Router } from "@mateothegreat/svelte5-router";
   import { Github, Home } from "lucide-svelte";
   import Default from "./lib/default.svelte";
@@ -60,7 +60,7 @@
       component: Protected,
       // Use a pre hook to simulate a protected route:
       pre: async (route: Route): Promise<Route> => {
-        console.log("pre hook #1 fired for route:", route, navigating);
+        console.log("pre hook #1 fired for route:", route, instance.navigating);
         return new Promise((resolve) => {
           console.log("simulated wait over for route:", route);
           // Crude example of checking if the user is logged in. A more
@@ -110,7 +110,7 @@
     console.log("globalLoggerPostHook:", route);
   };
 
-  let navigating: boolean;
+  let instance = $state<Instance>();
 </script>
 
 <div class="absolute flex h-full w-full flex-col items-center gap-4 bg-black">
@@ -135,7 +135,7 @@
     <span class="rounded border border-zinc-800 px-1 py-0.5 text-zinc-500">navigating</span>
     state:
     <span class="rounded border border-zinc-800 px-1 py-0.5 text-orange-500">
-      {navigating ? "(true) navigating..." : "(false) idle"}
+      {instance.navigating ? "(true) navigating..." : "(false) idle"}
     </span>
   </p>
   <span class="flex items-center text-xs text-zinc-500">Demo links to navigate to:</span>
@@ -146,14 +146,14 @@
     <a use:route href="/params" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/params</a>
     <a use:route href="/delayed" class="rounded bg-blue-600 px-3 py-1 hover:bg-blue-800">/delayed</a>
     <a use:route href="/protected" class="py-1hover:bg-pink-800 rounded bg-pink-600 px-3 py-1">/protected</a>
-    <button on:click={() => goto("/a")} class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
+    <button onclick={() => goto("/a")} class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
       Call the <span class="rounded bg-black px-2 py-0.5 text-green-500">goto("/a");</span> method
     </button>
   </div>
   <div class=" w-full flex-1 bg-zinc-900 p-6">
     <div class="flex flex-col gap-4 rounded-lg bg-zinc-950 p-4 shadow-xl">
       <p class="text-center text-xs text-zinc-500">app.svelte</p>
-      <Router basePath="/mybasepath" bind:navigating {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
+      <Router basePath="/mybasepath" bind:instance {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
     </div>
   </div>
 </div>
