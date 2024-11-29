@@ -2,8 +2,6 @@
   "name": "@mateothegreat/svelte5-router",
   "version": "0.1.19",
   "type": "module",
-  "main": "./src/lib/index.ts",
-  "module": "./src/lib/index.ts",
   "svelte": "./src/lib/index.ts",
   "exports": {
     ".": {
@@ -30,7 +28,7 @@
     "prettier-plugin-svelte": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "rimraf": "^6.0.1",
-    "svelte": "^5.2.10",
+    "svelte": "^5.2.11",
     "svelte-check": "^4.1.0",
     "svelte-package": "^0.1.0",
     "tailwind-merge": "^2.5.5",
@@ -40,8 +38,5 @@
   },
   "peerDependencies": {
     "svelte": "^5.0.0"
-  },
-  "dependencies": {
-    "@mateothegreat/svelte5-router": "^0.1.17"
   }
 }
