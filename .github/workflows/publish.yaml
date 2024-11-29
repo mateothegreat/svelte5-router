@@ -10,7 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
       - name: automated version bump
         uses: "phips28/gh-action-bump-version@master"
         env:
@@ -24,8 +26,3 @@ jobs:
         run: npm install --legacy-peer-deps
       - name: release
         run: npm run release
-      - name: discord notification
-        uses: sarisia/actions-status-discord@v1
-        if: always()
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
