@@ -4,7 +4,7 @@
   "trailingComma": "none",
   "printWidth": 150,
   "endOfLine": "lf",
-  "plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
+  "plugins": ["prettier-plugin-svelte"],
   "pluginSearchDirs": false,
   "overrides": [
     {
