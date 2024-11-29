@@ -20,7 +20,6 @@
     "release": "npm run check && npm publish --access public"
   },
   "devDependencies": {
-    "@sveltejs/package": "^2.3.7",
     "@sveltejs/vite-plugin-svelte": "^5.0.1",
     "@tsconfig/svelte": "^5.0.4",
     "@types/node": "^22.10.1",
@@ -41,8 +40,5 @@
   },
   "peerDependencies": {
     "svelte": "^5.0.0"
-  },
-  "dependencies": {
-    "@changesets/cli": "^2.27.10"
   }
 }
