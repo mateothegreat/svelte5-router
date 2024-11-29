@@ -30,5 +30,7 @@ jobs:
         run: echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > ~/.npmrc
       - name: install
         run: npm install --legacy-peer-deps
+      - name: build
+        run: npm run build
       - name: release
         run: npm run release
