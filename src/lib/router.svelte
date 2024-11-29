@@ -24,7 +24,6 @@
   setupHistoryWatcher(instance);
 
   $effect(() => {
-    $inspect("instance", instance);
     if (route) {
       loadComponent().then(() => {
         mountComponent();
