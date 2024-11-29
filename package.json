@@ -12,7 +12,7 @@
     }
   },
   "files": [
-    "src"
+    "."
   ],
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
