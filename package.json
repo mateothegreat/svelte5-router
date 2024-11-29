@@ -2,10 +2,13 @@
   "name": "@mateothegreat/svelte5-router",
   "version": "0.1.22",
   "type": "module",
-  "svelte": "./src/lib/index.ts",
+  "svelte": "./index.js",
+  "main": "./index.js",
+  "module": "./index.js",
+  "types": "./index.d.ts",
   "exports": {
     ".": {
-      "svelte": "./src/lib/index.ts"
+      "import": "./index.js"
     }
   },
   "files": [
