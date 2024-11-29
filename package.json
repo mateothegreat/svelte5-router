@@ -8,11 +8,12 @@
   "types": "./index.d.ts",
   "exports": {
     ".": {
-      "import": "./index.js"
+      "import": "./index.js",
+      "require": "./index.js"
     }
   },
   "files": [
-    "."
+    "./dist"
   ],
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
