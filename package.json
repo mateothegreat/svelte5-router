@@ -40,5 +40,8 @@
   },
   "peerDependencies": {
     "svelte": "^5.0.0"
+  },
+  "dependencies": {
+    "@mateothegreat/svelte5-router": "^0.1.17"
   }
 }
