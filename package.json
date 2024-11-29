@@ -1,6 +1,6 @@
 {
   "name": "@mateothegreat/svelte5-router",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "type": "module",
   "svelte": "./src/lib/index.ts",
   "exports": {
