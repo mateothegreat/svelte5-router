@@ -13,11 +13,11 @@
     }
   },
   "files": [
-    "./dist"
+    "./"
   ],
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "build": "npm run check && rimraf dist && cpx 'src/lib/**/*' dist && cpx package.json dist",
+    "build": "svelte-package && cp readme.md package.json dist",
     "release": "svelte-package && cp package.json dist/package.json && cd dist && npm publish --access public"
   },
   "devDependencies": {
