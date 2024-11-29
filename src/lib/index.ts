@@ -1,7 +1,10 @@
 export { route } from "./actions/route";
-export { Instance as default } from "./instance.svelte";
-export { goto, query } from "./methods";
-export { QueryString } from "./query.svelte";
-export * from "./router.svelte";
-export { default as Router } from "./router.svelte";
+export { Instance };
+import { Instance } from "./instance.svelte";
+import { QueryString } from "./query.svelte";
+import Router from "./router.svelte";
 
+export { goto, query } from "./methods";
+export { QueryString };
+
+export { Router };
