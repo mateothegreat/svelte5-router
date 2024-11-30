@@ -38,11 +38,10 @@ npm install @mateothegreat/svelte5-router
     - [States](#states)
       - [Navigation State](#navigation-state)
   - [Helper Methods](#helper-methods)
-    - [`goto(path: string)`](#gotopath-string)
+    - [`goto(path: string, searchParams?: Record<string, string>)`](#gotopath-string-searchparams-recordstring-string)
     - [`query(key: string): string | null`](#querykey-string-string--null)
     - [The `QueryString` class](#the-querystring-class)
-      - [Example Usage](#example-usage)
-  - [Example](#example)
+  - [Full Example](#full-example)
   - [Deploying](#deploying)
 
 ## Getting Started
@@ -286,9 +285,17 @@ const routes: Route[] = [
 
 ## Helper Methods
 
-### `goto(path: string)`
+### `goto(path: string, searchParams?: Record<string, string>)`
 
-Navigates to the given path.
+Navigates to the given path by calling `goto("/path")`.
+
+Example:
+
+```ts
+goto("/foo", { bar: "baz" });
+```
+
+This will navigate to `/foo?bar=baz`.
 
 ### `query(key: string): string | null`
 
@@ -306,8 +313,6 @@ A helper class for working with the query string.
 > ```
 >
 > and start using it now!
-
-#### Example Usage
 
 Basic usage:
 
@@ -335,7 +340,7 @@ query.set("foo", "baz");
 query.goto("/test"); // Navigates to "/test?foo=baz"
 ```
 
-## Example
+## Full Example
 
 ```svelte
 <script lang="ts">
