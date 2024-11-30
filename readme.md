@@ -21,7 +21,31 @@ An SPA router for Svelte that allows you to divide & conquer your app with neste
 npm install @mateothegreat/svelte5-router
 ```
 
-## Usage
+## Table of Contents
+
+- [Svelte Routing like a boss](#svelte-routing-like-a-boss)
+  - [Features](#features)
+  - [Installation](#installation)
+  - [Table of Contents](#table-of-contents)
+  - [Getting Started](#getting-started)
+  - [Base Paths](#base-paths)
+  - [Routes](#routes)
+    - [Async + Lazy Loading Routes](#async--lazy-loading-routes)
+    - [Using Components \& Snippets](#using-components--snippets)
+    - [Accessing Parameters](#accessing-parameters)
+    - [Passing Props](#passing-props)
+  - [Hooks](#hooks)
+    - [States](#states)
+      - [Navigation State](#navigation-state)
+  - [Helper Methods](#helper-methods)
+    - [`goto(path: string)`](#gotopath-string)
+    - [`query(key: string): string | null`](#querykey-string-string--null)
+    - [The `QueryString` class](#the-querystring-class)
+      - [Example Usage](#example-usage)
+  - [Example](#example)
+  - [Deploying](#deploying)
+
+## Getting Started
 
 All you need to do is define your routes and then use the `Router` component with the `routes` array.
 
@@ -39,104 +63,27 @@ Simply pass the `basePath` prop to the `Router` component and it will handle the
 <Router basePath="/mybasepath" {routes} />
 ```
 
-### Methods
-
-#### `goto(path: string)`
-
-Navigates to the given path.
-
-#### `query(key: string): string | null`
-
-Returns the value of the query parameter for the given key or null if the key does not exist.
-
-#### The `QueryString` class
-
-A helper class for working with the query string.
-
-> Check it out at [src/lib/query.svelte.ts](./src/lib/query.svelte.ts).
-> or import it with:
->
-> ```ts
-> import { QueryString } from "@mateothegreat/svelte5-router";
-> ```
->
-> and start using it now!
-
-##### Example Usage
-
-Basic usage:
-
-```ts
-import { QueryString } from "@mateothegreat/svelte5-router";
-
-const query = new QueryString();
-
-query.get("foo", "bar"); // "bar"
-query.set("foo", "baz");
-query.toString();        // "foo=baz"
-```
-
-Using it with navigation:
-
-```ts
-import { QueryString } from "@mateothegreat/svelte5-router";
-
-const query = new QueryString();
-
-// ...
-query.set("foo", "baz");
-// ...
-
-query.goto("/test"); // Navigates to "/test?foo=baz"
-```
-
-### Routes
+## Routes
 
 You can simply use static paths like `/foo` or dynamic paths like `/foo/(.*?)` with regex.
 
 Example patterns:
 
-| Pattern             | Description                            |
-| ------------------- | -------------------------------------- |
-| `/`                 | The root path.                         |
-| `/foo`              | A static path.                         |
-| `/foo/(.*?)`        | A dynamic path.                        |
-| `/cool/(.*?)/(.*?)` | A dynamic path with two parameters.    |
-| `(?<myRoute>.*)`    | A dynamic path with a named parameter. |
+| Pattern                                             | Description                                             |
+| --------------------------------------------------- | ------------------------------------------------------- |
+| `/`                                                 | The root path.                                          |
+| `/foo`                                              | A static path.                                          |
+| `/foo/(.*?)`                                        | A dynamic path.                                         |
+| `/cool/(.*?)/(.*?)`                                 | A dynamic path with two parameters.                     |
+| `(?<myRoute>.*)`                                    | A dynamic path with a named parameter.                  |
+| `^/components/(?<id>[a-z0-9]{25})(?:/(?<tab>.*))?$` | A dynamic path with a named parameter and optional tab. |
 
-For transparency, here's the type definition for a route:
+### Async + Lazy Loading Routes
 
-> Only `path` is required at a minimum with either pre/post hooks or a component/snippet.
-
-```ts
-export interface Route {
-  path: RegExp | string;
-  component?: Component<any> | Snippet;
-  props?: Record<string, any>;
-  pre?: PreHooks;
-  post?: PostHooks;
-}
-```
-
-Hooks are typed as follows:
-
-> As you can see, you can pass an array of hooks or a single hook as a promise or not:
-
-```ts
-export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<Route>)[] | ((route: Route) => Route) | ((route: Route) => Promise<Route>);
-export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<void>)[] | ((route: Route) => void) | ((route: Route) => Promise<void>);
-```
-
-#### Async Routes
-
-Use async routes simply with `component: async () => import("./my-component.svelte")`.
+Simply use the `async` keyword with the `component` property and return the component:
 
 ```svelte
 const routes: Route[] = [
-  {
-    path: "simple",
-    component: Simple
-  },
   {
     path: "async",
     component: async () => import("./lib/async/async.svelte")
@@ -144,7 +91,24 @@ const routes: Route[] = [
 ];
 ```
 
-#### Using Components & Snippets
+You can also do something with the module before returning it:
+
+```svelte
+const routes: Route[] = [
+  {
+    path: "async",
+    component: async () => {
+      const module = await import("./lib/async/async.svelte");
+      //
+      // do something with the module...
+      //
+      return module.default;
+    }
+  }
+];
+```
+
+### Using Components & Snippets
 
 For the quickest and easiest routes, you can use components:
 
@@ -180,7 +144,7 @@ For more complex routing needs, you can use snippets:
 {/snippet}
 ```
 
-#### Accessing Parameters
+### Accessing Parameters
 
 When your component is rendered, the `route` object will be passed in as a prop. You can then access the parameter(s) of a route using the `route.params` property:
 
@@ -203,7 +167,7 @@ If you were to route to `/cool/bar/baz`, this will result in the following outpu
 ]
 ```
 
-#### Passing Props
+### Passing Props
 
 You can pass props to a route by using the `props` property on any route. These props will be passed to the component as a prop:
 
@@ -232,11 +196,9 @@ Then, in your component, you can access the prop like this:
 <pre>{JSON.stringify(myProps, null, 2)}</pre>
 ```
 
-### `pre` and `post` hooks
+## Hooks
 
 Use `pre` and `post` hooks to run before and after a route is rendered to do things like authentication, logging, etc.
-
-#### Hook Syntax
 
 | Syntax                            | Location    | Description                                 |
 | --------------------------------- | ----------- | ------------------------------------------- |
@@ -320,6 +282,57 @@ const routes: Route[] = [
 <span class="rounded border border-zinc-800 px-1 py-0.5 text-orange-500">
   {navigating ? "(true) navigating..." : "(false) idle"}
 </span>
+```
+
+## Helper Methods
+
+### `goto(path: string)`
+
+Navigates to the given path.
+
+### `query(key: string): string | null`
+
+Returns the value of the query parameter for the given key or null if the key does not exist.
+
+### The `QueryString` class
+
+A helper class for working with the query string.
+
+> Check it out at [src/lib/query.svelte.ts](./src/lib/query.svelte.ts).
+> or import it with:
+>
+> ```ts
+> import { QueryString } from "@mateothegreat/svelte5-router";
+> ```
+>
+> and start using it now!
+
+#### Example Usage
+
+Basic usage:
+
+```ts
+import { QueryString } from "@mateothegreat/svelte5-router";
+
+const query = new QueryString();
+
+query.get("foo", "bar"); // "bar"
+query.set("foo", "baz");
+query.toString();        // "foo=baz"
+```
+
+Using it with navigation:
+
+```ts
+import { QueryString } from "@mateothegreat/svelte5-router";
+
+const query = new QueryString();
+
+// ...
+query.set("foo", "baz");
+// ...
+
+query.goto("/test"); // Navigates to "/test?foo=baz"
 ```
 
 ## Example

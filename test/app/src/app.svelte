@@ -20,6 +20,10 @@
       component: async () => import("./lib/async/async.svelte")
     },
     {
+      path: "lazy",
+      component: async () => import("./lib/lazy.svelte")
+    },
+    {
       path: "delayed",
       component: Delayed,
       pre: async (route: Route): Promise<Route> => {
@@ -142,6 +146,7 @@
   <div class="flex gap-3 bg-zinc-900 text-xs text-white">
     <a use:route href="/" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/</a>
     <a use:route href="/async" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/async</a>
+    <a use:route href="/lazy" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/lazy</a>
     <a use:route href="/props" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/props</a>
     <a use:route href="/params" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/params</a>
     <a use:route href="/delayed" class="rounded bg-blue-600 px-3 py-1 hover:bg-blue-800">/delayed</a>
