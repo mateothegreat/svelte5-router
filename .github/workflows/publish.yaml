@@ -1,5 +1,8 @@
 on:
   push:
+    paths-ignore:
+      - "test/**"
+      - "**/*.md"
     branches:
       - main
 name: publish
