@@ -9,6 +9,7 @@
   import BankAccount from "./lib/protected/bank-account.svelte";
   import Login from "./lib/protected/login.svelte";
   import Protected from "./lib/protected/protected.svelte";
+  import QueryRedirect from "./lib/query/query-redirect.svelte";
 
   const routes: Route[] = [
     {
@@ -97,6 +98,10 @@
           console.log("post hook #2 fired for route:", route);
         }
       ]
+    },
+    {
+      path: "query-redirect",
+      component: QueryRedirect
     }
   ];
 
@@ -154,6 +159,7 @@
     <button onclick={() => goto("/a")} class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
       Call the <span class="rounded bg-black px-2 py-0.5 text-green-500">goto("/a");</span> method
     </button>
+    <a use:route href="/query-redirect" class="py-1hover:bg-pink-800 rounded bg-blue-600 px-3 py-1">/query-redirect</a>
   </div>
   <div class=" w-full flex-1 bg-zinc-900 p-6">
     <div class="flex flex-col gap-4 rounded-lg bg-zinc-950 p-4 shadow-xl">

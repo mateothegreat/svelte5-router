@@ -30,6 +30,6 @@ export class QueryString {
   }
 
   goto(path: string) {
-    goto(`${path}?${this.toString()}`);
+    goto(path, this.params);
   }
 }

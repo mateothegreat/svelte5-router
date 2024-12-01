@@ -1,7 +1,7 @@
-export const goto = (path: string, searchParams?: Record<string, string>) => {
+export const goto = (path: string, queryParams?: Record<string, string>) => {
   const url = new URL(path, window.location.origin);
-  if (searchParams) {
-    Object.entries(searchParams).forEach(([key, value]) => {
+  if (queryParams) {
+    Object.entries(queryParams).forEach(([key, value]) => {
       url.searchParams.set(key, value);
     });
   }
