@@ -1,4 +1,4 @@
-export { route } from "./actions/route";
+export { route, routeLinks } from "./actions/route";
 export type { Route } from "./instance.svelte";
 export { goto, query } from "./methods";
 export * from "./router.svelte";
