@@ -1,7 +1,15 @@
-import type { Component, Snippet } from 'svelte';
+import type { Component, Snippet } from "svelte";
 
-export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<Route>)[] | ((route: Route) => Route) | ((route: Route) => Promise<Route>);
-export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<void>)[] | ((route: Route) => void) | ((route: Route) => Promise<void>);
+export type PreHooks =
+  | ((route: Route) => number)[]
+  | ((route: Route) => Promise<number>)[]
+  | ((route: Route) => number)
+  | ((route: Route) => Promise<number>);
+export type PostHooks =
+  | ((route: Route) => void)[]
+  | ((route: Route) => Promise<void>)[]
+  | ((route: Route) => void)
+  | ((route: Route) => Promise<void>);
 
 export interface Route {
   path: RegExp | string;
@@ -22,7 +30,8 @@ export class Instance {
   routes: Route[] = [];
   #pre?: PreHooks;
   #post?: PostHooks;
-  current = $state<Route>();
+  currentIndex = $state<number>();
+  current = $derived<Route>(this.routes[this.currentIndex]);
   navigating = $state(false);
 
   /**
@@ -37,7 +46,8 @@ export class Instance {
     this.basePath = basePath;
     this.routes = routes;
     if (currentPath) {
-      this.current = this.get(currentPath);
+      const { routeIndex } = this.get(currentPath);
+      this.currentIndex = routeIndex;
     }
     this.#pre = pre;
     this.#post = post;
@@ -47,8 +57,9 @@ export class Instance {
    * Get the route for a given path.
    * @returns { Route } The route for the given path.
    */
-  get(path: string): Route | undefined {
+  get(path: string): { route: Route; routeIndex: number } | undefined {
     let route: Route | undefined;
+    let routeIndex: number | undefined;
 
     let pathToMatch = path;
     if (this.basePath && this.basePath !== "/") {
@@ -56,70 +67,75 @@ export class Instance {
     }
     // If the path is the root path, return the root route:
     if (pathToMatch === "/") {
-      route = this.routes.find((route) => route.path === "/");
+      routeIndex = this.routes.findIndex((route) => route.path === "/");
     }
 
     // Split the path into the first segment and the rest:
     const [first, ...rest] = pathToMatch.replace(/^\//, "").split("/");
-    route = this.routes.find((route) => route.path === first);
+    routeIndex = this.routes.findIndex((route) => route.path === first);
+
+    route = routeIndex !== undefined ? this.routes[routeIndex] : undefined;
 
     // If the route is not found, try to find a route that matches at least part of the path:
     if (!route) {
-      for (const r of this.routes) {
+      for (let i = 0; i < this.routes.length; i++) {
+        const r = this.routes[i];
         const regexp = new RegExp(r.path);
         const match = regexp.exec(path);
         if (match) {
           route = { ...r, params: match.groups || match.slice(1) };
+          routeIndex = i;
           break;
         }
       }
     }
 
-    return route;
+    return { route, routeIndex };
   }
 
   /**
    * Navigates to a given route, running  the pre and post hooks.
-   * @param {Route} route The route to navigate to.
+   * @param {number} routeIndex The route index to navigate to.
    * @returns {Promise<void>}
    */
-  async run(route: Route): Promise<void> {
+  async run(routeIndex: number): Promise<void> {
+    const route = this.routes[routeIndex];
     this.navigating = true;
 
     // First, run the global pre hooks.
     if (this.#pre) {
       if (Array.isArray(this.#pre)) {
         for (const pre of this.#pre) {
-          route = await pre(route);
+          this.currentIndex = await pre(route);
         }
       } else {
-        route = await this.#pre(route);
+        this.currentIndex = await this.#pre(route);
       }
     }
 
     // Then, run the route specific pre hooks.
-    if (route && route.pre) {
+    if (route?.pre) {
       if (Array.isArray(route.pre)) {
         for (const pre of route.pre) {
           const r = await pre(route);
-          if (r) {
-            route = r;
+          if (r !== undefined) {
+            this.currentIndex = r;
           }
         }
       } else {
         const r = await route.pre(route);
-        if (r) {
-          route = r
+        if (r !== undefined) {
+          this.currentIndex = r;
         }
       }
     }
 
     // Then, set the current route and given `current` is
     // a reactive $state() variable, it will trigger a render:
-    this.current = route;
+    this.currentIndex = routeIndex;
 
     // Run the route specific post hooks:
-    if (route && route.post) {
+    if (route?.post) {
       if (Array.isArray(route.post)) {
         for (const post of route.post) {
           await post(route);
@@ -140,7 +156,9 @@ export class Instance {
       }
     }
 
-    this.navigating = false;
+    if (this.currentIndex === routeIndex) {
+      this.navigating = false;
+    }
   }
 }
 
@@ -166,16 +184,16 @@ export const setupHistoryWatcher = (instance: Instance) => {
 
     // Listen for custom pushState and replaceState events
     window.addEventListener("pushState", () => {
-      instance.run(instance.get(location.pathname));
+      instance.run(instance.get(location.pathname).routeIndex);
     });
 
     window.addEventListener("replaceState", () => {
-      instance.run(instance.get(location.pathname));
+      instance.run(instance.get(location.pathname).routeIndex);
     });
 
     // Listen for popstate event to detect forward and backward navigation
     window.addEventListener("popstate", () => {
-      instance.run(instance.get(location.pathname));
+      instance.run(instance.get(location.pathname).routeIndex);
     });
 
     (window.history as any)._listenersAdded = true;

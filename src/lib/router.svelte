@@ -8,13 +8,10 @@
     post?: PostHooks;
     routes: Route[];
     instance?: Instance;
+    navigating?: boolean;
   };
 
   let { basePath, routes, pre, post, instance = $bindable() }: Props = $props();
-
-  // Derive navigating state from instance.navigating so that
-  // the parent component can bind to it.
-  let navigating = $derived(instance.navigating);
 
   // Initialize the instance
   instance = new Instance(basePath, routes, pre, post);
@@ -34,7 +31,7 @@
   // Set up the initial route so that the component is rendered.
   const route = instance.get(location.pathname);
   if (route) {
-    instance.run(route);
+    instance.run(route.routeIndex);
   }
 
   let wrapper: HTMLDivElement;
@@ -44,8 +41,16 @@
   const loadComponent = async () => {
     if (instance.current) {
       if (instance.current.component.constructor.name === "AsyncFunction") {
+        const routeBefore = instance.currentIndex;
+        instance.navigating = true;
         const module = await instance.current.component();
+        if (instance.currentIndex !== routeBefore) {
+          return;
+        }
         component = module.default;
+        if (instance.navigating) {
+          instance.navigating = false;
+        }
       } else {
         component = instance.current.component;
       }
