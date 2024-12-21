@@ -1,7 +1,8 @@
 {
   "name": "@mateothegreat/svelte5-router",
-  "version": "0.1.35",
+  "version": "0.1.38",
   "type": "module",
+  "license": "MIT",
   "svelte": "./index.js",
   "main": "./index.js",
   "module": "./index.js",
