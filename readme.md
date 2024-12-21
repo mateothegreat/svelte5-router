@@ -34,6 +34,7 @@ npm install @mateothegreat/svelte5-router
     - [Using Components \& Snippets](#using-components--snippets)
     - [Accessing Parameters](#accessing-parameters)
     - [Passing Props](#passing-props)
+    - [Not Found](#not-found)
   - [Hooks](#hooks)
     - [States](#states)
       - [Navigation State](#navigation-state)
@@ -194,6 +195,33 @@ Then, in your component, you can access the prop like this:
 
 <pre>{JSON.stringify(myProps, null, 2)}</pre>
 ```
+
+### Not Found
+
+To handle 404 errors, you can use the `.*` or `.+` pattern such as:
+
+```ts
+const routes: Route[] = [
+  // This will match the root path ("/") and render the Homepage component:
+  {
+    path: "^/$",
+    component: Homepage
+  },
+  {
+    path: "profile",
+    component: Profile
+  },
+  // This will match any path that is not found:
+  {
+    path: ".+",
+    component: NotFound
+  }
+];
+```
+
+Notice the `^/$` pattern. This matches the root path ("/")indicating that this is the first "default" route.
+
+Now, after this route, we have a catch-all route that matches any path at last indicating the route is not found.
 
 ## Hooks
 

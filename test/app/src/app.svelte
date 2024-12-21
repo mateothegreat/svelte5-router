@@ -4,6 +4,7 @@
   import { Github, Home } from "lucide-svelte";
   import Default from "./lib/default.svelte";
   import Delayed from "./lib/delayed.svelte";
+  import NotFound from "./lib/not-found.svelte";
   import Params from "./lib/params/params.svelte";
   import Props from "./lib/props/props.svelte";
   import BankAccount from "./lib/protected/bank-account.svelte";
@@ -13,7 +14,7 @@
 
   const routes: Route[] = [
     {
-      path: "",
+      path: "^/$",
       component: Default
     },
     {
@@ -102,6 +103,10 @@
     {
       path: "query-redirect",
       component: QueryRedirect
+    },
+    {
+      path: ".+",
+      component: NotFound
     }
   ];
 
@@ -160,6 +165,7 @@
       Call the <span class="rounded bg-black px-2 py-0.5 text-green-500">goto("/a");</span> method
     </button>
     <a use:route href="/query-redirect" class="py-1hover:bg-pink-800 rounded bg-blue-600 px-3 py-1">/query-redirect</a>
+    <a use:route href="/not-found" class="py-1hover:bg-pink-800 rounded bg-slate-600 px-3 py-1">/not-found</a>
   </div>
   <div class=" w-full flex-1 bg-zinc-900 p-6">
     <div class="flex flex-col gap-4 rounded-lg bg-zinc-950 p-4 shadow-xl">
