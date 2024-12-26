@@ -26,7 +26,7 @@
     "@tsconfig/svelte": "^5.0.4",
     "@types/node": "^22.10.1",
     "cpx": "^1.5.0",
-    "prettier": "^3.4.1",
+    "prettier": "^3.4.2",
     "prettier-plugin-svelte": "^3.3.2",
     "rimraf": "^6.0.1",
     "svelte": "^5.2.11",
