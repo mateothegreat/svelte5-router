@@ -32,7 +32,7 @@
     "svelte": "^5.2.11",
     "svelte-check": "^4.1.0",
     "typescript": "^5.7.2",
-    "vitest": "^2.1.6"
+    "vitest": "^2.1.8"
   },
   "peerDependencies": {
     "svelte": "^5.0.0"
