@@ -30,7 +30,7 @@
     "prettier-plugin-svelte": "^3.3.2",
     "rimraf": "^6.0.1",
     "svelte": "^5.2.11",
-    "svelte-check": "^4.1.0",
+    "svelte-check": "^4.1.1",
     "typescript": "^5.7.2",
     "vitest": "^2.1.6"
   },
