@@ -24,7 +24,7 @@
   "devDependencies": {
     "@sveltejs/package": "^2.3.7",
     "@tsconfig/svelte": "^5.0.4",
-    "@types/node": "^22.10.1",
+    "@types/node": "^22.10.2",
     "cpx": "^1.5.0",
     "prettier": "^3.4.1",
     "prettier-plugin-svelte": "^3.3.2",
