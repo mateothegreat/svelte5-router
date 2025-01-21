@@ -404,7 +404,7 @@ goto("/test", { foo: "baz" }); // Navigates to "/test?foo=baz"
   <a use:route href="/settings">Settings</a>
 </div>
 
-<Router base="/" {routes} />
+<Router basePath="/" {routes} />
 </div>
 ```
 
