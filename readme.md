@@ -404,8 +404,7 @@ goto("/test", { foo: "baz" }); // Navigates to "/test?foo=baz"
   <a use:route href="/settings">Settings</a>
 </div>
 
-<Router base="/" {routes} />
-</div>
+<Router basePath="/" {routes} />
 ```
 
 > For a real world example, check out the [test app](./test/app/src/app.svelte).
