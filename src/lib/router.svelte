@@ -72,6 +72,14 @@
       unmount(mounted);
     }
   });
+
+  $effect(() => {
+    if (navigating) {
+      loadComponent().then(() => {
+        mountComponent();
+      });
+    }
+  });
 </script>
 
 <div bind:this={wrapper}></div>
