@@ -17,7 +17,6 @@ export interface Route {
  * A router instance that each <Router/> component creates.
  */
 export class Instance {
-  id = crypto.randomUUID();
   basePath?: string;
   routes: Route[] = [];
   #pre?: PreHooks;
