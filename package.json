@@ -3,16 +3,8 @@
   "version": "0.1.40",
   "type": "module",
   "license": "MIT",
-  "svelte": "./index.js",
-  "main": "./index.js",
-  "module": "./index.js",
-  "types": "./index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./index.js",
-      "require": "./index.js"
-    }
-  },
+  "types": "./router.svelte.d.ts",
+  "exports": "./index.js",
   "files": [
     "./"
   ],
