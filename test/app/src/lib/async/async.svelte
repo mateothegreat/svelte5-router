@@ -4,7 +4,7 @@
   import Child from "./child.svelte";
 
   onMount(() => {
-    console.log("child.svelte", "onMount");
+    console.log("async child.svelte", "onMount");
   });
 
   const routes: Route[] = [

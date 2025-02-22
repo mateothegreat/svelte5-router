@@ -1,8 +1,18 @@
 import type { Component, Snippet } from 'svelte';
 
+/**
+ * A pre hook that can be used to modify the route before it is navigated to.
+ */
 export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<Route>)[] | ((route: Route) => Route) | ((route: Route) => Promise<Route>);
+
+/**
+ * A post hook that can be used to modify the route after it is navigated to.
+ */
 export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<void>)[] | ((route: Route) => void) | ((route: Route) => Promise<void>);
 
+/**
+ * A route that can be navigated to.
+ */
 export interface Route {
   path: RegExp | string;
   component?: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
@@ -13,10 +23,74 @@ export interface Route {
   params?: string[] | Record<string, string>;
 }
 
+export type RouterHandlers = {
+  pushStateHandler: () => void,
+  replaceStateHandler: () => void,
+  popStateHandler: () => void
+}
+
+/**
+ * Hold the original history methods and the instances of the router.
+ * This is used to restore the original history methods when the last instance is destroyed
+ * and to register & unregister the event listeners for the router instances to prevent memory leaks.
+ */
+class routerRegistry {
+  pushState = window.history.pushState;
+  replaceState = window.history.replaceState;
+  instances = new Map<string, {
+    pushStateHandler: () => void,
+    replaceStateHandler: () => void,
+    popStateHandler: () => void
+  }>();
+
+  /**
+   * Register a new router instance.
+   * @param {Instance} instance The instance to register.
+   * @returns {Object} The handlers for the router instance.
+   */
+  register(instance: Instance): RouterHandlers {
+    const handlers = {
+      pushStateHandler: () => instance.onStateChange(location.pathname),
+      replaceStateHandler: () => instance.onStateChange(location.pathname),
+      popStateHandler: () => instance.onStateChange(location.pathname)
+    };
+
+    this.instances.set(instance.id, handlers);
+
+    return handlers;
+  }
+
+  /**
+   * Unregister a router instance.
+   * @param {string} id The id of the instance to unregister.
+   * @returns {void}
+   */
+  unregister(id: string): void {
+    const handler = this.instances.get(id);
+    if (handler) {
+      window.removeEventListener("pushState", handler.pushStateHandler);
+      window.removeEventListener("replaceState", handler.replaceStateHandler);
+      window.removeEventListener("popstate", handler.popStateHandler);
+      this.instances.delete(id);
+    }
+
+    if (this.instances.size === 0) {
+      window.history.pushState = this.pushState;
+      window.history.replaceState = this.replaceState;
+    }
+  }
+};
+
+/**
+ * Expose a reference to the registry of router instances.
+ */
+export const RouterRegistry = new routerRegistry();
+
 /**
  * A router instance that each <Router/> component creates.
  */
 export class Instance {
+  id = Math.random().toString(36).substring(2, 15);
   basePath?: string;
   routes: Route[] = [];
   #pre?: PreHooks;
@@ -40,6 +114,28 @@ export class Instance {
     }
     this.#pre = pre;
     this.#post = post;
+
+    const { pushState, replaceState } = window.history;
+
+    if (!RouterRegistry.instances.has(this.id)) {
+      const handlers = RouterRegistry.register(this);
+
+      if (RouterRegistry.instances.size === 1) {
+        // Only override history methods once
+        window.history.pushState = function (...args) {
+          pushState.apply(window.history, args);
+          window.dispatchEvent(new Event("pushState"));
+        };
+        window.history.replaceState = function (...args) {
+          replaceState.apply(window.history, args);
+          window.dispatchEvent(new Event("replaceState"));
+        };
+      }
+
+      window.addEventListener("pushState", handlers.pushStateHandler);
+      window.addEventListener("replaceState", handlers.replaceStateHandler);
+      window.addEventListener("popstate", handlers.popStateHandler);
+    }
   }
 
   /**
@@ -50,9 +146,11 @@ export class Instance {
     let route: Route | undefined;
 
     let pathToMatch = path;
+    // If the base path is set, remove it from the path:
     if (this.basePath && this.basePath !== "/") {
       pathToMatch = path.replace(this.basePath, "");
     }
+
     // If the path is the root path, return the root route:
     if (pathToMatch === "/") {
       route = this.routes.find((route) => route.path === "/");
@@ -114,8 +212,12 @@ export class Instance {
     }
 
     // Then, set the current route and given `current` is
-    // a reactive $state() variable, it will trigger a render:
-    this.current = route;
+    // a reactive $state() variable, it will trigger a render.
+    // Only set the current route if it's different from the
+    // current route to avoid unnecessary re-rendering.
+    if (route.path !== this.current?.path) {
+      this.current = route;
+    }
 
     // Run the route specific post hooks:
     if (route && route.post) {
@@ -141,42 +243,24 @@ export class Instance {
 
     this.navigating = false;
   }
-}
 
-/**
- * Sets up a new history watcher for a router instance.
- * @param {Instance} instance The router instance to setup the history watcher for.
- */
-export const setupHistoryWatcher = (instance: Instance) => {
-  const { pushState, replaceState } = window.history;
-
-  if (!(window.history as any)._listenersAdded) {
-    // Override pushState to dispatch a custom event
-    window.history.pushState = function (...args) {
-      pushState.apply(window.history, args);
-      window.dispatchEvent(new Event("pushState"));
-    };
-
-    // Override replaceState to dispatch a custom event
-    window.history.replaceState = function (...args) {
-      replaceState.apply(window.history, args);
-      window.dispatchEvent(new Event("replaceState"));
-    };
-
-    // Listen for custom pushState and replaceState events
-    window.addEventListener("pushState", () => {
-      instance.run(instance.get(location.pathname));
-    });
-
-    window.addEventListener("replaceState", () => {
-      instance.run(instance.get(location.pathname));
-    });
-
-    // Listen for popstate event to detect forward and backward navigation
-    window.addEventListener("popstate", () => {
-      instance.run(instance.get(location.pathname));
-    });
-
-    (window.history as any)._listenersAdded = true;
+  /**
+   * Handle a state change event.
+   * @param {string} path The path to navigate to.
+   * @returns {void}
+   */
+  onStateChange(path: string): void {
+    const route = this.get(path);
+    if (route) {
+      this.run(route);
+    }
   }
-};
+
+  /**
+   * Destroy the router instance.
+   * @returns {void}
+   */
+  destroy(): void {
+    RouterRegistry.unregister(this.id);
+  }
+}

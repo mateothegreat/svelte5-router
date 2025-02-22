@@ -1,6 +1,6 @@
 <script lang="ts">
   import { mount, onDestroy, unmount, type Component } from "svelte";
-  import { Instance, setupHistoryWatcher, type PostHooks, type PreHooks, type Route } from "./instance.svelte";
+  import { Instance, type PostHooks, type PreHooks, type Route } from "./instance.svelte";
 
   type Props = {
     basePath?: string;
@@ -18,10 +18,6 @@
 
   // Initialize the instance
   instance = new Instance(basePath, routes, pre, post);
-
-  // Setup history watcher which updates the instance's current
-  // route based on `pushState` and `popState` events.
-  setupHistoryWatcher(instance);
 
   $effect(() => {
     if (route) {
@@ -68,6 +64,7 @@
   };
 
   onDestroy(() => {
+    instance.destroy();
     if (mounted) {
       unmount(mounted);
     }
