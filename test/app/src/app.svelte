@@ -14,7 +14,7 @@
 
   const routes: Route[] = [
     {
-      path: "^/$",
+      path: /^\/$/,
       component: Default
     },
     {
@@ -170,7 +170,7 @@
   <div class=" w-full flex-1 bg-zinc-900 p-6">
     <div class="flex flex-col gap-4 rounded-lg bg-zinc-950 p-4 shadow-xl">
       <p class="text-center text-xs text-zinc-500">app.svelte</p>
-      <Router basePath="/mybasepath" bind:instance {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
+      <Router bind:instance {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
     </div>
   </div>
 </div>

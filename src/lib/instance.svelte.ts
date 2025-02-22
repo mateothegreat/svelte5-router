@@ -14,7 +14,7 @@ export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<
  * A route that can be navigated to.
  */
 export interface Route {
-  path: RegExp | string;
+  path: RegExp | string | number;
   component?: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
   props?: Record<string, any>;
   pre?: PreHooks;
@@ -139,36 +139,59 @@ export class Instance {
   }
 
   /**
+   * Find a matching route for a given path by checking if the path is a string or a RegExp.
+   * @param {string} path The path to find a matching route for.
+   * @returns {Route} The matching route.
+   */
+  match(path: string): Route | undefined {
+    for (const r of this.routes) {
+      if (typeof r.path === "string") {
+        // Check if the path contains regex syntax characters
+        const hasRegexSyntax = /[[\]{}()*+?.,\\^$|#\s]/.test(r.path);
+        if (!hasRegexSyntax) {
+          // If no regex syntax, treat as plain string match
+          if (path === r.path) {
+            return { ...r, params: {} };
+          }
+          continue;
+        }
+        const match = new RegExp(r.path).exec(path);
+        if (match) {
+          return { ...r, params: match.groups || match.slice(1) };
+        }
+      } else if (typeof r.path === "object") {
+        const match = r.path.exec(path);
+        if (match) {
+          return { ...r, params: match.groups || match.slice(1) };
+        }
+      }
+    }
+  }
+
+  /**
    * Get the route for a given path.
    * @returns { Route } The route for the given path.
    */
   get(path: string): Route | undefined {
     let route: Route | undefined;
 
-    let pathToMatch = path;
-    // If the base path is set, remove it from the path:
-    if (this.basePath && this.basePath !== "/") {
-      pathToMatch = path.replace(this.basePath, "");
+    // Handle base path
+    const normalizedPath = this.basePath && this.basePath !== "/"
+      ? path.replace(this.basePath, "")
+      : path;
+
+    // Check for root path first
+    if (normalizedPath === "/") {
+      // return this.routes.find((route) => route.path === "/");
+      return this.match(path);
     }
 
-    // If the path is the root path, return the root route:
-    if (pathToMatch === "/") {
-      route = this.routes.find((route) => route.path === "/");
-    }
-
-    // Split the path into the first segment and the rest:
-    const [first, ...rest] = pathToMatch.replace(/^\//, "").split("/");
-    route = this.routes.find((route) => route.path === first);
-
-    // If the route is not found, try to find a route that matches at least part of the path:
-    if (!route) {
-      for (const r of this.routes) {
-        const regexp = new RegExp(r.path);
-        const match = regexp.exec(path);
-        if (match) {
-          route = { ...r, params: match.groups || match.slice(1) };
-          break;
-        }
+    // Try to find a matching route using RegExp
+    for (const r of this.routes) {
+      const regexp = new RegExp(r.path);
+      const match = regexp.exec(normalizedPath);
+      if (match) {
+        return { ...r, params: match.groups || match.slice(1) };
       }
     }
 
