@@ -16,7 +16,7 @@ export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<
 /**
  * A route that can be navigated to.
  */
-export interface Route {
+export class Route {
   path: RegExp | string | number;
   component?: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
   props?: Record<string, any>;
@@ -24,7 +24,28 @@ export interface Route {
   post?: PostHooks;
   children?: Route[];
   params?: string[] | Record<string, string>;
-  remainingPath?: string;  // Added for nested routing
+  remainingPath?: string;
+  #active = $state(false);
+
+  constructor(route: Route) {
+    this.path = route.path;
+    this.component = route.component;
+    this.props = route.props;
+    this.pre = route.pre;
+    this.post = route.post;
+  }
+
+  /**
+   * Set the active state of the route.
+   * @param {boolean} active The active state of the route.
+   */
+  setActive(active: boolean) {
+    this.#active = active;
+  }
+
+  active() {
+    return this.#active;
+  }
 }
 
 export class InstanceConfig {

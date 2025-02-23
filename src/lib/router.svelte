@@ -29,9 +29,12 @@
     })
   );
 
+  let RenderableComponent = $state<Component | null>(null);
+
   $effect(() => {
     if (instance.current) {
       loadComponent();
+      RenderableComponent = component;
     }
   });
 
@@ -78,6 +81,4 @@
   });
 </script>
 
-{#if component}
-  <svelte:component this={component} />
-{/if}
+<RenderableComponent />
