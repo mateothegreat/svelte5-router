@@ -31,9 +31,7 @@
 
   $effect(() => {
     if (instance.current) {
-      loadComponent().then(() => {
-        mountComponent();
-      });
+      loadComponent();
     }
   });
 
@@ -42,13 +40,17 @@
   let mounted: Component;
 
   const loadComponent = async () => {
-    if (instance.current && instance.current.component) {
-      if (instance.current.component.constructor.name === "AsyncFunction") {
+    if (!instance.current?.component) return;
+
+    try {
+      if (typeof instance.current.component === "function" && instance.current.component.constructor.name === "AsyncFunction") {
         const module = await instance.current.component();
         component = module.default;
       } else {
         component = instance.current.component;
       }
+    } catch (error) {
+      console.error("Failed to load component:", error);
     }
   };
 
@@ -61,6 +63,7 @@
         target: wrapper,
         props: {
           params: instance.current?.params,
+          remainingPath: instance.current?.remainingPath,
           ...instance.current?.props
         }
       });
@@ -75,4 +78,6 @@
   });
 </script>
 
-<div bind:this={wrapper}></div>
+{#if component}
+  <svelte:component this={component} />
+{/if}
