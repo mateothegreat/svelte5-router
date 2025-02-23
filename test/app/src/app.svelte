@@ -1,21 +1,40 @@
 <script lang="ts">
   import type { Instance, Route } from "@mateothegreat/svelte5-router";
   import { goto, route, Router } from "@mateothegreat/svelte5-router";
+  import { logger } from "@mateothegreat/svelte5-router/logger";
   import { Github, Home } from "lucide-svelte";
   import Default from "./lib/default.svelte";
   import Delayed from "./lib/delayed.svelte";
+  import Nested from "./lib/nested/nested.svelte";
   import NotFound from "./lib/not-found.svelte";
   import Params from "./lib/params/params.svelte";
   import Props from "./lib/props/props.svelte";
-  import BankAccount from "./lib/protected/bank-account.svelte";
-  import Login from "./lib/protected/login.svelte";
   import Protected from "./lib/protected/protected.svelte";
   import QueryRedirect from "./lib/query/query-redirect.svelte";
 
   const routes: Route[] = [
     {
-      path: /^\/$/,
-      component: Default
+      path: "",
+      component: Default,
+      // Use an async pre hook to simulate a protected route:
+      pre: async (route: Route): Promise<Route> => {
+        console.log("pre hook #1 fired for route");
+        return route;
+      },
+      post: [
+        // This is a post hook that will be executed after the route is resolved:
+        (route: Route): void => {
+          console.log("post hook #1 fired for route");
+        },
+        // This is an async post hook that will be executed after the route is resolved:
+        async (route: Route): Promise<void> => {
+          console.log("post hook #2 (async) fired for route");
+        }
+      ]
+    },
+    {
+      path: "nested",
+      component: Nested
     },
     {
       path: "async",
@@ -63,52 +82,15 @@
     },
     {
       path: "protected",
-      component: Protected,
-      // Use a pre hook to simulate a protected route:
-      pre: async (route: Route): Promise<Route> => {
-        console.log("pre hook #1 fired for route:", route, instance.navigating);
-        return new Promise((resolve) => {
-          console.log("simulated wait over for route:", route);
-          // Crude example of checking if the user is logged in. A more
-          // sophisticated example would use a real authentication system
-          // and a server-side API.
-          if (!localStorage.getItem("token")) {
-            // By returning a new route, the user will be redirected to the
-            // new route and then the post hook(s) will be executed:
-            resolve({
-              path: "/login",
-              component: Login
-            });
-          } else {
-            setTimeout(() => {
-              // By returning a new route, the user will be redirected to the
-              // new route and then the post hook(s) will be executed:
-              resolve({
-                path: "/bankaccount",
-                component: BankAccount
-              });
-            }, 1500);
-          }
-        });
-      },
-      post: [
-        (route: Route): void => {
-          console.log("post hook #1 fired for route:", route);
-        },
-        async (route: Route): Promise<void> => {
-          console.log("post hook #2 fired for route:", route);
-        }
-      ]
+      component: Protected
     },
     {
       path: "query-redirect",
       component: QueryRedirect
-    },
-    {
-      path: ".+",
-      component: NotFound
     }
   ];
+
+  let instance = $state<Instance>();
 
   const globalAuthGuardHook = async (route: Route): Promise<Route> => {
     // This is a global pre hook that will be applied to all routes.
@@ -121,15 +103,23 @@
   };
 
   const globalLoggerPostHook = async (route: Route): Promise<void> => {
-    console.log("globalLoggerPostHook:", route);
+    logger.debug(instance.id, "globalLoggerPostHook: path =", route.path);
   };
-
-  let instance = $state<Instance>();
 </script>
 
 <div class="absolute flex h-full w-full flex-col items-center gap-4 bg-black">
   <div class="flex w-full items-center justify-between p-6">
-    <h1 class="text-center font-mono text-lg text-indigo-500">Svelte SPA Router Demo</h1>
+    <div class="flex items-center gap-5">
+      <h1 class="text-center font-mono text-lg text-indigo-500">Svelte SPA Router Demo</h1>
+      <p class="text-center text-sm text-slate-500">
+        `instance.navigating` state:
+        {#if instance && instance.navigating}
+          <span class="rounded border border-zinc-800 px-1 py-0.5 text-pink-500"> (true) navigating... </span>
+        {:else}
+          <span class="rounded border border-zinc-800 px-1 py-0.5 text-green-500"> false (idle) </span>
+        {/if}
+      </p>
+    </div>
     <div class="flex items-center gap-2">
       <a
         href="https://github.com/mateothegreat/svelte5-router"
@@ -145,16 +135,11 @@
       </a>
     </div>
   </div>
-  <p class="text-center text-sm text-slate-500">
-    <span class="rounded border border-zinc-800 px-1 py-0.5 text-zinc-500">navigating</span>
-    state:
-    <span class="rounded border border-zinc-800 px-1 py-0.5 text-orange-500">
-      {instance.navigating ? "(true) navigating..." : "(false) idle"}
-    </span>
-  </p>
+
   <span class="flex items-center text-xs text-zinc-500">Demo links to navigate to:</span>
   <div class="flex gap-3 bg-zinc-900 text-xs text-white">
     <a use:route href="/" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/</a>
+    <a use:route href="/nested" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/nested</a>
     <a use:route href="/async" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/async</a>
     <a use:route href="/lazy" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/lazy</a>
     <a use:route href="/props" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/props</a>
@@ -168,9 +153,14 @@
     <a use:route href="/not-found" class="py-1hover:bg-pink-800 rounded bg-slate-600 px-3 py-1">/not-found</a>
   </div>
   <div class=" w-full flex-1 bg-zinc-900 p-6">
-    <div class="flex flex-col gap-4 rounded-lg bg-zinc-950 p-4 shadow-xl">
+    <div class="flex flex-col gap-4 rounded-sm bg-zinc-950 p-4 shadow-xl">
       <p class="text-center text-xs text-zinc-500">app.svelte</p>
-      <Router bind:instance {routes} pre={globalAuthGuardHook} post={globalLoggerPostHook} />
+      <Router
+        bind:instance
+        {routes}
+        pre={globalAuthGuardHook}
+        post={globalLoggerPostHook}
+        notFoundComponent={NotFound} />
     </div>
   </div>
 </div>

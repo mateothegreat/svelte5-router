@@ -1,9 +1,12 @@
 import type { Component, Snippet } from 'svelte';
 
+import { logger } from './logger';
+import { RouterRegistry } from './registry';
+
 /**
  * A pre hook that can be used to modify the route before it is navigated to.
  */
-export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<Route>)[] | ((route: Route) => Route) | ((route: Route) => Promise<Route>);
+export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<Route>)[] | ((route: Route) => void) | ((route: Route) => Route) | ((route: Route) => Promise<Route>);
 
 /**
  * A post hook that can be used to modify the route after it is navigated to.
@@ -21,181 +24,169 @@ export interface Route {
   post?: PostHooks;
   children?: Route[];
   params?: string[] | Record<string, string>;
+  remainingPath?: string;  // Added for nested routing
 }
 
-export type RouterHandlers = {
-  pushStateHandler: () => void,
-  replaceStateHandler: () => void,
-  popStateHandler: () => void
+export class InstanceConfig {
+  basePath?: string;
+  routes: Route[];
+  pre?: PreHooks;
+  post?: PostHooks;
+  currentPath?: string;
+  notFoundComponent?: Component;
+
+  constructor(config: InstanceConfig) {
+    this.basePath = config.basePath;
+    this.routes = config.routes;
+    this.pre = config.pre;
+    this.post = config.post;
+    this.currentPath = config.currentPath;
+    this.notFoundComponent = config.notFoundComponent;
+  }
 }
-
-/**
- * Hold the original history methods and the instances of the router.
- * This is used to restore the original history methods when the last instance is destroyed
- * and to register & unregister the event listeners for the router instances to prevent memory leaks.
- */
-class routerRegistry {
-  pushState = window.history.pushState;
-  replaceState = window.history.replaceState;
-  instances = new Map<string, {
-    pushStateHandler: () => void,
-    replaceStateHandler: () => void,
-    popStateHandler: () => void
-  }>();
-
-  /**
-   * Register a new router instance.
-   * @param {Instance} instance The instance to register.
-   * @returns {Object} The handlers for the router instance.
-   */
-  register(instance: Instance): RouterHandlers {
-    const handlers = {
-      pushStateHandler: () => instance.onStateChange(location.pathname),
-      replaceStateHandler: () => instance.onStateChange(location.pathname),
-      popStateHandler: () => instance.onStateChange(location.pathname)
-    };
-
-    this.instances.set(instance.id, handlers);
-
-    return handlers;
-  }
-
-  /**
-   * Unregister a router instance.
-   * @param {string} id The id of the instance to unregister.
-   * @returns {void}
-   */
-  unregister(id: string): void {
-    const handler = this.instances.get(id);
-    if (handler) {
-      window.removeEventListener("pushState", handler.pushStateHandler);
-      window.removeEventListener("replaceState", handler.replaceStateHandler);
-      window.removeEventListener("popstate", handler.popStateHandler);
-      this.instances.delete(id);
-    }
-
-    if (this.instances.size === 0) {
-      window.history.pushState = this.pushState;
-      window.history.replaceState = this.replaceState;
-    }
-  }
-};
-
-/**
- * Expose a reference to the registry of router instances.
- */
-export const RouterRegistry = new routerRegistry();
-
 /**
  * A router instance that each <Router/> component creates.
  */
 export class Instance {
+  /**
+   * The unique identifier for the router instance.
+   */
   id = Math.random().toString(36).substring(2, 15);
-  basePath?: string;
-  routes: Route[] = [];
-  #pre?: PreHooks;
-  #post?: PostHooks;
+
+  /**
+   * The current route.
+   */
   current = $state<Route>();
+
+  /**
+   * Whether the router is navigating to a new route.
+   */
   navigating = $state(false);
 
   /**
-   * Creates a new router instance.
-   * @param {string} basePath (optional) The base path to navigate to.
-   * @param {Route[]} routes The routes to navigate to.
-   * @param {PreHooks} pre (optional) The pre hooks to run before navigating to a route.
-   * @param {PostHooks} post (optional) The post hooks to run after navigating to a route.
-   * @param {string} currentPath (optional) The current path to automaticallynavigate to.
+   * The configuration for this router instance.
    */
-  constructor(basePath: string, routes: Route[], pre?: PreHooks, post?: PostHooks, currentPath?: string) {
-    this.basePath = basePath;
-    this.routes = routes;
-    if (currentPath) {
-      this.current = this.get(currentPath);
+  config: InstanceConfig;
+
+  /**
+   * Creates a new router instance.
+   * @param {InstanceConfig} config The configuration for this router instance.
+   */
+  constructor(config: InstanceConfig) {
+    this.config = config;
+
+    // If a current path is provided, set the current route to the
+    // route that matches the current path.
+    if (config.currentPath) {
+      this.current = this.get(config.currentPath);
+      this.run(this.current);
     }
-    this.#pre = pre;
-    this.#post = post;
 
     const { pushState, replaceState } = window.history;
 
-    if (!RouterRegistry.instances.has(this.id)) {
-      const handlers = RouterRegistry.register(this);
+    const handlers = RouterRegistry.register(this);
 
-      if (RouterRegistry.instances.size === 1) {
-        // Only override history methods once
-        window.history.pushState = function (...args) {
-          pushState.apply(window.history, args);
-          window.dispatchEvent(new Event("pushState"));
-        };
-        window.history.replaceState = function (...args) {
-          replaceState.apply(window.history, args);
-          window.dispatchEvent(new Event("replaceState"));
-        };
-      }
+    window.history.pushState = function (...args) {
+      pushState.apply(window.history, args);
+      window.dispatchEvent(new Event("pushState"));
+    };
 
-      window.addEventListener("pushState", handlers.pushStateHandler);
-      window.addEventListener("replaceState", handlers.replaceStateHandler);
-      window.addEventListener("popstate", handlers.popStateHandler);
-    }
+    window.history.replaceState = function (...args) {
+      replaceState.apply(window.history, args);
+      window.dispatchEvent(new Event("replaceState"));
+    };
+
+    window.addEventListener("pushState", handlers.pushStateHandler);
+    window.addEventListener("replaceState", handlers.replaceStateHandler);
+    window.addEventListener("popstate", handlers.popStateHandler);
   }
 
   /**
-   * Find a matching route for a given path by checking if the path is a string or a RegExp.
+   * Find a matching route for a given path checking if the path is a string or a RegExp.
    * @param {string} path The path to find a matching route for.
-   * @returns {Route} The matching route.
-   */
-  match(path: string): Route | undefined {
-    for (const r of this.routes) {
-      if (typeof r.path === "string") {
-        // Check if the path contains regex syntax characters
-        const hasRegexSyntax = /[[\]{}()*+?.,\\^$|#\s]/.test(r.path);
-        if (!hasRegexSyntax) {
-          // If no regex syntax, treat as plain string match
-          if (path === r.path) {
-            return { ...r, params: {} };
-          }
-          continue;
-        }
-        const match = new RegExp(r.path).exec(path);
-        if (match) {
-          return { ...r, params: match.groups || match.slice(1) };
-        }
-      } else if (typeof r.path === "object") {
-        const match = r.path.exec(path);
-        if (match) {
-          return { ...r, params: match.groups || match.slice(1) };
-        }
-      }
-    }
-  }
-
-  /**
-   * Get the route for a given path.
-   * @returns { Route } The route for the given path.
+   * @returns {Route | undefined} The matching route (if found).
    */
   get(path: string): Route | undefined {
-    let route: Route | undefined;
+    // Normalize the input path:
+    const normalizedPath = path.startsWith('/') ? path : '/' + path;
 
     // Handle base path
-    const normalizedPath = this.basePath && this.basePath !== "/"
-      ? path.replace(this.basePath, "")
-      : path;
-
-    // Check for root path first
-    if (normalizedPath === "/") {
-      // return this.routes.find((route) => route.path === "/");
-      return this.match(path);
+    let pathToMatch = normalizedPath;
+    if (this.config.basePath && this.config.basePath !== "/") {
+      const basePathRegex = new RegExp(`^${this.config.basePath}`);
+      pathToMatch = normalizedPath.replace(basePathRegex, "");
     }
 
-    // Try to find a matching route using RegExp
-    for (const r of this.routes) {
-      const regexp = new RegExp(r.path);
-      const match = regexp.exec(normalizedPath);
-      if (match) {
-        return { ...r, params: match.groups || match.slice(1) };
+    // This allows us to log when we're in debug mode otherwise
+    // this statement is removed by the compiler (tree-shaking):
+    if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
+      logger.debug(this.id, `trying to get("${path}")`, {
+        upstream: this.config.basePath || "",
+        downstream: pathToMatch,
+      });
+    }
+
+    // Split path into segments, removing empty strings:
+    const segments = pathToMatch.split('/').filter(Boolean);
+    const firstSegment = segments[0];
+
+    for (const r of this.config.routes) {
+      // Normalize the route path:
+      const routePath = typeof r.path === "string"
+        ? r.path.replace(/^\//, "")
+        : r.path;
+
+      // Handle root path:
+      if (!segments.length || pathToMatch === "/") {
+        if (!routePath || routePath === "/" || routePath === "") {
+          return { ...r, params: {} };
+        }
+        continue;
+      }
+
+      if (typeof routePath === "string") {
+        // Check for exact match:
+        const routeSegments = routePath.split('/').filter(Boolean);
+        if (routeSegments.join('/') === segments.join('/')) {
+          return { ...r, params: {} };
+        }
+
+        // Check for nested route match:
+        if (routePath === firstSegment) {
+          const remainingSegments = segments.slice(1);
+          const remainingPath = remainingSegments.length
+            ? '/' + remainingSegments.join('/')
+            : '/';
+
+          return {
+            ...r,
+            params: remainingSegments,
+            remainingPath
+          };
+        }
+
+        // Handle possible regex routes:
+        const hasRegexSyntax = /[[\]{}()*+?.,\\^$|#\s]/.test(routePath);
+        if (hasRegexSyntax) {
+          const match = new RegExp(`^${routePath}$`).exec(segments.join('/'));
+          if (match) {
+            return { ...r, params: match.groups || match.slice(1) };
+          }
+        }
+      } else if (routePath instanceof RegExp) {
+        const match = routePath.exec(segments.join('/'));
+        if (match) {
+          return { ...r, params: match.groups || match.slice(1) };
+        }
       }
     }
 
-    return route;
+    if (this.config.notFoundComponent) {
+      return {
+        path: "/404",
+        component: this.config.notFoundComponent
+      };
+    }
   }
 
   /**
@@ -206,31 +197,29 @@ export class Instance {
   async run(route: Route): Promise<void> {
     this.navigating = true;
 
-    // First, run the global pre hooks.
-    if (this.#pre) {
-      if (Array.isArray(this.#pre)) {
-        for (const pre of this.#pre) {
-          route = await pre(route);
+    // First, run the global pre hooks
+    if (this.config.pre) {
+      if (Array.isArray(this.config.pre)) {
+        for (const pre of this.config.pre) {
+          const result = await pre(route);
+          if (result) route = result;
         }
       } else {
-        route = await this.#pre(route);
+        const result = await this.config.pre(route);
+        if (result) route = result;
       }
     }
 
-    // Then, run the route specific pre hooks.
-    if (route && route.pre) {
+    // Then, run the route specific pre hooks
+    if (route.pre) {
       if (Array.isArray(route.pre)) {
         for (const pre of route.pre) {
-          const r = await pre(route);
-          if (r) {
-            route = r;
-          }
+          const result = await pre(route);
+          if (result) route = result;
         }
       } else {
-        const r = await route.pre(route);
-        if (r) {
-          route = r
-        }
+        const result = await route.pre(route);
+        if (result) route = result;
       }
     }
 
@@ -254,13 +243,13 @@ export class Instance {
     }
 
     // Finally, run the global post hooks:
-    if (this.#post) {
-      if (Array.isArray(this.#post)) {
-        for (const post of this.#post) {
+    if (this.config.post) {
+      if (Array.isArray(this.config.post)) {
+        for (const post of this.config.post) {
           await post(route);
         }
       } else {
-        await this.#post(route);
+        await this.config.post(route);
       }
     }
 
@@ -273,11 +262,20 @@ export class Instance {
    * @returns {void}
    */
   onStateChange(path: string): void {
+    if (this._processing) return;
+    this._processing = true;
+
     const route = this.get(path);
     if (route) {
-      this.run(route);
+      this.run(route).finally(() => {
+        this._processing = false;
+      });
+    } else {
+      this._processing = false;
     }
   }
+
+  private _processing = false;
 
   /**
    * Destroy the router instance.

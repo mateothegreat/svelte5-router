@@ -5,7 +5,9 @@ export const goto = (path: string, queryParams?: Record<string, string>) => {
       url.searchParams.set(key, value);
     });
   }
-  window.history.pushState({}, "", url.toString());
+  setTimeout(() => {
+    window.history.pushState({}, "", url.toString());
+  });
 };
 
 export const query = (key: string): string | null => {
