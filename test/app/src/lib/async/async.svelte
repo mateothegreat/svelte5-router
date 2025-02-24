@@ -1,6 +1,7 @@
 <script lang="ts">
   import { route, Router, type Route } from "@mateothegreat/svelte5-router";
   import { onMount } from "svelte";
+  import { myDefaultRouteConfig } from "../common-stuff";
 
   onMount(() => {
     console.log("async child.svelte", "onMount");
@@ -20,7 +21,8 @@
 
 {#snippet snippet()}
   <div class="flex flex-col gap-3 bg-green-500 p-4">
-    Default path routed and output using a snippet.<br />
+    Default path routed and output using a snippet.
+    <br />
     <strong>Click on a link above..</strong>
   </div>
 {/snippet}
@@ -28,10 +30,23 @@
   <p class="rounded-sm bg-slate-900 p-2 text-center text-xs text-green-500">/async.svelte</p>
   <h1>Parent: AsyncFunction</h1>
   <div class="flex gap-2 rounded-sm bg-black p-4">
-    <a use:route href="/async" class="rounded-sm bg-blue-500 px-2">/async</a>
-    <a use:route href="/async/child" class="rounded-sm bg-blue-500 px-2">/async/child</a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/async"
+      class="rounded-sm bg-blue-500 px-2">
+      /async
+    </a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/async/child"
+      class="rounded-sm bg-blue-500 px-2">
+      /async/child
+    </a>
   </div>
   <div class="rounded-sm bg-black p-4 shadow-xl">
-    <Router basePath="/async" {routes} />
+    <Router
+      basePath="/async"
+      children={routes}
+      {routes} />
   </div>
 </div>

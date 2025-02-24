@@ -3,7 +3,7 @@
   "useTabs": false,
   "singleQuote": false,
   "trailingComma": "none",
-  "printWidth": 120,
+  "printWidth": 180,
   "endOfLine": "lf",
   "plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
   "pluginSearchDirs": false,
@@ -45,5 +45,7 @@
       }
     }
   ],
-  "bracketSameLine": true
+  "bracketSameLine": true,
+  "singleAttributePerLine": true,
+  "htmlWhitespaceSensitivity": "ignore"
 }

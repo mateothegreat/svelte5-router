@@ -2,33 +2,17 @@ import { tick } from "svelte";
 
 import { RouterRegistry } from "../registry.svelte";
 
-/**
- * Options for the route action.
- */
-export type RouteOptions = {
-  /**
-   * When the route is active, these options are applied.
-   */
-  active?: {
-    /**
-     * The css class(es) to add when route is active.
-     */
-    class?: string;
-  };
-};
+import type { RouteOptions } from "./route";
 
 /**
- * Svelte action to handle routing with optional active state.
- * Add `use:route` to an anchor element to handle routing and optionally manage active state.
- * @param node - The anchor element to handle.
- * @param options - Options for the route action.
- * @param options.activeClass - The class to add when route is active.
+ * Add the `active` class to the node if the current route matches the node's href.
+ * @param node - The node to add the active class to.
  */
-export function route(node: HTMLAnchorElement, { active }: RouteOptions = {}) {
+export function active(node: HTMLAnchorElement, { active }: RouteOptions = {}) {
   /**
-   * Apply the active class to the node if the current route matches
-   * the node's href and the route is not a 404.
-   */
+  * Apply the active class to the node if the current route matches
+  * the node's href and the route is not a 404.
+  */
   const applyActiveClass = () => {
     if (active?.class) {
       const url = new URL(node.href);

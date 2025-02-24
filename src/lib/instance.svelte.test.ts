@@ -1,27 +1,32 @@
 import { describe, expect, it } from 'vitest';
+
 import { Instance } from './instance.svelte';
 
-const instance1 = new Instance("", [
-  {
-    path: "/1a",
-    component: "1a",
-  },
-  {
-    path: "/1b",
-    component: "1b",
-  },
-]);
+const instance1 = new Instance({
+  basePath: "",
+  routes: [
+    {
+      path: "/1a",
+      component: "1a",
+    },
+    {
+      path: "/1b",
+      component: "1b",
+    },
+  ]);
 
-const instance2 = new Instance("/foo", [
-  {
-    path: "/2a",
-    component: "2a",
-  },
-  {
-    path: "/2b",
-    component: "2b",
-  },
-]);
+const instance2 = new Instance({
+  basePath: "/foo",
+  routes: [
+    {
+      path: "/2a",
+      component: "2a",
+    },
+    {
+      path: "/2b",
+      component: "2b",
+    },
+  ]);
 
 describe("Instance.routes", () => {
   it("should navigate", async () => {

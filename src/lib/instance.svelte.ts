@@ -1,112 +1,197 @@
-import type { Component, Snippet } from 'svelte';
+import { type Component } from 'svelte';
 
+import type { PostHooks, PreHooks } from './hooks';
 import { logger } from './logger';
-import { RouterRegistry } from './registry';
+import { normalizePath } from './paths';
+import { RouterRegistry } from './registry.svelte';
+import { Route } from './route.svelte';
 
 /**
- * A pre hook that can be used to modify the route before it is navigated to.
+ * The configuration for a router instance.
  */
-export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<Route>)[] | ((route: Route) => void) | ((route: Route) => Route) | ((route: Route) => Promise<Route>);
-
-/**
- * A post hook that can be used to modify the route after it is navigated to.
- */
-export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<void>)[] | ((route: Route) => void) | ((route: Route) => Promise<void>);
-
-/**
- * A route that can be navigated to.
- */
-export class Route {
-  path: RegExp | string | number;
-  component?: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
-  props?: Record<string, any>;
-  pre?: PreHooks;
-  post?: PostHooks;
-  children?: Route[];
-  params?: string[] | Record<string, string>;
-  remainingPath?: string;
-  #active = $state(false);
-
-  constructor(route: Route) {
-    this.path = route.path;
-    this.component = route.component;
-    this.props = route.props;
-    this.pre = route.pre;
-    this.post = route.post;
-  }
+export class InstanceConfig {
+  /**
+   * The base path for the router instance.
+   *
+   * @optional If no value is provided, the base path will be "/".
+   */
+  basePath?: string;
 
   /**
-   * Set the active state of the route.
-   * @param {boolean} active The active state of the route.
+   * The routes for the router instance.
+   *
+   * @type {Route[]}
    */
-  setActive(active: boolean) {
-    this.#active = active;
-  }
+  routes: Route[] = [];
 
-  active() {
-    return this.#active;
-  }
-}
-
-export class InstanceConfig {
-  basePath?: string;
-  routes: Route[];
+  /**
+   * The pre hooks for the router instance.
+   *
+   * @optional If no value is provided, no pre hooks will be run.
+   */
   pre?: PreHooks;
+
+  /**
+   * The post hooks for the router instance.
+   *
+   * @optional If no value is provided, no post hooks will be run.
+   */
   post?: PostHooks;
-  currentPath?: string;
+
+  /**
+   * The initial path for the router instance.
+   *
+   * @optional If no value is provided, the initial path will be the current path of the browser.
+   */
+  initialPath?: string;
+
+  /**
+   * The not found component for the router instance.
+   *
+   * @optional If no value is provided and no route could be found,
+   * the router will will not render anything.
+   */
   notFoundComponent?: Component;
 
+  /**
+   * The children for the router instance.
+   *
+   * @type {Route[]}
+   */
+  children?: Route[];
+
+  /**
+   * The constructor for this router instance.
+   *
+   * @param {InstanceConfig} config The config for this router instance.
+   */
   constructor(config: InstanceConfig) {
     this.basePath = config.basePath;
-    this.routes = config.routes;
     this.pre = config.pre;
     this.post = config.post;
-    this.currentPath = config.currentPath;
+    this.initialPath = config.initialPath;
     this.notFoundComponent = config.notFoundComponent;
+
+    /**
+     * For safety, determine if the routes are already instances of the Route class
+     * and if not, create a new instance of the Route class:
+     */
+    for (let route of config.routes) {
+      if (route instanceof Route) {
+        this.routes.push(route);
+      } else {
+        this.routes.push(new Route(new Route(route)));
+      }
+    }
   }
 }
+
 /**
  * A router instance that each <Router/> component creates.
+ *
+ * This is the reference that is exposed and observable by the caller
+ * of the <Router/> component such as:
+ *
+ * ```svelte
+ * <script lang="ts">
+ *   let instance = $state<Instance>();
+ * </script>
+ *
+ * <Router
+ *  bind:instance
+ *  {routes}
+ *  pre={globalAuthGuardHook}
+ *  post={globalLoggerPostHook}
+ *  notFoundComponent={NotFound} />
+ *
+ * <div>
+ *   Current Path: {instance.current.path}
+ *   Navigating: {instance.navigating}
+ * </div>
+ * ```
  */
 export class Instance {
   /**
    * The unique identifier for the router instance.
+   *
+   * @type {string}
+   *
+   * @default Defaults to a random string of characters.
    */
   id = Math.random().toString(36).substring(2, 15);
 
   /**
-   * The current route.
+   * The current route having been set when a route has been navigated to.
+   *
+   * @type {Route}
+   *
+   * @default null
    */
-  current = $state<Route>();
+  current = $state<Route>(null);
 
   /**
    * Whether the router is navigating to a new route.
+   *
+   * This is exposed to the outside so that we can use it to
+   * determine if the router is currently navigating to a new route.
+   *
+   * @type {boolean} Defaults to `false`.
    */
   navigating = $state(false);
 
   /**
    * The configuration for this router instance.
+   *
+   * @type {InstanceConfig}
    */
   config: InstanceConfig;
 
   /**
    * Creates a new router instance.
+   *
    * @param {InstanceConfig} config The configuration for this router instance.
    */
   constructor(config: InstanceConfig) {
     this.config = config;
 
-    // If a current path is provided, set the current route to the
-    // route that matches the current path.
-    if (config.currentPath) {
-      this.current = this.get(config.currentPath);
-      this.run(this.current);
+    /**
+     * If a current path is provided, find the route that matches the `initialPath`
+     * and set the current route to that route.
+     *
+     * This is typically caused when a page is refreshed or initially loaded.
+     */
+    if (config.initialPath) {
+      const route = this.get(config.initialPath);
+      if (route) {
+        this.current = route;
+      }
+    } else {
+      this.current = this.get(location.pathname);
     }
 
+    /**
+     * When the router instance is created we need to run the current route
+     * to ensure that the router is in the correct state.
+     *
+     * This is typically caused when a page is refreshed or initially loaded.
+     */
+    // this.run(this.current);
+
+    /**
+     * Register the router instance with the RouterRegistry and
+     * add event listeners for the pushState, replaceState, and popstate events.
+     */
+    const handlers = RouterRegistry.register(this);
     const { pushState, replaceState } = window.history;
 
-    const handlers = RouterRegistry.register(this);
+    window.addEventListener("pushState", handlers.pushStateHandler);
+    window.addEventListener("replaceState", handlers.replaceStateHandler);
+    window.addEventListener("popstate", handlers.popStateHandler);
 
+    /**
+     * Override the pushState and replaceState methods to
+     * dispatch the pushState and replaceState events.
+     */
     window.history.pushState = function (...args) {
       pushState.apply(window.history, args);
       window.dispatchEvent(new Event("pushState"));
@@ -117,119 +202,113 @@ export class Instance {
       window.dispatchEvent(new Event("replaceState"));
     };
 
-    window.addEventListener("pushState", handlers.pushStateHandler);
-    window.addEventListener("replaceState", handlers.replaceStateHandler);
-    window.addEventListener("popstate", handlers.popStateHandler);
   }
 
   /**
    * Find a matching route for a given path checking if the path is a string or a RegExp.
+   *
    * @param {string} path The path to find a matching route for.
    * @returns {Route | undefined} The matching route (if found).
    */
   get(path: string): Route | undefined {
-    // Normalize the input path:
-    const normalizedPath = path.startsWith('/') ? path : '/' + path;
+    let route: Route;
+    let normalizedPath = normalizePath(path);
 
-    // Handle base path
-    let pathToMatch = normalizedPath;
+    /**
+     * Handle base path by removing it from the normalizedPath:
+     */
     if (this.config.basePath && this.config.basePath !== "/") {
-      const basePathRegex = new RegExp(`^${this.config.basePath}`);
-      pathToMatch = normalizedPath.replace(basePathRegex, "");
+      normalizedPath = normalizedPath.replace(this.config.basePath, "");
     }
 
-    // This allows us to log when we're in debug mode otherwise
-    // this statement is removed by the compiler (tree-shaking):
-    if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
-      logger.debug(this.id, `trying to get("${path}")`, {
-        upstream: this.config.basePath || "",
-        downstream: pathToMatch,
-      });
-    }
+    /**
+     * Split path into segments, removing empty strings:
+     */
+    const segments = normalizedPath.split('/').filter(Boolean);
 
-    // Split path into segments, removing empty strings:
-    const segments = pathToMatch.split('/').filter(Boolean);
-    const firstSegment = segments[0];
-
+    /**
+     * Iterate over the routes and find the matching route:
+     */
     for (const r of this.config.routes) {
-      // Normalize the route path:
       const routePath = typeof r.path === "string"
         ? r.path.replace(/^\//, "")
         : r.path;
 
-      // Handle root path:
-      if (!segments.length || pathToMatch === "/") {
+      if (segments.length === 0 || normalizedPath === "/") {
         if (!routePath || routePath === "/" || routePath === "") {
-          return { ...r, params: {} };
+          route = r;
+          route.status = 200;
         }
         continue;
       }
 
-      if (typeof routePath === "string") {
-        // Check for exact match:
-        const routeSegments = routePath.split('/').filter(Boolean);
-        if (routeSegments.join('/') === segments.join('/')) {
-          return { ...r, params: {} };
-        }
+      const routeable = r.test(normalizedPath);
+      if (routeable) {
+        r.params = routeable.params;
+        r.remaining = routeable.remaining;
+        return r;
+      }
 
-        // Check for nested route match:
-        if (routePath === firstSegment) {
-          const remainingSegments = segments.slice(1);
-          const remainingPath = remainingSegments.length
-            ? '/' + remainingSegments.join('/')
-            : '/';
+      // Check for nested route match:
+      // if (routePath === firstSegment) {
+      //   const remainingSegments = segments.slice(1);
+      //   const remainingPath = remainingSegments.length
+      //     ? '/' + remainingSegments.join('/')
+      //     : '/';
 
-          return {
-            ...r,
-            params: remainingSegments,
-            remainingPath
-          };
-        }
+      //   console.log("rasadf", remainingPath)
+      //   return {
+      //     ...r,
+      //     params: remainingSegments,
+      //     remaining: remainingPath
+      //   };
+      // }
 
-        // Handle possible regex routes:
-        const hasRegexSyntax = /[[\]{}()*+?.,\\^$|#\s]/.test(routePath);
-        if (hasRegexSyntax) {
-          const match = new RegExp(`^${routePath}$`).exec(segments.join('/'));
-          if (match) {
-            return { ...r, params: match.groups || match.slice(1) };
-          }
-        }
-      } else if (routePath instanceof RegExp) {
-        const match = routePath.exec(segments.join('/'));
-        if (match) {
-          return { ...r, params: match.groups || match.slice(1) };
+      if (r.test(normalizedPath)) {
+        route = r;
+        route.status = 200;
+      }
+    }
+
+    if (!route) {
+      if (this.config.notFoundComponent) {
+        route = {
+          path: "/404",
+          component: this.config.notFoundComponent,
+          status: 404
+        };
+      } else {
+        route = {
+          path,
+          status: 404
         }
       }
     }
 
-    if (this.config.notFoundComponent) {
-      return {
-        path: "/404",
-        component: this.config.notFoundComponent
-      };
+    /**
+     * This allows us to log when we're in debug mode otherwise
+     * this statement is removed by the compiler (tree-shaking):
+     */
+    if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
+      logger.debug(this.id, `trying to get("${normalizedPath}")`, {
+        status: route?.status,
+        trying: route.path,
+        upstream: this.config.basePath || "",
+        downstream: normalizedPath,
+      });
     }
+
+    return route;
   }
 
   /**
    * Navigates to a given route, running  the pre and post hooks.
+   *
    * @param {Route} route The route to navigate to.
    * @returns {Promise<void>}
    */
   async run(route: Route): Promise<void> {
     this.navigating = true;
-
-    // First, run the global pre hooks
-    if (this.config.pre) {
-      if (Array.isArray(this.config.pre)) {
-        for (const pre of this.config.pre) {
-          const result = await pre(route);
-          if (result) route = result;
-        }
-      } else {
-        const result = await this.config.pre(route);
-        if (result) route = result;
-      }
-    }
 
     // Then, run the route specific pre hooks
     if (route.pre) {
@@ -248,10 +327,22 @@ export class Instance {
     // a reactive $state() variable, it will trigger a render.
     // Only set the current route if it's different from the
     // current route to avoid unnecessary re-rendering.
-    if (route.path !== this.current?.path) {
-      this.current = route;
+    // if (route.path !== this.current?.path) {
+    //   console.log("xxxxxxxsetting current", route.path, this.current?.path)
+    // }
+
+    // if (route.path === this.current.path) {
+    //   console.log('resetting')
+    //   this.current = null;
+    // }
+    //
+    // console.log("setting current", this.id, route.path, this.current?.path)
+    // const clonedRoute = Object.assign({}, route);
+    if (route.path === this.current?.path) {
+      this.current = null;
     }
 
+    this.current = route;
     // Run the route specific post hooks:
     if (route && route.post) {
       if (Array.isArray(route.post)) {
@@ -278,28 +369,36 @@ export class Instance {
   }
 
   /**
-   * Handle a state change event.
+   * Whether the router is currently processing a state change.
+   */
+  #_processing = false;
+
+  /**
+   * Process a state change event.
+   *
+   * We use a quueing mechanism to ensure that only one state change event
+   * is processed at a time.
+   *
    * @param {string} path The path to navigate to.
    * @returns {void}
    */
-  onStateChange(path: string): void {
-    if (this._processing) return;
-    this._processing = true;
+  onStateChange(route: Route): void {
+    if (this.#_processing) return;
+    this.#_processing = true;
 
-    const route = this.get(path);
     if (route) {
       this.run(route).finally(() => {
-        this._processing = false;
+        this.#_processing = false;
       });
     } else {
-      this._processing = false;
+      this.#_processing = false;
     }
   }
 
-  private _processing = false;
-
   /**
-   * Destroy the router instance.
+   * Called when the router instance needs to be destroyed
+   * (typically when the router instance is removed from the DOM).
+   *
    * @returns {void}
    */
   destroy(): void {

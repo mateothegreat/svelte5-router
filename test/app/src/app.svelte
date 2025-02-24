@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { Instance, Route } from "@mateothegreat/svelte5-router";
-  import { goto, route, Router } from "@mateothegreat/svelte5-router";
-  import { logger } from "@mateothegreat/svelte5-router/logger";
+  import { active, goto, route, Router } from "@mateothegreat/svelte5-router";
+  import { RouterRegistry } from "@mateothegreat/svelte5-router/registry.svelte";
   import { Github, Home } from "lucide-svelte";
+  import { myDefaultRouteConfig } from "./lib/common-stuff";
   import Default from "./lib/default.svelte";
   import Delayed from "./lib/delayed.svelte";
   import Nested from "./lib/nested/nested.svelte";
@@ -103,54 +104,132 @@
   };
 
   const globalLoggerPostHook = async (route: Route): Promise<void> => {
-    logger.debug(instance.id, "globalLoggerPostHook: path =", route.path);
+    console.log("globalLoggerPostHook");
   };
 </script>
 
 <div class="absolute flex h-full w-full flex-col items-center gap-4 bg-black">
   <div class="flex w-full items-center justify-between p-6">
-    <div class="flex items-center gap-5">
+    <div class="flex w-full justify-between">
       <h1 class="text-center font-mono text-lg text-indigo-500">Svelte SPA Router Demo</h1>
-      <p class="text-center text-sm text-slate-500">
-        `instance.navigating` state:
-        {#if instance && instance.navigating}
-          <span class="rounded border border-zinc-800 px-1 py-0.5 text-pink-500"> (true) navigating... </span>
-        {:else}
-          <span class="rounded border border-zinc-800 px-1 py-0.5 text-green-500"> false (idle) </span>
-        {/if}
-      </p>
-    </div>
-    <div class="flex items-center gap-2">
-      <a
-        href="https://github.com/mateothegreat/svelte5-router"
-        class="text-slate-500 hover:text-green-500"
-        target="_blank">
-        <Github />
-      </a>
-      <a
-        href="https://github.com/mateothegreat/svelte5-router"
-        class="text-indigo-500 hover:text-green-500"
-        target="_blank">
-        <Home />
-      </a>
+      <div class="flex gap-2">
+        <a
+          href="https://github.com/mateothegreat/svelte5-router"
+          class="text-slate-500 hover:text-green-500"
+          target="_blank">
+          <Github />
+        </a>
+        <a
+          href="https://github.com/mateothegreat/svelte5-router"
+          class="text-indigo-500 hover:text-green-500"
+          target="_blank">
+          <Home />
+        </a>
+      </div>
+      <table class="divide-y divide-gray-800 text-xs text-gray-500">
+        <thead>
+          <tr>
+            <th class="px-3 py-2 text-left font-medium tracking-wider text-gray-600">PROPERTY</th>
+            <th class="px-3 py-2 text-left font-medium tracking-wider text-gray-600">VALUE</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-800 font-mono">
+          <tr>
+            <td class="px-3 py-2 text-indigo-500">Active Routers</td>
+            <td class="px-3 py-2 text-indigo-500">
+              {RouterRegistry.instances.size}
+            </td>
+          </tr>
+          <tr>
+            <td class="px-3 py-2">`instance.current`</td>
+            <td class="px-3 py-2 text-pink-500">
+              {instance.current.path}
+            </td>
+          </tr>
+          <tr>
+            <td class="px-3 py-2">`instance.navigating``</td>
+            <td class="px-3 py-2">
+              {#if instance && instance.navigating}
+                <span class="rounded border border-zinc-800 px-1 py-0.5 text-orange-500">true</span>
+              {:else}
+                <span class="rounded border border-zinc-800 px-1 py-0.5 text-gray-500">false</span>
+              {/if}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
-
-  <span class="flex items-center text-xs text-zinc-500">Demo links to navigate to:</span>
-  <div class="flex gap-3 bg-zinc-900 text-xs text-white">
-    <a use:route href="/" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/</a>
-    <a use:route href="/nested" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/nested</a>
-    <a use:route href="/async" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/async</a>
-    <a use:route href="/lazy" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/lazy</a>
-    <a use:route href="/props" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/props</a>
-    <a use:route href="/params" class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">/params</a>
-    <a use:route href="/delayed" class="rounded bg-blue-600 px-3 py-1 hover:bg-blue-800">/delayed</a>
-    <a use:route href="/protected" class="py-1hover:bg-pink-800 rounded bg-pink-600 px-3 py-1">/protected</a>
-    <button onclick={() => goto("/a")} class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
-      Call the <span class="rounded bg-black px-2 py-0.5 text-green-500">goto("/a");</span> method
+  <div class="flex w-full flex-wrap gap-3 bg-zinc-900 p-3 text-xs text-white">
+    <span class="flex items-center text-xs text-zinc-500">Demos:</span>
+    <a
+      use:route
+      use:active={{ active: { class: "bg-pink-500" } }}
+      href="/"
+      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
+      /
+    </a>
+    <a
+      use:route
+      use:active={{ active: { class: "bg-red-500" } }}
+      href="/nested"
+      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
+      /nested
+    </a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/async"
+      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
+      /async
+    </a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/lazy"
+      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
+      /lazy
+    </a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/props"
+      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
+      /props
+    </a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/params"
+      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
+      /params
+    </a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/delayed"
+      class="rounded bg-blue-600 px-3 py-1 hover:bg-blue-800">
+      /delayed
+    </a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/protected"
+      class="py-1hover:bg-pink-800 rounded bg-pink-600 px-3 py-1">
+      /protected
+    </a>
+    <button
+      onclick={() => goto("/a")}
+      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
+      Call the <span class="rounded bg-black px-2 py-0.5 text-green-500">goto("/a");</span>
+      method
     </button>
-    <a use:route href="/query-redirect" class="py-1hover:bg-pink-800 rounded bg-blue-600 px-3 py-1">/query-redirect</a>
-    <a use:route href="/not-found" class="py-1hover:bg-pink-800 rounded bg-slate-600 px-3 py-1">/not-found</a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/query-redirect"
+      class="py-1hover:bg-pink-800 rounded bg-blue-600 px-3 py-1">
+      /query-redirect
+    </a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/not-found"
+      class="py-1hover:bg-pink-800 rounded bg-slate-600 px-3 py-1">
+      /not-found
+    </a>
   </div>
   <div class=" w-full flex-1 bg-zinc-900 p-6">
     <div class="flex flex-col gap-4 rounded-sm bg-zinc-950 p-4 shadow-xl">

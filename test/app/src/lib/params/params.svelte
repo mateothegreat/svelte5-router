@@ -1,43 +1,64 @@
 <script lang="ts">
-  import { route, Router, type Route } from "@mateothegreat/svelte5-router";
+  import { Instance, route, Router, type Route } from "@mateothegreat/svelte5-router";
+  import DisplayParams from "./display-params.svelte";
 
-  let { params }: { params: string[] } = $props();
-
+  let { params } = $props();
   const routes: Route[] = [
     {
-      path: "(?<child>.*)",
-      component: output
+      // This route will be used if there is no match above.
+      component: snippet
     },
     {
-      path: "",
-      component: snippet
+      // This route will match any path and pass the pattern groups
+      // as an object to the component that is passed in $props().
+      //
+      // The component will access the params using $props() and the
+      // property "child" will contain the value extracted from the path.
+      path: /\/(?<child>.*)/,
+      component: DisplayParams
     }
   ];
+
+  let instance = $state<Instance>(null);
 </script>
 
-{#snippet output()}
-  <div class="flex flex-col gap-3 bg-indigo-400 p-4">
-    <pre>params: string[] <em>from</em> $props() <em>value is:</em></pre>
-    <pre class="rounded-sm bg-black p-2 text-xs text-green-500">{JSON.stringify(params, null, 2)}</pre>
-  </div>
-{/snippet}
 {#snippet snippet()}
-  <div class="flex flex-col gap-3 bg-green-400 p-4">
-    I'm a snippet!<br />
-    Click on a link above to see the params..
+  <div class="flex flex-col gap-3 bg-indigo-500 p-4">
+    Click on a link above to see the params --^
+    <em>Oh, and i'm a snippet that was rendered because I am the default route.</em>
   </div>
 {/snippet}
 
 <div class="flex flex-col gap-3 bg-gray-400 p-4">
   <p class="rounded-sm bg-black p-2 text-center text-xs text-green-500">params.svelte</p>
-  <h1>Params Links</h1>
+  <p class="rounded-sm p-2 text-sm text-black">This demo shows how to use the `params` prop to pass the pattern groups from the current route to a component.</p>
   <div class="flex gap-2 rounded-sm bg-black p-4">
-    <a use:route href="/params/foo" class="rounded-sm bg-blue-500 px-2">/params/foo</a>
-    <a use:route href="/params/bar" class="rounded-sm bg-blue-500 px-2">/params/bar</a>
-    <a use:route href="/params/one" class="rounded-sm bg-blue-500 px-2">/params/one</a>
+    Children Routes: <a
+      use:route
+      href="/params/foo"
+      class="rounded-sm bg-blue-500 px-2">
+      /params/foo
+    </a>
+    <a
+      use:route
+      href="/params/bar"
+      class="rounded-sm bg-blue-500 px-2">
+      /params/bar
+    </a>
+    <a
+      use:route
+      href="/params/one"
+      class="rounded-sm bg-blue-500 px-2">
+      /params/one
+    </a>
   </div>
-
   <div class="rounded-sm bg-black p-4 shadow-xl">
-    <Router basePath="/params" {routes} />
+    <!-- `basePath` is passed in so that the underlying routing
+         engine knows to use this router instance for routes that
+         start with "/params". -->
+    <Router
+      bind:instance
+      basePath="/params"
+      {routes} />
   </div>
 </div>
