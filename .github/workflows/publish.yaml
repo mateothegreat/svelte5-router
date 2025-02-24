@@ -3,8 +3,8 @@ on:
     paths-ignore:
       - "test/**"
       - "**/*.md"
-    branches:
-      - main
+    tags:
+      - "*"
 name: publish
 permissions:
   contents: write
@@ -16,12 +16,12 @@ jobs:
         id: app
         uses: actions/create-github-app-token@v1
         with:
-            app-id: ${{ secrets.CICD_APP_ID }}
-            private-key: ${{ secrets.CICD_APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.CICD_APP_ID }}
+          private-key: ${{ secrets.CICD_APP_PRIVATE_KEY }}
       - uses: actions/checkout@v4
         with:
-            fetch-depth: 0
-            token: ${{ steps.app.outputs.token }}
+          fetch-depth: 0
+          token: ${{ steps.app.outputs.token }}
       - name: automated version bump
         uses: "phips28/gh-action-bump-version@master"
         env:
