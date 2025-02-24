@@ -1,6 +1,7 @@
 import type { Component, Snippet } from "svelte";
 
 import type { PostHooks, PreHooks } from "./hooks";
+import type { Instance } from "./instance.svelte";
 import { normalizePath } from "./paths";
 
 /**
@@ -156,7 +157,6 @@ export class Route {
   /**
    * The remaining path of the route.
    *
-   * @type {string}
    * @optional If no value is provided, there is no remaining path.
    */
   remaining?: string;
@@ -168,17 +168,8 @@ export class Route {
    * - `404`: No route was found.
    * - `500`: An error occurred while processing the route (check the console for more details).
    *
-   * @type {number}
    */
   status?: number;
-
-  /**
-   * Whether the route is dirty.
-   *
-   * @type {boolean}
-   * @private This is used internally to track the dirty state of the route.
-   */
-  dirty? = $state(false);
 
   /**
    * The active state of the route.
@@ -186,15 +177,15 @@ export class Route {
    * @type {boolean}
    * @private This is used internally to track the active state of the route.
    */
-  #active? = $state(false);
+  active? = $state(false);
 
   /**
    * The route instance.
    *
-   * @type {Route}
+   * @type {Instance}
    * @private This is used internally to track the route instance.
    */
-  #instance? = $state<Route>();
+  #instance?: Instance;
 
   /**
    * The constructor for the `Route` class.
@@ -211,23 +202,13 @@ export class Route {
   }
 
   /**
-   * Set the active state of the route.
-   * @param {boolean} active The active state of the route.
-   */
-  setActive?(active: boolean) {
-    this.#active = active;
-  }
-
-  active?() {
-    return this.#active;
-  }
-
-  /**
    * Test if the route matches the given path.
    * @param {RegExp | string | number} path The path to test against the route.
+   * @param {string} basePath The base path of the route.
+   * @optional If no value is provided, the route will match any path.
    * @returns {boolean} True if the route matches the given path, false otherwise.
    */
-  test?(path: RegExp | string | number): Routeable {
+  test?(path: RegExp | string | number, basePath?: string): Routeable {
     const pathStr = path.toString();
     const segments = pathStr.split('/').filter(Boolean);
     // Handle string paths
@@ -236,7 +217,6 @@ export class Route {
       if (/[[\]{}()*+?.,\\^$|#\s]/.test(this.path)) {
         // Path is a regex, so we need to test it against the path passed in:
         const match = new RegExp(this.path).exec(segments.join('/'));
-
         if (match) {
           return {
             path: this.path,
@@ -247,8 +227,19 @@ export class Route {
       } else {
         // Path is not a regex, so we then check if the path passed in is a direct match:
         // const routePath = this.path.toString().replace(/^\/|\/$/g, '');
+        const routePath = normalizePath(this.path);
+        if (routePath === pathStr) {
+          return {
+            path: this.path,
+            params: {},
+            remaining: segments.slice(1).join('/')
+          };
+        }
+        console.log(basePath, this.path, normalizePath(this.path), normalizePath(segments[0]));
+        // console.log(this.path, normalizePath(this.path), normalizePath(segments[0]));
         if (normalizePath(this.path) === normalizePath(segments[0])) {
           const remainingSegments = segments.slice(1);
+          console.log("left with final effort", path, this.path, pathStr, routePath, remainingSegments);
           return {
             path: this.path,
             params: remainingSegments,

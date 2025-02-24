@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Instance, route, Router, type Route } from "@mateothegreat/svelte5-router";
+  import { myDefaultRouteConfig } from "../common-stuff";
   import DisplayParams from "./display-params.svelte";
 
   let { params } = $props();
@@ -34,19 +35,19 @@
   <p class="rounded-sm p-2 text-sm text-black">This demo shows how to use the `params` prop to pass the pattern groups from the current route to a component.</p>
   <div class="flex gap-2 rounded-sm bg-black p-4">
     Children Routes: <a
-      use:route
+      use:route={myDefaultRouteConfig}
       href="/params/foo"
       class="rounded-sm bg-blue-500 px-2">
       /params/foo
     </a>
     <a
-      use:route
+      use:route={myDefaultRouteConfig}
       href="/params/bar"
       class="rounded-sm bg-blue-500 px-2">
       /params/bar
     </a>
     <a
-      use:route
+      use:route={myDefaultRouteConfig}
       href="/params/one"
       class="rounded-sm bg-blue-500 px-2">
       /params/one

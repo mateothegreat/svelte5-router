@@ -1,3 +1,7 @@
+<!--
+ * @category components
+ * @module
+ -->
 <script lang="ts">
   import { onDestroy, unmount, type Component } from "svelte";
   import { Instance, InstanceConfig } from "./instance.svelte";

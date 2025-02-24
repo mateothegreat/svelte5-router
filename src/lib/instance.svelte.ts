@@ -3,7 +3,7 @@ import { type Component } from 'svelte';
 import type { PostHooks, PreHooks } from './hooks';
 import { logger } from './logger';
 import { normalizePath } from './paths';
-import { RouterRegistry } from './registry.svelte';
+import { registry } from './registry.svelte';
 import { Route } from './route.svelte';
 
 /**
@@ -92,6 +92,7 @@ export class InstanceConfig {
  * This is the reference that is exposed and observable by the caller
  * of the <Router/> component such as:
  *
+ *  @example
  * ```svelte
  * <script lang="ts">
  *   let instance = $state<Instance>();
@@ -135,14 +136,12 @@ export class Instance {
    * This is exposed to the outside so that we can use it to
    * determine if the router is currently navigating to a new route.
    *
-   * @type {boolean} Defaults to `false`.
+   * @defaultValue `false`
    */
   navigating = $state(false);
 
   /**
    * The configuration for this router instance.
-   *
-   * @type {InstanceConfig}
    */
   config: InstanceConfig;
 
@@ -163,10 +162,14 @@ export class Instance {
     if (config.initialPath) {
       const route = this.get(config.initialPath);
       if (route) {
+        route.active = true;
         this.current = route;
       }
     } else {
       this.current = this.get(location.pathname);
+      if (this.current) {
+        this.current.active = true;
+      }
     }
 
     /**
@@ -181,7 +184,7 @@ export class Instance {
      * Register the router instance with the RouterRegistry and
      * add event listeners for the pushState, replaceState, and popstate events.
      */
-    const handlers = RouterRegistry.register(this);
+    const handlers = registry.register(this);
     const { pushState, replaceState } = window.history;
 
     window.addEventListener("pushState", handlers.pushStateHandler);
@@ -196,7 +199,6 @@ export class Instance {
       pushState.apply(window.history, args);
       window.dispatchEvent(new Event("pushState"));
     };
-
     window.history.replaceState = function (...args) {
       replaceState.apply(window.history, args);
       window.dispatchEvent(new Event("replaceState"));
@@ -242,7 +244,7 @@ export class Instance {
         continue;
       }
 
-      const routeable = r.test(normalizedPath);
+      const routeable = r.test(normalizedPath, this.config.basePath);
       if (routeable) {
         r.params = routeable.params;
         r.remaining = routeable.remaining;
@@ -264,9 +266,10 @@ export class Instance {
       //   };
       // }
 
-      if (r.test(normalizedPath)) {
+      if (r.test(normalizedPath, this.config.basePath)) {
         route = r;
         route.status = 200;
+        route.active = true;
       }
     }
 
@@ -393,6 +396,8 @@ export class Instance {
     } else {
       this.#_processing = false;
     }
+
+    route.active = true;
   }
 
   /**
@@ -402,6 +407,6 @@ export class Instance {
    * @returns {void}
    */
   destroy(): void {
-    RouterRegistry.unregister(this.id);
+    registry.unregister(this.id);
   }
 }

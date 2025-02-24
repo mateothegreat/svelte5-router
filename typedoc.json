@@ -1,0 +1,122 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  // "outputs": [
+  //   {
+  //     "name": "html",
+  //     "path": "docs/typedoc",
+  //   }
+  // ],
+  "entryPoints": [
+    "./src/lib/index.ts",
+  ],
+  "exclude": [
+    "**/*+(.spec|.e2e).ts"
+  ],
+  "cleanOutputDir": false,
+  "hideGenerator": true,
+  "githubPages": false,
+  "searchInComments": true,
+  "searchInDocuments": true,
+  "plugin": [
+    "typedoc-github-theme",
+    "typedoc-plugin-inline-sources",
+    "typedoc-plugin-extras",
+    "@shipgirl/typedoc-plugin-versions",
+    "typedoc-plugin-include-example",
+    "typedoc-plugin-mermaid",
+  ],
+  "navigationLinks": {
+    "GitHub": "https://github.com/mateothegreat/svelte5-router"
+  },
+  "sidebarLinks": {
+    "GitHub": "https://github.com/mateothegreat/svelte5-router"
+  },
+  "headings": {
+    "readme": false,
+    "document": false
+  },
+  "versions": {
+    "makeRelativeLinks": true,
+    "stable": "0.3.1",
+    "prerelease": "0.3.2-alpha.0"
+  },
+  "validation": {
+    "notExported": false,
+    "invalidLink": false,
+    "rewrittenLink": false,
+    "notDocumented": false,
+    "unusedMergeModuleWith": false
+  },
+  "navigation": {
+    "includeCategories": true
+  },
+  "categorizeByGroup": false,
+  "categoryOrder": [
+    "actions",
+    "components",
+    "hooks",
+    "utilities"
+  ],
+  "visibilityFilters": {
+    "protected": true,
+    "private": true,
+    "inherited": true,
+    "external": false,
+    "@alpha": true,
+    "@beta": true
+  },
+  "useFirstParagraphOfCommentAsSummary": true,
+  "commentStyle": "all",
+  "blockTags": [
+    "@defaultValue",
+    "@deprecated",
+    "@example",
+    "@param",
+    "@privateRemarks",
+    "@remarks",
+    "@returns",
+    "@see",
+    "@throws",
+    "@typeParam",
+    "@author",
+    "@callback",
+    "@category",
+    "@categoryDescription",
+    "@default",
+    "@document",
+    "@extends",
+    "@augments",
+    "@yields",
+    "@group",
+    "@groupDescription",
+    "@import",
+    "@inheritDoc",
+    "@jsx",
+    "@license",
+    "@module",
+    "@mergeModuleWith",
+    "@prop",
+    "@property",
+    "@return",
+    "@satisfies",
+    "@since",
+    "@template",
+    "@type",
+    "@typedef",
+    "@summary",
+    "@optional",
+    "@source"
+  ],
+  "highlightLanguages": [
+    "typescript",
+    "javascript",
+    "svelte"
+  ],
+  "modifierTags": [
+    "@alpha",
+    "@beta",
+    "@experimental"
+  ],
+  "groupReferencesByType": false,
+  "includeVersion": true
+}

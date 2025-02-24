@@ -4,6 +4,9 @@ import { type Route } from "./route.svelte";
 
 /**
  * The handlers type that is used when registering a router instance.
+ *
+ * This is used to restore the original history methods when the last instance is destroyed
+ * and to register & unregister the event listeners for the router instances to prevent memory leaks.
  */
 export type RouterHandlers = {
   /**
@@ -23,12 +26,12 @@ export type RouterHandlers = {
 }
 
 /**
- * Holds the original history methods and the instances of the router.
+ * Handles the dynamic registration and unregistration of router instances.
  *
- * This is used to restore the original history methods when the last instance is destroyed
- * and to register & unregister the event listeners for the router instances to prevent memory leaks.
+ * @remarks
+ * This is a singleton and should not be instantiated directly.
  */
-class routerRegistry {
+export class Registry {
   /**
    * The original pushState method.
    */
@@ -57,8 +60,8 @@ class routerRegistry {
    * Register a new router instance.
    *
    * @param {Instance} instance The instance to register.
-   *
-   * @returns {Object} The handlers for the router instance.
+   * @see {@link unregister}: The opposite of this method.
+   * @returns The handlers for the router instance.
    */
   register(instance: Instance): RouterHandlers {
     const handlers = {
@@ -110,19 +113,27 @@ class routerRegistry {
    * @returns {Promise<void>}
    */
   private async handleStateChange(instanceId: string, path: string): Promise<void> {
+
+    /**
+     * Reset the active state for all routes so that we can
+     * re-evaluate the active state for the current route downstream.
+     */
+    this.resetActive();
+
     if (this.processingQueue.has(instanceId)) {
       return;
     }
 
-    // Add the instance to the processing queue:
+    /**
+     * Add the instance to the processing queue so that we can
+     * prevent multiple state changes from happening at the same time.
+     */
     this.processingQueue.add(instanceId);
 
     try {
       const entry = this.instances.get(instanceId);
-
       if (entry) {
-        const route = entry.instance.get(path);
-        await entry.instance.onStateChange(route);
+        entry.instance.onStateChange(entry.instance.get(path));
       }
     } finally {
       this.processingQueue.delete(instanceId);
@@ -178,8 +189,8 @@ class routerRegistry {
    */
   get(path: string): Route | undefined {
     for (const [_, entry] of this.instances) {
-      if (entry.instance.current) {
-        if (entry.instance.current.test(path)) {
+      if (entry.instance.current && entry.instance.current.test) {
+        if (entry.instance.current.test(path, entry.instance.config.basePath)) {
           return entry.instance.current;
         }
       }
@@ -187,19 +198,18 @@ class routerRegistry {
   }
 
   /**
-   * Clear the active classes for all instances.
+   * Reset the active state for all routes.
    *
-   * This is called when a route has changed and we need to clear
-   * the active classes activated previously.
+   * This is called when a route has changed and we need to reset
+   * the active state for all routes.
    *
    * @returns {void}
    */
-  clearActiveClasses(): void {
+  resetActive(): void {
     for (const [_, entry] of this.instances) {
-      for (let route of entry.instance.config.routes) {
-        console.log("clearing", route.path, route.active());
-        // route.setActive(false);
-      }
+      entry.instance.config.routes.filter(route => route.active).forEach(route => {
+        route.active = false;
+      });
     }
   }
 };
@@ -212,7 +222,5 @@ class routerRegistry {
  *
  * This is a singleton and should not be instantiated directly and should
  * never be accessed outside of the scope of this package in most cases.
- *
- * @type {routerRegistry}
  */
-export const RouterRegistry = new routerRegistry();
+export const registry = new Registry();

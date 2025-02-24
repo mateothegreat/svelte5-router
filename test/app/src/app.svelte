@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Instance, Route } from "@mateothegreat/svelte5-router";
   import { active, goto, route, Router } from "@mateothegreat/svelte5-router";
-  import { RouterRegistry } from "@mateothegreat/svelte5-router/registry.svelte";
+  import { registry } from "@mateothegreat/svelte5-router/registry.svelte";
   import { Github, Home } from "lucide-svelte";
   import { myDefaultRouteConfig } from "./lib/common-stuff";
   import Default from "./lib/default.svelte";
@@ -126,7 +126,7 @@
           <Home />
         </a>
       </div>
-      <table class="divide-y divide-gray-800 text-xs text-gray-500">
+      <table class="divide-y divide-gray-800 bg-gray-900 text-xs text-gray-500">
         <thead>
           <tr>
             <th class="px-3 py-2 text-left font-medium tracking-wider text-gray-600">PROPERTY</th>
@@ -137,13 +137,19 @@
           <tr>
             <td class="px-3 py-2 text-indigo-500">Active Routers</td>
             <td class="px-3 py-2 text-indigo-500">
-              {RouterRegistry.instances.size}
+              {registry.instances.size}
             </td>
           </tr>
           <tr>
             <td class="px-3 py-2">`instance.current`</td>
             <td class="px-3 py-2 text-pink-500">
               {instance.current.path}
+            </td>
+          </tr>
+          <tr>
+            <td class="px-3 py-2">`instance.current.params`</td>
+            <td class="px-3 py-2 text-pink-500">
+              {JSON.stringify(instance.current.params)}
             </td>
           </tr>
           <tr>
