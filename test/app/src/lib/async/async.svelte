@@ -1,11 +1,6 @@
 <script lang="ts">
   import { route, Router, type Route } from "@mateothegreat/svelte5-router";
-  import { onMount } from "svelte";
   import { myDefaultRouteConfig } from "../common-stuff";
-
-  onMount(() => {
-    console.log("async child.svelte", "onMount");
-  });
 
   const routes: Route[] = [
     {
@@ -13,7 +8,6 @@
       component: async () => import("./child.svelte")
     },
     {
-      path: "",
       component: snippet
     }
   ];

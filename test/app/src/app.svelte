@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Route, RouterInstance } from "@mateothegreat/svelte5-router";
-  import { active, route, Router } from "@mateothegreat/svelte5-router";
+  import { active, goto, route, Router } from "@mateothegreat/svelte5-router";
   import { registry } from "@mateothegreat/svelte5-router/registry.svelte";
   import { Github, Home as HomeIcon } from "lucide-svelte";
   import { myDefaultRouteConfig } from "./lib/common-stuff";
@@ -8,31 +8,44 @@
   import Home from "./lib/home.svelte";
   import Nested from "./lib/nested/nested.svelte";
   import NotFound from "./lib/not-found.svelte";
-  import Params from "./lib/params/params.svelte";
   import Props from "./lib/props/props.svelte";
   import Protected from "./lib/protected/protected.svelte";
   import QueryRedirect from "./lib/query/query-redirect.svelte";
 
   const routes: Route[] = [
+    // Example of a route that redirects to the home route:
     {
+      path: "",
+      hooks: {
+        pre: () => {
+          goto("/home");
+        }
+      }
+    },
+    {
+      // Notice how no `path` is provided.
+      // This means that this route will be the default route.
+      path: /(?:^$|home)/,
       component: Home,
       // Use an async pre hook to simulate a protected route:
-      pre: async (route: Route): Promise<boolean> => {
-        console.log("pre hook #1 fired for route");
-        return true;
-      },
-      post: [
-        // This is a post hook that will be executed after the route is resolved:
-        (route: Route): boolean => {
-          console.log("post hook #1 fired for route");
+      hooks: {
+        pre: async (route: Route): Promise<boolean> => {
+          console.log("pre hook #1 fired for route");
           return true;
         },
-        // This is an async post hook that will be executed after the route is resolved:
-        async (route: Route): Promise<boolean> => {
-          console.log("post hook #2 (async) fired for route");
-          return true;
-        }
-      ]
+        post: [
+          // This is a post hook that will be executed after the route is resolved:
+          (route: Route): boolean => {
+            console.log("post hook #1 fired for route");
+            return true;
+          },
+          // This is an async post hook that will be executed after the route is resolved:
+          async (route: Route): Promise<boolean> => {
+            console.log("post hook #2 (async) fired for route");
+            return true;
+          }
+        ]
+      }
     },
     {
       path: "nested",
@@ -45,28 +58,20 @@
     {
       path: "delayed",
       component: Delayed,
-      pre: async (route: Route): Promise<boolean> => {
-        // Simulate a network delay by returning a promise that resolves after 1.5 seconds:
-        return new Promise((resolve) =>
-          setTimeout(() => {
-            resolve(true);
-          }, 1000)
-        );
-      }
-    },
-    {
-      path: "props",
-      component: Props,
-      props: {
-        myProp: {
-          date: new Date(),
-          name: "mateothegreat"
+      hooks: {
+        pre: async (route: Route): Promise<boolean> => {
+          // Simulate a network delay by returning a promise that resolves after 1.5 seconds:
+          return new Promise((resolve) =>
+            setTimeout(() => {
+              resolve(true);
+            }, 1000)
+          );
         }
       }
     },
     {
-      path: "params",
-      component: Params
+      path: "props",
+      component: Props
     },
     {
       path: "protected",
@@ -75,11 +80,6 @@
     {
       path: "query-redirect",
       component: QueryRedirect
-    },
-    {
-      path: "not-found",
-      component: NotFound,
-      status: 404
     }
   ];
 
@@ -158,6 +158,12 @@
       /
     </a>
     <a
+      use:route={myDefaultRouteConfig}
+      href="/props"
+      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
+      /props
+    </a>
+    <a
       use:route
       use:active={{ active: { class: "bg-red-500" } }}
       href="/nested"
@@ -169,18 +175,6 @@
       href="/async"
       class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
       /async
-    </a>
-    <a
-      use:route={myDefaultRouteConfig}
-      href="/props"
-      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
-      /props
-    </a>
-    <a
-      use:route={myDefaultRouteConfig}
-      href="/params"
-      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
-      /params
     </a>
     <a
       use:route={myDefaultRouteConfig}
@@ -202,9 +196,9 @@
     </a>
     <a
       use:route={myDefaultRouteConfig}
-      href="/not-found"
+      href="/doesnt-exist"
       class="py-1hover:bg-pink-800 rounded bg-slate-600 px-3 py-1">
-      /not-found
+      /doesnt-exist
     </a>
   </div>
   <div class=" w-full flex-1 bg-zinc-900 p-6">
@@ -215,8 +209,12 @@
         bind:instance
         {routes}
         basePath="/"
-        pre={globalAuthGuardHook}
-        notFoundComponent={NotFound} />
+        hooks={{
+          pre: globalAuthGuardHook
+        }}
+        statuses={{
+          404: NotFound
+        }} />
     </div>
   </div>
 </div>

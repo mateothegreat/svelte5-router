@@ -88,18 +88,15 @@ export class Route {
   props?: Record<string, any>;
 
   /**
-   * The pre hooks to run before the route is rendered.
+   * Hooks to be run before and after the routes are rendered
+   * at the router level (independent of the route hooks if applicable).
    *
-   * @optional If no value is provided, no pre hooks will be executed for this specific route.
+   * @optional If no value is provided, no hooks will be run.
    */
-  pre?: PreHooks;
-
-  /**
-   * The post hooks to run after the route is rendered.
-   *
-   * @optional If no value is provided, no post hooks will be executed for this specific route.
-   */
-  post?: PostHooks;
+  hooks?: {
+    pre?: PreHooks;
+    post?: PostHooks;
+  };
 
   /**
    * The children routes of the route.
@@ -140,6 +137,13 @@ export class Route {
   params?: string[] | Record<string, string>;
 
   /**
+   * The query params of the route.
+   *
+   * @optional If no value is provided, there are no query params.
+   */
+  query?: Record<string, string>;
+
+  /**
    * The remaining path of the route.
    *
    * @optional If no value is provided, there is no remaining path.
@@ -176,8 +180,7 @@ export class Route {
     this.path = route.path;
     this.component = route.component;
     this.props = route.props;
-    this.pre = route.pre;
-    this.post = route.post;
+    this.hooks = route.hooks;
     this.status = route.status;
     this.children = route.children?.map(child => new Route(child));
   }

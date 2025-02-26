@@ -23,24 +23,19 @@ export class RouterInstanceConfig {
 
   /**
    * The routes for the router instance.
-   *
-   * @type {Route[]}
    */
-  routes: Route[] = [];
+  routes: Route[];
 
   /**
-   * The pre hooks for the router instance.
+   * Hooks to be run before and after the routes are rendered
+   * at the router level (independent of the route hooks if applicable).
    *
-   * @optional If no value is provided, no pre hooks will be run.
+   * @optional If no value is provided, no hooks will be run.
    */
-  pre?: PreHooks;
-
-  /**
-   * The post hooks for the router instance.
-   *
-   * @optional If no value is provided, no post hooks will be run.
-   */
-  post?: PostHooks;
+  hooks?: {
+    pre?: PreHooks;
+    post?: PostHooks;
+  };
 
   /**
    * The initial path for the router instance.
@@ -55,7 +50,7 @@ export class RouterInstanceConfig {
    * @optional If no value is provided and no route could be found,
    * the router will will not render anything.
    */
-  notFoundComponent?: Component;
+  notFoundComponent?: Component<any>;
 
   /**
    * The children for the router instance.
@@ -65,6 +60,16 @@ export class RouterInstanceConfig {
   children?: Route[];
 
   /**
+   * The default components rendered when a route is not found and
+   * the status code is in one of the following:
+   * 400, 401, 403, 404, 500
+   * @optional If no value is provided, the default components will not be rendered.
+   */
+  statuses?: Partial<{
+    [K in 400 | 401 | 403 | 404 | 500]: Component<any>;
+  }> = {};
+
+  /**
    * The constructor for this router instance.
    *
    * @param {RouterInstanceConfig} config The config for this router instance.
@@ -72,20 +77,23 @@ export class RouterInstanceConfig {
   constructor(config: RouterInstanceConfig) {
     this.id = config.id || Math.random().toString(36).substring(2, 15);
     this.basePath = config.basePath;
-    this.pre = config.pre;
-    this.post = config.post;
+    this.hooks = config.hooks;
     this.initialPath = config.initialPath;
     this.notFoundComponent = config.notFoundComponent;
+    this.statuses = config.statuses;
 
     /**
      * For safety, determine if the routes are already instances of the Route class
      * and if not, create a new instance of the Route class:
      */
-    for (let route of config.routes) {
-      if (route instanceof Route) {
-        this.routes.push(route);
-      } else {
-        this.routes.push(new Route(new Route(route)));
+    if (config.routes) {
+      this.routes = [];
+      for (let route of config.routes) {
+        if (route instanceof Route) {
+          this.routes.push(route);
+        } else {
+          this.routes.push(new Route(new Route(route)));
+        }
       }
     }
   }

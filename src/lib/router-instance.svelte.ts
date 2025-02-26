@@ -37,6 +37,12 @@ export class RouterInstance {
   navigating = $state(false);
   current = $state<Route>();
 
+  /**
+   * The constructor for the RouterInstance class.
+   *
+   * @param {RouterInstanceConfig} config The config for the router instance.
+   * @param {ApplyFn} applyFn The apply function for the router instance.
+   */
   constructor(config: RouterInstanceConfig, applyFn: ApplyFn) {
     this.config = config;
     this.routes = new Set();
@@ -55,8 +61,6 @@ export class RouterInstance {
     for (let route of config.routes) {
       this.routes.add(route);
     }
-
-    // this.handleStateChange(location.pathname);
   }
 
   /**
@@ -64,26 +68,24 @@ export class RouterInstance {
    * the duration of the state change. This is to prevent multiple state changes from
    * happening at the same time.
    *
-   * @param {string} instanceId The id of the instance to handle the state change for.
    * @param {string} path The path to handle the state change for.
-   *
-   * @returns {Promise<void>}
    */
   async handleStateChange(path: string): Promise<void> {
     const route = this.get(path.replace(this.config.basePath || "/", ""));
+    console.log("handleStateChange", path, route);
     if (route) {
       this.navigating = true;
 
       // Run the global pre hooks:
-      if (this.config.pre) {
-        if (!(await this.evaluateHooks(route, this.config.pre))) {
+      if (this.config.hooks?.pre) {
+        if (!(await this.evaluateHooks(route, this.config.hooks.pre))) {
           return;
         }
       }
 
       // Run the route specific pre hooks:
-      if (route.pre) {
-        if (!(await this.evaluateHooks(route, route.pre))) {
+      if (route.hooks?.pre) {
+        if (!(await this.evaluateHooks(route, route.hooks.pre))) {
           return;
         }
       }
@@ -91,15 +93,15 @@ export class RouterInstance {
       this.applyFn(route);
 
       // Run the route specific post hooks:
-      if (route && route.post) {
-        if (!(await this.evaluateHooks(route, route.post))) {
+      if (route && route.hooks?.post) {
+        if (!(await this.evaluateHooks(route, route.hooks.post))) {
           return;
         }
       }
 
       // Finally, run the global post hooks:
-      if (this.config.post) {
-        await this.evaluateHooks(route, this.config.post)
+      if (this.config.hooks?.post) {
+        await this.evaluateHooks(route, this.config.hooks.post);
       }
 
       this.current = route;
@@ -182,23 +184,50 @@ export class RouterInstance {
    * @returns {RegistryMatch} The matched route for the given path.
    */
   get(path: string): Route {
-    if (path === "") {
+    let query: Record<string, string> | undefined = undefined;
+    if (window.location.search) {
+      query = Object.fromEntries(new URLSearchParams(window.location.search));
+    }
+
+    // If the path is empty, return the default route:
+    if (path.length === 0) {
       const defaultRoute = this.getDefaultRoute();
       if (defaultRoute) {
-        return defaultRoute;
+        return {
+          ...defaultRoute,
+          props: {
+            path,
+            query
+          }
+        };
       }
     }
 
-    // First check for exact route matches
+    // Run `test()` on each route to see if it matches the path:
     for (const route of this.routes) {
       const match = route.test(normalize(path));
+      console.log("match", match?.params);
       if (match) {
         return {
-          ...route,
-          params: match.params,
-          path: match.path
+          component: route.component,
+          params: match?.params ? match.params : undefined,
+          props: route.props,
+          path,
+          query
         };
       }
+    }
+
+    // No route matches, try to return a 404 route:
+    if (this.config.statuses?.[404]) {
+      return {
+        component: this.config.statuses[404],
+        props: {
+          path,
+          query
+        },
+        status: 404
+      };
     }
   }
 }
