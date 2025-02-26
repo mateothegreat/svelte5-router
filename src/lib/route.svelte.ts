@@ -1,7 +1,6 @@
 import type { Component, Snippet } from "svelte";
 
 import type { PostHooks, PreHooks } from "./hooks";
-import { normalizePath } from "./paths";
 
 /**
  * The result of a route being matched.
@@ -30,18 +29,13 @@ export type Routeable = {
    *
    */
   path: RegExp | string | number;
+
   /**
    * The params of the route.
    *
    * @optional If no value is provided, there are no params that could be extracted from the path.
    */
   params?: string[] | Record<string, string>;
-  /**
-   * The remaining path of the route.
-   *
-   * @optional If no value is provided, there is no remaining path.
-   */
-  remaining?: string;
 };
 
 /**
@@ -189,15 +183,10 @@ export class Route {
   }
 
   /**
-   * Test if the route matches the given path.
-   * @param path The path to test against the route.
-   * @param basePath The base path of the route.
+   * Parse the route against the given path.
+   * @param path The path to parse against the route.
    */
-  test?(path: RegExp | string | number, basePath?: string): Routeable {
-    if (basePath === "/params" && this.path) {
-      // console.log("testing", path, basePath, this.path);
-
-    };
+  test?(path: RegExp | string | number): Routeable {
     const pathStr = path.toString();
     const segments = pathStr.split('/').filter(Boolean);
     // Handle string paths
@@ -209,76 +198,39 @@ export class Route {
         if (match) {
           return {
             path: this.path,
-            params: match.groups || match.slice(1),
-            remaining: segments.slice(match.length).join('/')
+            params: match.groups || match.slice(1)
           };
         }
       } else {
         // Path is not a regex, so we then check if the path passed in is a direct match:
-        // const routePath = this.path.toString().replace(/^\/|\/$/g, '');
-        const routePath = normalizePath(this.path);
+        const routePath = this.path;
         if (routePath === pathStr) {
           return {
-            path: this.path,
-            params: {},
-            remaining: segments.slice(1).join('/')
+            path: this.path
           };
-        }
-        // console.log(basePath, this.path, normalizePath(this.path), normalizePath(segments[0]));
-        if (normalizePath(this.path) === normalizePath(segments[0])) {
+        } else if (this.path === segments[0]) {
           const remainingSegments = segments.slice(1);
-          // console.log("left with final effort", path, this.path, pathStr, routePath, remainingSegments);
           return {
             path: this.path,
-            params: remainingSegments,
-            remaining: remainingSegments.length
-              ? '/' + remainingSegments.join('/')
-              : '/'
+            params: remainingSegments
           };
         }
       }
-
-      // Handle possible regex routes:
-
-      // // Check if this route matches the first segment(s)
-      // const isMatch = routeSegments.every((segment, i) => segment === segments[i]);
-
-      // if (isMatch) {
-      //   // If we have children and there are remaining segments, check children
-      //   if (this.children && segments.length > routeSegments.length) {
-      //     const remainingPath = '/' + segments.slice(routeSegments.length).join('/');
-      //     return this.children.some(child => child.test?.(remainingPath));
-      //   }
-      //   return true;
-      // } else {
-      //   console.log("no match", this.path, pathStr, routePath, routeSegments, segments, isMatch);
-      // }
     }
     // Handle RegExp paths
     else if (this.path instanceof RegExp) {
-      if (basePath === "/params") {
-        // console.log("asdfasdfasdfsdtesting", path, basePath, this.path);
-      }
       const match = this.path.exec(pathStr);
-      // console.log("matsdfch", match);
       if (match) {
         return {
           path: this.path.toString(),
           params: match.groups || match.slice(1),
-          // remainingPath: segments.slice(routeSegments.length).join('/')
         };
       }
-      // // Check children if no direct match
-      // if (this.children) {
-      //   return this.children.some(child => child.test?.(path));
-      // }
     }
     // Handle numeric paths
     else if (typeof this.path === 'number' && this.path === path) {
       return {
         path: this.path.toString(),
-        params: {},
-        // remainingPath: segments.slice(routeSegments.length).join('/')
       };
     }
   }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Instance, route, type Route } from "@mateothegreat/svelte5-router";
+  import { RouterInstance, route, type Route } from "@mateothegreat/svelte5-router";
   import Router from "@mateothegreat/svelte5-router/router.svelte";
   import { myDefaultRouteConfig } from "../common-stuff";
   import DisplayParams from "./display-params.svelte";
@@ -20,7 +20,7 @@
     }
   ];
 
-  let instance = $state<Instance>(null);
+  let instance = $state<RouterInstance>();
 </script>
 
 {#snippet snippet()}

@@ -11,3 +11,5 @@ export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<
  * @category hooks
  */
 export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<void>)[] | ((route: Route) => void) | ((route: Route) => Promise<void>);
+
+export type Hooks = PreHooks | PostHooks;

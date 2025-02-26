@@ -9,7 +9,6 @@
       component: Level_2
     },
     {
-      path: "",
       component: snippet
     }
   ];

@@ -1,4 +1,3 @@
-import { registry } from "../registry.svelte";
 
 /**
  * Options for the route action.
@@ -50,8 +49,6 @@ export function route(node: HTMLAnchorElement, options: RouteOptions = {}) {
   const handleClick = (event: Event) => {
     event.preventDefault();
     window.history.pushState({}, "", node.href);
-    const route = registry.get(new URL(node.href).pathname);
-    // route.active = true;
     applyActiveClass();
   };
 

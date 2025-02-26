@@ -1,39 +1,50 @@
 <script lang="ts">
-  import { onMount, type Component } from "svelte";
-  import { Instance, InstanceConfig } from "./instance.svelte";
-  import { normalize } from "./paths";
-  import { registry, type RegistryMatch } from "./registry.svelte";
+  import { onDestroy, onMount, type Component } from "svelte";
+  import { log } from "./logger";
+  import { registry } from "./registry.svelte";
+  import type { Route } from "./route.svelte";
+  import { RouterInstanceConfig } from "./router-instance-config";
+  import type { RouterInstance } from "./router-instance.svelte";
 
   let { instance = $bindable(), ...rest } = $props<
-    { instance?: Instance } & InstanceConfig
+    { instance?: RouterInstance } & RouterInstanceConfig
   >();
 
   let RenderableComponent = $state<Component | null>(null);
   let params: any = $state(null);
+  let r: RouterInstance;
 
-  const apply = async (match: RegistryMatch) => {
+  const apply = async (route: Route) => {
+    log.debug(r.config.id, "apply", route);
     if (
-      typeof match.route.component === "function" &&
-      match.route.component.constructor.name === "AsyncFunction"
+      typeof route.component === "function" &&
+      route.component.constructor.name === "AsyncFunction"
     ) {
       // Handle async component - await the import
-      const module = await match.route.component();
+      const module = await route.component();
       RenderableComponent = module.default || module;
     } else {
       // Handle regular component
-      RenderableComponent = match.route.component;
+      RenderableComponent = route.component;
     }
 
-    if (match.route.params) {
-      params = match.route.params;
+    if (route.params) {
+      params = route.params;
     }
   };
 
-  const router = new Instance(rest.basePath, new InstanceConfig(rest), apply);
-  const r = registry.register(router);
+  r = registry.register(new RouterInstanceConfig(rest), apply);
 
   onMount(() => {
-    r.navigate(normalize(location.pathname.replace(rest.basePath || "/", "")));
+    if (r) {
+      r.handleStateChange(location.pathname);
+    }
+  });
+
+  onDestroy(() => {
+    if (r) {
+      r.unregister();
+    }
   });
 </script>
 

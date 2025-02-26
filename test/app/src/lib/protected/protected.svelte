@@ -5,12 +5,11 @@
   import BankAccount from "./bank-account.svelte";
   import Denied from "./denied.svelte";
   import Login from "./login.svelte";
-  import Logout from "./logout.svelte";
 </script>
 
 {#snippet snippet()}
   <div class="flex flex-col gap-3 bg-gray-400 p-4">
-    Some default stuff here.. <br />
+    Some default stuff here..oh, and I'm a snippet! <br />
     Click login!
   </div>
 {/snippet}
@@ -49,13 +48,11 @@
         {
           component: snippet,
           pre: () => {
-            console.log("pre hook #1 fired for route");
-          },
-          post: () => {
             if (getLoggedIn()) {
               console.log("redirecting to bankaccount");
               goto("/protected/bankaccount");
             }
+            return true;
           }
         },
         {
@@ -69,13 +66,11 @@
         },
         {
           path: "/logout",
-          component: Logout,
           pre: () => {
             localStorage.removeItem("token");
-          },
-          post: () => {
             setLoggedIn(false);
             goto("/protected");
+            return true;
           }
         },
         {
