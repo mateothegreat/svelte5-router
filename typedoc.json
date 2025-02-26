@@ -1,13 +1,17 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "out": "build",
+  "out": "tmp/build",
   "entryPoints": [
-    "../src/lib/index.ts",
+    "./src/lib/index.ts",
   ],
   "exclude": [
     "**/*+(.spec|.e2e).ts"
   ],
-  "cleanOutputDir": false,
+  "externalPattern": [
+    "**/*.md"
+  ],
+  "readme": "docs/readme.md",
+  "cleanOutputDir": true,
   "hideGenerator": true,
   "githubPages": false,
   "searchInComments": true,
@@ -16,9 +20,8 @@
     "typedoc-github-theme",
     "typedoc-plugin-inline-sources",
     "typedoc-plugin-extras",
-    "@shipgirl/typedoc-plugin-versions",
     "typedoc-plugin-include-example",
-    "typedoc-plugin-mermaid",
+    "typedoc-plugin-mermaid"
   ],
   "navigationLinks": {
     "GitHub": "https://github.com/mateothegreat/svelte5-router"
@@ -29,11 +32,6 @@
   "headings": {
     "readme": false,
     "document": false
-  },
-  "versions": {
-    "makeRelativeLinks": true,
-    "stable": "0.3.1",
-    "prerelease": "0.3.2-alpha.0"
   },
   "validation": {
     "notExported": false,

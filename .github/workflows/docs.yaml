@@ -1,32 +1,28 @@
-name: "Publish documentation"
+name: publish api docs
 on:
   push:
     branches:
-      - "main"
+      - main
 jobs:
   publish-documentation:
     permissions:
-      id-token: "write"
-      pages: "write"
+      id-token: write
+      pages: write
     environment:
-      name: "github-pages"
-      url: "${{ steps.deployment.outputs.page_url }}"
-    runs-on: "ubuntu-latest"
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
     steps:
-      - id: "checkout"
-        name: "Check out Git repository"
-        uses: "actions/checkout@v4"
-      - id: "install-dependencies"
-        name: "Install Node.js dependencies"
+      - name: Check out repo
+        uses: actions/checkout@v4
+      - name: Install Node.js dependencies
         run: npm install
-      - id: "build"
-        name: "Build documentation"
-        run: npm run docs
-      - id: "upload-documentation"
-        name: "Upload Pages artifact"
-        uses: "actions/upload-pages-artifact@v3.0.1"
+      - name: Build documentation
+        run: npm run docs:build
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3.0.1
         with:
-          path: "tmp/typedoc"
-      - id: "deployment"
-        name: "Deploy documentation to GitHub Pages"
-        uses: "actions/deploy-pages@v4.0.5"
+          path: tmp/build
+      - id: deployment
+        name: Deploy documentation to GitHub Pages
+        uses: actions/deploy-pages@v4.0.5

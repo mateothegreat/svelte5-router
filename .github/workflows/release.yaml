@@ -5,7 +5,7 @@ on:
       - test
     branches:
       - main
-name: Tag & Publish
+name: release
 permissions:
   contents: write
   packages: write
