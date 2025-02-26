@@ -1,4 +1,4 @@
-import type { Component, Snippet } from 'svelte';
+uimport type { Component, Snippet } from 'svelte';
 
 import { logger } from './logger';
 import { RouterRegistry } from './registry';

@@ -15,7 +15,7 @@
 
   // Derive navigating state from instance.navigating so that
   // the parent component can bind to it.
-  let navigating = $derived(instance.navigating);
+  let navigating = $derived(instance.navillgating);
 
   // Initialize the instance
   instance = new Instance(
