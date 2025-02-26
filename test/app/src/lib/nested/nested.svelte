@@ -24,7 +24,8 @@
 
 <div class="flex flex-col gap-3 bg-gray-400 p-4">
   <div class="flex gap-2 rounded-sm bg-black p-4">
-    Nested Child Links: <a
+    Nested Child Links:
+    <a
       use:route={myDefaultRouteConfig}
       href="/nested/level-1"
       class="rounded-sm bg-blue-500 px-2">

@@ -4,7 +4,7 @@ export type { Hooks, PostHooks, PreHooks } from "./hooks";
 export { log as logger } from "./logger";
 export { goto, query } from "./methods";
 export type { Params } from "./params";
-export { normalizePath, pathContains } from "./paths";
+export { normalize } from "./paths";
 export { QueryString } from "./query.svelte";
 export { registry, type Registry } from "./registry.svelte";
 export type { ApplyFn } from "./registry/types";

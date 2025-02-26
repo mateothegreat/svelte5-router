@@ -123,11 +123,12 @@ export class RouterInstance {
         component: route.component,
         status: route.status,
         params: route.params,
+        props: route.props,
         query,
         name: route.name,
         path: {
-          before: route.path,
-          after: path,
+          before: route.path?.toString(),
+          after: path
         },
       });
 
@@ -198,11 +199,8 @@ export class RouterInstance {
     for (const route of this.routes) {
       const match = route.test(normalize(path));
       if (match) {
-        return {
-          ...route,
-          params: match?.params ? match.params : undefined,
-          path: match.path.toString(),
-        };
+        route.params = match?.params ? match.params : undefined;
+        return route;
       }
     }
 

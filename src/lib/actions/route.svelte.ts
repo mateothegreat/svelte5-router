@@ -1,18 +1,6 @@
+import { normalize } from "../paths";
 
-/**
- * Options for the route action.
- */
-export type RouteOptions = {
-  /**
-   * When the route is active, these options are applied.
-   */
-  active?: {
-    /**
-     * The css class(es) to add when route is active.
-     */
-    class?: string;
-  };
-};
+import type { RouteOptions } from "./options";
 
 /**
  * Svelte action to handle routing with optional active state.
@@ -30,16 +18,23 @@ export type RouteOptions = {
  * @category actions
  * @includeExample test/app/src/app.svelte:185-190
  * @source
- * @document ../../../docs/foo.md
  */
-export function route(node: HTMLAnchorElement, options: RouteOptions = {}) {
+export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
   const applyActiveClass = () => {
-    // const route = registry.get(new URL(node.href).pathname);
-    // if (route?.active) {
-    //   node.classList.add(options.active?.class);
-    // } else {
-    //   node.classList.remove(options.active?.class);
-    // }
+    const path = normalize(new URL(node.href).pathname);
+    if (path === location.pathname || location.pathname.startsWith(path)) {
+      if (Array.isArray(options.active?.class)) {
+        node.classList.add(...options.active?.class);
+      } else {
+        node.classList.add(options.active?.class);
+      }
+    } else {
+      if (Array.isArray(options.active?.class)) {
+        node.classList.remove(...options.active?.class);
+      } else {
+        node.classList.remove(options.active?.class);
+      }
+    }
   };
 
   /**
@@ -49,20 +44,16 @@ export function route(node: HTMLAnchorElement, options: RouteOptions = {}) {
   const handleClick = (event: Event) => {
     event.preventDefault();
     window.history.pushState({}, "", node.href);
-    applyActiveClass();
   };
 
   applyActiveClass();
 
   node.addEventListener("click", handleClick);
-
-  $effect(() => {
-    applyActiveClass();
-  });
-
+  window.addEventListener("pushState", applyActiveClass);
   return {
     destroy() {
       node.removeEventListener("click", handleClick);
+      window.removeEventListener("pushState", applyActiveClass);
     },
   };
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, onMount, type Component } from "svelte";
+  import { onDestroy, type Component } from "svelte";
   import { registry } from "./registry.svelte";
   import type { Route } from "./route.svelte";
   import { RouterInstanceConfig } from "./router-instance-config";
@@ -29,10 +29,7 @@
   };
 
   router = registry.register(new RouterInstanceConfig(rest), apply);
-
-  onMount(() => {
-    router.handleStateChange(location.pathname);
-  });
+  router.handleStateChange(location.pathname);
 
   onDestroy(() => {
     router.unregister();

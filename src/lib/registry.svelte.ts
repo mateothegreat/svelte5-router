@@ -22,7 +22,7 @@ export class Registry {
     if ((window as any).__SVELTE_SPA_ROUTER_REGISTERED__) {
       return (window as any).__SVELTE_SPA_ROUTER_REGISTERED__;
     }
-    (window as any).__SVELTE_SPA_ROUTER_REGISTERED__ = 1;
+    (window as any).__SVELTE_SPA_ROUTER_REGISTERED__ = this;
 
     const { pushState, replaceState } = window.history;
 
@@ -46,13 +46,12 @@ export class Registry {
    * @see {@link unregister}: The opposite of this method.
    */
   register(config: RouterInstanceConfig, applyFn: ApplyFn): RouterInstance {
-    // Prevent duplicate registration
     if (this.instances.has(config.id)) {
-      return;
+      throw new Error(`Router instance with id ${config.id} already registered`);
     }
 
-    const registry = new RouterInstance(config, applyFn);
-    this.instances.set(config.id, registry);
+    const instance = new RouterInstance(config, applyFn);
+    this.instances.set(config.id, instance);
 
     /**
      * This allows us to log when we're in debug mode otherwise
@@ -60,12 +59,14 @@ export class Registry {
      */
     if (import.meta.env.SPA_ROUTER?.logLevel === "debug") {
       log.debug(config.id, "registered router instance", {
+        id: config.id,
         routes: config.routes.length,
-        registries: this.instances.size
+        registries: this.instances.size,
+        basePath: config.basePath
       });
     }
 
-    return registry;
+    return instance;
   }
 
   /**
@@ -74,7 +75,16 @@ export class Registry {
    * @param {string} id The id of the instance to unregister.
    */
   unregister(id: string): void {
-    this.instances.delete(id);
+    const instance = this.instances.get(id);
+    if (instance) {
+      if (import.meta.env.SPA_ROUTER?.logLevel === "debug") {
+        log.debug(id, "unregistered router instance", {
+          id: id,
+          routes: instance.config.routes.length
+        });
+      }
+      this.instances.delete(id);
+    }
   }
 }
 

@@ -105,7 +105,7 @@
   // Here you could check if the user is logged in or perform some other
   // authentication checks:
   const globalAuthGuardHook = async (route: Route): Promise<boolean> => {
-    console.warn("globalAuthGuardHook");
+    console.warn("globalAuthGuardHook", route);
     // Return true so that the route can continue down its evaluation path.
     return true;
   };
@@ -179,14 +179,14 @@
       /props
     </a>
     <a
-      use:route
-      use:active={{ active: { class: "bg-red-500" } }}
+      use:route={myDefaultRouteConfig}
       href="/nested"
       class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
       /nested
     </a>
     <a
-      use:route={myDefaultRouteConfig}
+      use:route
+      use:active={{ active: { class: "bg-pink-500" } }}
       href="/async"
       class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
       /async

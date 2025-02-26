@@ -8,10 +8,17 @@ import type { PostHooks, PreHooks } from "./hooks";
  * @example
  * ```ts
  * {
- *   name: "user-home-page",
- *   path: "/users/:id",
- *   params: { id: "123" },
- *   remaining: "/posts"
+ *   name: "props-page-boop",
+ *   params: {
+ *     child: "bar"
+ *   },
+ *   query: {
+ *     someQueryParam: "123"
+ *   },
+ *   path: {
+ *     before: "/\\/(?<child>.*)/",
+ *     after: "/props/bar"
+ *   }
  * }
  * ```
  */
@@ -28,7 +35,10 @@ export class Routed {
    * The path of the route to match against the current path.
    *
    */
-  path: RegExp | string | number;
+  path: RegExp | string | number | {
+    before: RegExp | string | number;
+    after: string;
+  };
 
   /**
    * The params of the route.
@@ -219,10 +229,8 @@ export class Route {
             path: this.path
           });
         } else if (this.path === segments[0]) {
-          const remainingSegments = segments.slice(1);
           return new Routed({
             path: this.path,
-            params: remainingSegments
           });
         }
       }

@@ -23,12 +23,6 @@
 {/snippet}
 
 <div class="flex flex-col gap-3 bg-gray-400 p-4">
-  <a
-    use:route={myDefaultRouteConfig}
-    href="/nested/level-1"
-    class="rounded-sm bg-slate-900 p-2 text-center text-xs text-green-500">
-    /nested/level-1
-  </a>
   <div class="flex gap-2 rounded-sm bg-black p-4">
     Level-1 Children Links: <a
       use:route={myDefaultRouteConfig}
@@ -40,6 +34,7 @@
 
   <div class="rounded-sm bg-black p-4 shadow-xl">
     <Router
+      id="/nested/level-1"
       basePath="/nested/level-1"
       {routes} />
   </div>

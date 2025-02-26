@@ -26,12 +26,6 @@
   <div class="flex gap-2 rounded-sm bg-black p-4">
     <a
       use:route={myDefaultRouteConfig}
-      href="/async"
-      class="rounded-sm bg-blue-500 px-2">
-      /async
-    </a>
-    <a
-      use:route={myDefaultRouteConfig}
       href="/async/child"
       class="rounded-sm bg-blue-500 px-2">
       /async/child

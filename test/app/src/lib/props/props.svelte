@@ -7,6 +7,7 @@
   const routes: Route[] = [
     {
       // This route will be used if there is no match above.
+      name: "props-default-snippet",
       component: snippet
     },
     {
@@ -15,12 +16,14 @@
       //
       // The component will access the params using $props() and the
       // property "child" will contain the value extracted from the path.
+      name: "props-fancy-regex",
       path: /\/(?<child>.*)/,
       component: DisplayParams,
       props: {
+        randomId: Math.random().toString(36).substring(2, 15),
         someUserStuff: {
-          id: 123,
-          username: "mateothegreat"
+          username: "mateothegreat",
+          userAgent: navigator.userAgent
         }
       }
     }
@@ -40,7 +43,8 @@
   <p class="rounded-sm bg-black p-2 text-center text-xs text-green-500">params.svelte</p>
   <p class="rounded-sm p-2 text-sm text-black">This demo shows how to use the `params` prop to pass the pattern groups from the current route to a component.</p>
   <div class="flex gap-2 rounded-sm bg-black p-4">
-    Children Routes: <a
+    Children Routes:
+    <a
       use:route={myDefaultRouteConfig}
       href="/props/foo"
       class="rounded-sm bg-blue-500 px-2">
