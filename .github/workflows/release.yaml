@@ -1,9 +1,7 @@
 on:
   push:
-    paths-ignore:
-      - "docs/**"
-      - "test/**"
-      - package.json
+    paths:
+      - "src/**"
     branches:
       - main
 name: release
