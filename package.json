@@ -3,10 +3,10 @@
   "version": "0.3.2",
   "type": "module",
   "license": "MIT",
-  "types": "./dist/router.svelte.d.ts",
-  "exports": "./dist/index.ts",
+  "types": "./router.svelte.d.ts",
+  "exports": "./index.ts",
   "files": [
-    "dist"
+    "."
   ],
   "readme": "readme.md",
   "repository": {
@@ -21,7 +21,7 @@
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "build": "svelte-package && cp readme.md package.json dist",
-    "release": "svelte-package && cp package.json dist/package.json && cd dist && npm publish --access public"
+    "release": "npm run check && rm -rf dist; npm version from-git && cp -r src/lib dist && cp package.json dist"
   },
   "devDependencies": {
     "@tsconfig/svelte": "^5.0.4",
