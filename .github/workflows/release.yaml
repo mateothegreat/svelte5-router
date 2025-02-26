@@ -37,7 +37,7 @@ jobs:
           config: cliff.toml
           args: -vv --latest --strip header
         env:
-          OUTPUT: docs/changelog.md
+          OUTPUT: tmp/changelog.md
           GITHUB_REPO: ${{ github.repository }}
       - name: bump version and push tag
         id: tag
@@ -52,6 +52,11 @@ jobs:
           git remote set-url origin https://x-access-token:${{ steps.app.outputs.token }}@github.com/${{ github.repository }}.git
       - name: npm version
         run: npm version ${{ steps.tag.outputs.new_tag }} --force
+      - name: concat changelogs
+        run: |
+          cat ${{ steps.git-cliff.outputs.changelog }} > tmp/new_changelog.md
+          cat docs/changelog.md >> tmp/new_changelog.md
+          mv tmp/new_changelog.md docs/changelog.md
       - name: commit
         run: |
           git add docs/changelog.md package.json

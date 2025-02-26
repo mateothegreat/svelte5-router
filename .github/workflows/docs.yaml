@@ -1,6 +1,9 @@
 name: publish api docs
 on:
   push:
+    paths:
+      - "docs/**"
+      - "src/**"
     branches:
       - main
 jobs:
