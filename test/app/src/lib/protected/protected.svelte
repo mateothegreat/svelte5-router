@@ -47,12 +47,14 @@
       routes={[
         {
           component: snippet,
-          pre: () => {
-            if (getLoggedIn()) {
-              console.log("redirecting to bankaccount");
-              goto("/protected/bankaccount");
+          hooks: {
+            pre: () => {
+              if (getLoggedIn()) {
+                console.log("redirecting to bankaccount");
+                goto("/protected/bankaccount");
+              }
+              return true;
             }
-            return true;
           }
         },
         {
@@ -62,15 +64,19 @@
         {
           path: "/bankaccount",
           component: BankAccount,
-          pre: authGuard
+          hooks: {
+            pre: authGuard
+          }
         },
         {
           path: "/logout",
-          pre: () => {
-            localStorage.removeItem("token");
-            setLoggedIn(false);
-            goto("/protected");
-            return true;
+          hooks: {
+            pre: () => {
+              localStorage.removeItem("token");
+              setLoggedIn(false);
+              goto("/protected");
+              return true;
+            }
           }
         },
         {

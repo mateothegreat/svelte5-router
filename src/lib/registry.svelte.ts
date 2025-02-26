@@ -6,14 +6,14 @@ import { ReactiveMap } from "./utilities.svelte";
 import type { ApplyFn } from './registry/types';
 
 /**
- * Handles the dynamic registration and unregistration of router instances.
+ * Handles the dynamic registration and deregistration of router instances.
  *
  * @remarks
  * This is a singleton and should not be instantiated directly.
  */
 export class Registry {
   /**
-   * The instances of the router.
+   * Container for router instances.
    */
   instances = new ReactiveMap<string, RouterInstance>();
 

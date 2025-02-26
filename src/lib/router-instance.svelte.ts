@@ -99,6 +99,11 @@ export class RouterInstance {
     if (route) {
       this.navigating = true;
 
+      let query: Record<string, string> | undefined = undefined;
+      if (window.location.search) {
+        query = Object.fromEntries(new URLSearchParams(window.location.search));
+      }
+
       // Run the global pre hooks:
       if (this.config.hooks?.pre) {
         if (!(await this.evaluateHooks(route, this.config.hooks.pre))) {
@@ -113,13 +118,17 @@ export class RouterInstance {
         }
       }
 
+      // Call the downstream router instance to apply the route:
       this.applyFn({
         component: route.component,
         status: route.status,
         params: route.params,
-        query: route.query,
+        query,
         name: route.name,
-        path: route.path,
+        path: {
+          before: route.path,
+          after: path,
+        },
       });
 
       // Run the route specific post hooks:
@@ -168,21 +177,6 @@ export class RouterInstance {
   }
 
   /**
-   * Retrieve a route for a given status code.
-   *
-   * @param {number} status The status code to get the route for.
-   *
-   * @returns {RegistryMatch} The matched route for the given status code.
-   */
-  getByStatus(status: number): Route {
-    for (const route of this.routes) {
-      if (route.status === status) {
-        return route;
-      }
-    }
-  }
-
-  /**
    * Retrieve a route for a given path.
    *
    * @param {string} path The path to get the route for.
@@ -190,21 +184,12 @@ export class RouterInstance {
    * @returns {RegistryMatch} The matched route for the given path.
    */
   get(path: string): Route {
-    let query: Record<string, string> | undefined = undefined;
-    if (window.location.search) {
-      query = Object.fromEntries(new URLSearchParams(window.location.search));
-    }
-
     // If the path is empty, return the default route:
     if (path.length === 0) {
       const defaultRoute = this.getDefaultRoute();
       if (defaultRoute) {
         return {
           ...defaultRoute,
-          props: {
-            path,
-            query
-          }
         };
       }
     }
@@ -216,9 +201,7 @@ export class RouterInstance {
         return {
           ...route,
           params: match?.params ? match.params : undefined,
-          props: route.props,
           path: match.path.toString(),
-          query
         };
       }
     }
@@ -227,11 +210,6 @@ export class RouterInstance {
     if (this.config.statuses?.[404]) {
       return {
         component: this.config.statuses[404],
-        props: {
-          path,
-          query
-        },
-        status: 404
       };
     }
   }

@@ -75,7 +75,10 @@ export class Route {
    * @optional If not provided, the route will match any path
    * as it will be the default route.
    */
-  path?: RegExp | string | number;
+  path?: RegExp | string | number | {
+    before: RegExp | string | number;
+    after: string;
+  };
 
   /**
    * The component to render when the route is active.
