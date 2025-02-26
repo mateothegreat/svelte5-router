@@ -45,12 +45,9 @@ jobs:
           dry_run: true
       - name: configure git
         run: |
-          git config --global credential.helper store
-          git config --global http.https://github.com/.extraheader "AUTHORIZATION: basic ${{ steps.app.outputs.token }}"
           git config --global user.name "svelte5-router[bot]"
           git config --global user.email "svelte5-router[bot]@users.noreply.github.com"
-          git remote set-url origin https://github.com/${{ github.repository }}.git
-          # test git credentials
+          git remote set-url origin https://${{ steps.app.outputs.token }}@github.com/${{ github.repository }}.git
           git fetch
           git pull
       - name: npm version
