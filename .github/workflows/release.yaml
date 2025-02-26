@@ -1,8 +1,8 @@
 on:
   push:
     paths-ignore:
-      - docs
-      - test
+      - docs/**/*
+      - test/**/*
       - package.json
     branches:
       - main
