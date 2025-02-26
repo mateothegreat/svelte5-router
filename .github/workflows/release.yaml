@@ -34,9 +34,6 @@ jobs:
         with:
           config: cliff.toml
           args: -vv --latest --strip header
-        env:
-          OUTPUT: docs/changelog.md
-          GITHUB_REPO: ${{ github.repository }}
       - name: bump version and push tag
         id: tag
         uses: mathieudutour/github-tag-action@v6.2
