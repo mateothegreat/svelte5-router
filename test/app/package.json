@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "test-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
-  "dependencies": {
+  "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tailwindcss/oxide": "^4.0.8",
     "@tailwindcss/postcss": "^4.0.8",
@@ -25,9 +25,7 @@
     "typescript": "^5.7.3",
     "vite": "^6.1.1",
     "vite-tsconfig-paths": "^5.1.4",
-    "zimmerframe": "^1.1.2"
-  },
-  "devDependencies": {
+    "zimmerframe": "^1.1.2",
     "@tailwindcss/vite": "^4.0.8"
   }
 }
