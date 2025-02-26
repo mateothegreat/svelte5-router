@@ -33,3 +33,31 @@ export const pathContains = (path: string, route: Route) => {
 
   return true;
 }
+
+/**
+ * Normalize a path to ensure it starts with a slash.
+ *
+ * @param {string} path The path to normalize.
+ * @returns {string} The normalized path.
+ */
+export const normalize = (path: string) => {
+  if (path && !path.startsWith("/")) {
+    path = "/" + path;
+  }
+  return path;
+}
+
+export const segment = (path: string) => {
+  const segments = path.split('/').filter(Boolean);
+  return segments.map(segment => normalize(segment));
+}
+
+export const test = (matcher: RegExp | string | number, path: string) => {
+  if (typeof matcher === "string") {
+    return normalize(matcher) === normalize(path);
+  }
+
+  if (matcher instanceof RegExp) {
+    return matcher.test(path);
+  }
+}

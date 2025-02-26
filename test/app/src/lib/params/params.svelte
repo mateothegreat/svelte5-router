@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { Instance, route, Router, type Route } from "@mateothegreat/svelte5-router";
+  import { Instance, route, type Route } from "@mateothegreat/svelte5-router";
+  import Router from "@mateothegreat/svelte5-router/router.svelte";
   import { myDefaultRouteConfig } from "../common-stuff";
   import DisplayParams from "./display-params.svelte";
 
-  let { params } = $props();
   const routes: Route[] = [
     {
       // This route will be used if there is no match above.
@@ -25,6 +25,7 @@
 
 {#snippet snippet()}
   <div class="flex flex-col gap-3 bg-indigo-500 p-4">
+    <strong>Click on a link above to see the params --^</strong>
     Click on a link above to see the params --^
     <em>Oh, and i'm a snippet that was rendered because I am the default route.</em>
   </div>
@@ -58,8 +59,9 @@
          engine knows to use this router instance for routes that
          start with "/params". -->
     <Router
-      bind:instance
+      id="params-top-level-router"
       basePath="/params"
-      {routes} />
+      {routes}
+      bind:instance />
   </div>
 </div>

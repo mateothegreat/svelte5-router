@@ -35,12 +35,12 @@ export type RouteOptions = {
  */
 export function route(node: HTMLAnchorElement, options: RouteOptions = {}) {
   const applyActiveClass = () => {
-    const route = registry.get(new URL(node.href).pathname);
-    if (route?.active) {
-      node.classList.add(options.active?.class);
-    } else {
-      node.classList.remove(options.active?.class);
-    }
+    // const route = registry.get(new URL(node.href).pathname);
+    // if (route?.active) {
+    //   node.classList.add(options.active?.class);
+    // } else {
+    //   node.classList.remove(options.active?.class);
+    // }
   };
 
   /**
@@ -51,7 +51,7 @@ export function route(node: HTMLAnchorElement, options: RouteOptions = {}) {
     event.preventDefault();
     window.history.pushState({}, "", node.href);
     const route = registry.get(new URL(node.href).pathname);
-    route.active = true;
+    // route.active = true;
     applyActiveClass();
   };
 
@@ -68,8 +68,4 @@ export function route(node: HTMLAnchorElement, options: RouteOptions = {}) {
       node.removeEventListener("click", handleClick);
     },
   };
-}
-
-export function random(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min)) + min;
 }

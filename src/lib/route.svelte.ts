@@ -1,7 +1,6 @@
 import type { Component, Snippet } from "svelte";
 
 import type { PostHooks, PreHooks } from "./hooks";
-import type { Instance } from "./instance.svelte";
 import { normalizePath } from "./paths";
 
 /**
@@ -22,7 +21,6 @@ export type Routeable = {
    * The unique identifier of this route.
    * This is useful if you need to track routes outside of the router's scope.
    *
-   * @type {string | number}
    * @optional If no value is provided, the route will not have a name.
    */
   name?: string | number;
@@ -30,20 +28,17 @@ export type Routeable = {
   /**
    * The path of the route to match against the current path.
    *
-   * @type {RegExp | string | number}
    */
   path: RegExp | string | number;
   /**
    * The params of the route.
    *
-   * @type {string[] | Record<string, string>}
    * @optional If no value is provided, there are no params that could be extracted from the path.
    */
   params?: string[] | Record<string, string>;
   /**
    * The remaining path of the route.
    *
-   * @type {string}
    * @optional If no value is provided, there is no remaining path.
    */
   remaining?: string;
@@ -69,7 +64,6 @@ export class Route {
    * The unique identifier of this route.
    * This is useful if you need to track routes outside of the router's scope.
    *
-   * @type {string | number}
    * @optional If no value is provided, the route will not have a name.
    */
   name?: string | number;
@@ -86,7 +80,6 @@ export class Route {
   /**
    * The component to render when the route is active.
    *
-   * @type {Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any}
    * @optional If no value is provided, the route will not render a component.
    * This is useful if you want to use pre or post hooks to render a component
    * or snippet conditionally.
@@ -96,7 +89,6 @@ export class Route {
   /**
    * The props to pass to the component.
    *
-   * @type {Record<string, any>}
    * @optional If a value is provided, the component will receive this value in $props().
    */
   props?: Record<string, any>;
@@ -104,16 +96,14 @@ export class Route {
   /**
    * The pre hooks to run before the route is rendered.
    *
-   * @type {PreHooks}
-   * @optional If no value is provided, no pre hooks will be run.
+   * @optional If no value is provided, no pre hooks will be executed for this specific route.
    */
   pre?: PreHooks;
 
   /**
    * The post hooks to run after the route is rendered.
    *
-   * @type {PostHooks}
-   * @optional If no value is provided, no post hooks will be run.
+   * @optional If no value is provided, no post hooks will be executed for this specific route.
    */
   post?: PostHooks;
 
@@ -123,6 +113,11 @@ export class Route {
    * This is useful if you want to be declarative about the routes that are direct
    * children of this route and not depend on the router to determine the children
    * when there are multiple <Router/> instances.
+   *
+   *
+   * @optional If no value is provided, there are no direct child routes. Routes may
+   * be mapped to children routes by the router when there are multiple <Router/> instances
+   * with overlapping `basePath` values.
    *
    * @example
    * ```ts
@@ -140,16 +135,12 @@ export class Route {
    *   ...
    * ]
    * ```
-   *
-   * @type {Route[]} An array of routes that are direct children of this route.
-   * @optional If no value is provided, there are no direct child routes.
    */
   children?: Route[];
 
   /**
    * The params of the route.
    *
-   * @type {string[] | Record<string, string>}
    * @optional If no value is provided, there are no params that could be extracted from the path.
    */
   params?: string[] | Record<string, string>;
@@ -173,22 +164,17 @@ export class Route {
 
   /**
    * The active state of the route.
-   *
-   * @type {boolean}
-   * @private This is used internally to track the active state of the route.
    */
-  active? = $state(false);
+  // active? = $state(false);
 
   /**
    * The route instance.
-   *
-   * @type {Instance}
-   * @private This is used internally to track the route instance.
    */
-  #instance?: Instance;
+  // #instance?: Instance;
 
   /**
    * The constructor for the `Route` class.
+   *
    * @param {Route} route An instance of the `Route` class.
    */
   constructor(route: Route) {
@@ -198,17 +184,20 @@ export class Route {
     this.props = route.props;
     this.pre = route.pre;
     this.post = route.post;
+    this.status = route.status;
     this.children = route.children?.map(child => new Route(child));
   }
 
   /**
    * Test if the route matches the given path.
-   * @param {RegExp | string | number} path The path to test against the route.
-   * @param {string} basePath The base path of the route.
-   * @optional If no value is provided, the route will match any path.
-   * @returns {boolean} True if the route matches the given path, false otherwise.
+   * @param path The path to test against the route.
+   * @param basePath The base path of the route.
    */
   test?(path: RegExp | string | number, basePath?: string): Routeable {
+    if (basePath === "/params" && this.path) {
+      // console.log("testing", path, basePath, this.path);
+
+    };
     const pathStr = path.toString();
     const segments = pathStr.split('/').filter(Boolean);
     // Handle string paths
@@ -235,11 +224,10 @@ export class Route {
             remaining: segments.slice(1).join('/')
           };
         }
-        console.log(basePath, this.path, normalizePath(this.path), normalizePath(segments[0]));
-        // console.log(this.path, normalizePath(this.path), normalizePath(segments[0]));
+        // console.log(basePath, this.path, normalizePath(this.path), normalizePath(segments[0]));
         if (normalizePath(this.path) === normalizePath(segments[0])) {
           const remainingSegments = segments.slice(1);
-          console.log("left with final effort", path, this.path, pathStr, routePath, remainingSegments);
+          // console.log("left with final effort", path, this.path, pathStr, routePath, remainingSegments);
           return {
             path: this.path,
             params: remainingSegments,
@@ -268,7 +256,11 @@ export class Route {
     }
     // Handle RegExp paths
     else if (this.path instanceof RegExp) {
+      if (basePath === "/params") {
+        // console.log("asdfasdfasdfsdtesting", path, basePath, this.path);
+      }
       const match = this.path.exec(pathStr);
+      // console.log("matsdfch", match);
       if (match) {
         return {
           path: this.path.toString(),

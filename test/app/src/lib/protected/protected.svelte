@@ -9,7 +9,10 @@
 </script>
 
 {#snippet snippet()}
-  <div class="flex flex-col gap-3 bg-gray-400 p-4">Some default stuff here.. <br />Click login!</div>
+  <div class="flex flex-col gap-3 bg-gray-400 p-4">
+    Some default stuff here.. <br />
+    Click login!
+  </div>
 {/snippet}
 
 <div class="flex flex-col gap-3 bg-gray-400 p-4">
@@ -17,17 +20,44 @@
   <div class="flex gap-2 rounded-sm bg-black p-4">
     Links:
     {#if !getLoggedIn()}
-      <a use:route href="/protected/login" class="rounded-sm bg-green-500 px-2">Login</a>
-      <a use:route href="/protected/bankaccount" class="rounded-sm bg-red-500 px-2">View My Bank Account (will fail)</a>
+      <a
+        use:route
+        href="/protected/login"
+        class="rounded-sm bg-green-500 px-2">
+        Login
+      </a>
+      <a
+        use:route
+        href="/protected/bankaccount"
+        class="rounded-sm bg-red-500 px-2">
+        View My Bank Account (will fail)
+      </a>
     {/if}
     {#if getLoggedIn()}
-      <a use:route href="/protected/logout" class="rounded-sm bg-red-500 px-2">Logout</a>
+      <a
+        use:route
+        href="/protected/logout"
+        class="rounded-sm bg-red-500 px-2">
+        Logout
+      </a>
     {/if}
   </div>
   <div class="rounded-sm bg-black p-4 shadow-xl">
     <Router
       basePath="/protected"
       routes={[
+        {
+          component: snippet,
+          pre: () => {
+            console.log("pre hook #1 fired for route");
+          },
+          post: () => {
+            if (getLoggedIn()) {
+              console.log("redirecting to bankaccount");
+              goto("/protected/bankaccount");
+            }
+          }
+        },
         {
           path: "/login",
           component: Login
@@ -51,16 +81,6 @@
         {
           path: "/denied",
           component: Denied
-        },
-        {
-          path: "",
-          component: snippet,
-          post: () => {
-            if (getLoggedIn()) {
-              console.log("redirecting to bankaccount");
-              goto("/protected/bankaccount");
-            }
-          }
         }
       ]} />
   </div>

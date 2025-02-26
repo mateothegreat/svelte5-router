@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Debug App",
+      "url": "http://localhost:5173/params/one",
+      "webRoot": "${workspaceFolder}/src",
+      "sourceMapPathOverrides": {
+        "webpack:///./src/*": "${webRoot}/*"
+      },
+      "runtimeArgs": [
+        "--remote-debugging-port=9222"
+      ],
+      "sourceMaps": true
+    }
+  ]
+}

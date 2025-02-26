@@ -1,28 +1,15 @@
 import { type Instance } from "./instance.svelte";
-import { logger } from "./logger";
+import { log } from "./logger";
 import { type Route } from "./route.svelte";
+import type Router from "./router.svelte";
 
-/**
- * The handlers type that is used when registering a router instance.
- *
- * This is used to restore the original history methods when the last instance is destroyed
- * and to register & unregister the event listeners for the router instances to prevent memory leaks.
- */
-export type RouterHandlers = {
-  /**
-   * The handler for the pushState event.
-   */
-  pushStateHandler: () => void,
+import { RegistryInstance } from "./registry/registry-instance";
 
-  /**
-   * The handler for the replaceState event.
-   */
-  replaceStateHandler: () => void,
-
-  /**
-   * The handler for the popState event.
-   */
-  popStateHandler: () => void
+export type RegistryMatch = {
+  registry: RegistryInstance;
+  router: Router;
+  instance: Instance;
+  route: Route;
 }
 
 /**
@@ -45,16 +32,11 @@ export class Registry {
   /**
    * The instances of the router.
    */
-  instances = new Map<string, {
-    instance: Instance,
-    handlers: RouterHandlers,
-    children: Set<string>
-  }>();
-
-  /**
-   * The processing queue for the router instances.
-   */
-  private processingQueue: Set<string> = new Set();
+  instances = new Map<string, RegistryInstance>();
+  parentChildMap = new Map<string, Set<string>>();
+  private processingPaths = new Set<string>();
+  private processingDepth = 0;
+  private MAX_DEPTH = 3;
 
   /**
    * Register a new router instance.
@@ -63,156 +45,284 @@ export class Registry {
    * @see {@link unregister}: The opposite of this method.
    * @returns The handlers for the router instance.
    */
-  register(instance: Instance): RouterHandlers {
-    const handlers = {
-      pushStateHandler: () => this.handleStateChange(instance.id, location.pathname),
-      replaceStateHandler: () => this.handleStateChange(instance.id, location.pathname),
-      popStateHandler: () => this.handleStateChange(instance.id, location.pathname)
-    };
-
-    this.instances.set(instance.id, {
-      instance,
-      handlers,
-      children: new Set()
-    });
-
-    /**
-     * Register parent-child relationship
-     */
-    if (instance.config.basePath) {
-      for (const [id, entry] of this.instances) {
-        const parentBasePath = entry.instance.config.basePath || '';
-        if (instance.config.basePath.startsWith(parentBasePath) && instance.id !== id) {
-          entry.children.add(instance.id);
-          break;
-        }
-      }
+  register(instance: Instance): RegistryInstance {
+    // Prevent duplicate registration
+    if (this.instances.has(instance.id)) {
+      return;
     }
+
+    const registry = new RegistryInstance(instance);
+    this.instances.set(instance.id, registry);
 
     /**
      * This allows us to log when we're in debug mode otherwise
      * this statement is removed by the compiler (tree-shaking):
      */
     if (import.meta.env.SPA_ROUTER?.logLevel === "debug") {
-      logger.debug(instance.id, "registered router instance", {
+      log.debug(instance.id, "registered router instance", {
         count: this.instances.size
       });
     }
 
-    return handlers;
+    return registry;
   }
 
-  /**
-   * Handle a state change event by adding the instance to the processing queue for
-   * the duration of the state change. This is to prevent multiple state changes from
-   * happening at the same time.
-   *
-   * @param {string} instanceId The id of the instance to handle the state change for.
-   * @param {string} path The path to handle the state change for.
-   *
-   * @returns {Promise<void>}
-   */
-  private async handleStateChange(instanceId: string, path: string): Promise<void> {
-
-    /**
-     * Reset the active state for all routes so that we can
-     * re-evaluate the active state for the current route downstream.
-     */
-    this.resetActive();
-
-    if (this.processingQueue.has(instanceId)) {
-      return;
-    }
-
-    /**
-     * Add the instance to the processing queue so that we can
-     * prevent multiple state changes from happening at the same time.
-     */
-    this.processingQueue.add(instanceId);
-
-    try {
-      const entry = this.instances.get(instanceId);
-      if (entry) {
-        entry.instance.onStateChange(entry.instance.get(path));
-      }
-    } finally {
-      this.processingQueue.delete(instanceId);
+  navigate(path: string): void {
+    const route = this.get(path);
+    if (route) {
+      route.instance.applyFn(route);
+    } else {
+      // console.log("navigate() -----> no route found for path", path);
+      // const noRoute = this.getEqualMatch(path);
+      // if (noRoute) {
+      //   noRoute.instance.applyFn(noRoute.route);
+      // }
     }
   }
 
   /**
-   * Unregister a router instance by removing it from the registry and
-   * restoring the original history methods.
+   * Retrieve a route for a given path.
    *
-   * This is called when a router instance is removed from the DOM
-   * triggered by the `onDestroy` lifecycle method of the router instance.
+   * This will traverse all registered router instances and return the first match.
    *
-   * @param {string} id The id of the instance to unregister.
-   *
-   * @returns {void}
-   */
-  unregister(id: string): void {
-    const entry = this.instances.get(id);
-    if (entry) {
-      // Remove this instance as a child from any parent
-      for (const [_, parentEntry] of this.instances) {
-        parentEntry.children.delete(id);
-      }
-
-      window.removeEventListener("pushState", entry.handlers.pushStateHandler);
-      window.removeEventListener("replaceState", entry.handlers.replaceStateHandler);
-      window.removeEventListener("popstate", entry.handlers.popStateHandler);
-
-      this.instances.delete(id);
-
-      // This allows us to log when we're in debug mode otherwise
-      // this statement is removed by the compiler (tree-shaking):
-      if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
-        logger.debug(id, "unregistered router instance", {
-          remainingInstances: this.instances.size
-        });
-      }
-    }
-
-    if (this.instances.size === 0) {
-      window.history.pushState = this.pushState;
-      window.history.replaceState = this.replaceState;
-    }
-  }
-
-  /**
-   * Get the route for a given path.
+   * @todo This is potentially a hack to wait for the routers to be registered.
+   *       We should find a better way to handle this.
    *
    * @param {string} path The path to get the route for.
    *
    * @returns {Route | undefined} The route for the given path.
    */
-  get(path: string): Route | undefined {
-    for (const [_, entry] of this.instances) {
-      if (entry.instance.current && entry.instance.current.test) {
-        if (entry.instance.current.test(path, entry.instance.config.basePath)) {
-          return entry.instance.current;
+  get(path: string): RegistryMatch | undefined {
+    // Prevent deep recursion and duplicate path processing
+    if (this.processingPaths.has(path) || this.processingDepth >= this.MAX_DEPTH) {
+      throw new Error(`Preventing recursive routing for path: ${path}`);
+    }
+
+    console.warn("get() -----> path", path);
+
+    try {
+      this.processingPaths.add(path);
+      this.processingDepth++;
+
+      for (const [id, registry] of this.instances) {
+        // Skip if this instance is already processing a route
+        // if (registry.processing) continue;
+
+        // registry.processing = true;
+        try {
+          const route = this.findBestMatch(registry, path);
+          console.warn("get() -----> route", path, route);
+          if (route) {
+            return {
+              registry,
+              router: registry.router,
+              instance: registry.instance,
+              ...route
+            };
+          }
+        } finally {
+          // registry.processing = false;
+        }
+      }
+
+      return undefined;
+    } finally {
+      this.processingPaths.delete(path);
+      this.processingDepth--;
+    }
+  }
+
+  // private findMatch(instance: RegistryInstance, path: string): RegistryMatch | undefined {
+  //   console.warn("findMatch() -----> instance", instance.instance.id, instance);
+  //   for (let route of instance.routes) {
+  //     if (path === "/") {
+  //       if (!route.path) {
+  //         return {
+  //           router: instance.router,
+  //           instance: instance.instance,
+  //           route,
+  //           depth: 0
+  //         };
+  //       }
+  //     } else {
+  //       let matches = 0;
+  //       const segments = segment(path);
+  //       const tomatch = new Array(segments.length);
+  //       for (let i = 0; i < segments.length; i++) {
+  //         const normalized = normalize(segments[i]);
+  //         console.log("testing:", route.path, normalized, test(normalize(route.path), normalized));
+
+  //         if (test(normalize(route.path), normalized)) {
+  //           matches++;
+  //           tomatch[i] = segments[i];
+  //           console.log("234findmatch() -----> returning route", {
+  //             router: instance.router,
+  //             instance: instance.instance,
+  //             ...route,
+  //             depth: matches
+  //           }, instance.instance.id, matches, segments.length, tomatch, route);
+  //           return {
+  //             router: instance.router,
+  //             instance: instance.instance,
+  //             route,
+  //             depth: matches
+  //           };
+  //         }
+
+  //         // if (test(normalize(route.path), normalized)) {
+  //         //   matches++;
+  //         //   tomatch[i] = segments[i];
+  //         // }
+  //       }
+  //       if (matches === (tomatch.length)) {
+  //         console.log("findmatch() -----> returning route", instance.instance.id, matches, segments.length, tomatch, route);
+  //         // return {
+  //         //   router: instance.router,
+  //         //   instance: instance.instance,
+  //         //   route,
+  //         //   depth: matches
+  //         // };
+  //       }
+  //     }
+  //   }
+
+  //   throw new Error("No route found for path: " + path);
+  // }
+
+  getByBasePath(path: string): RegistryMatch {
+    for (const [id, registry] of this.instances) {
+      if (registry.instance.config.basePath === path) {
+        return {
+          registry,
+          router: registry.router,
+          instance: registry.instance,
+          route: registry.routes.values().next().value
+        };
+      }
+    }
+  }
+
+  getDefaultRoute(path: string): RegistryMatch {
+    for (const [id, registry] of this.instances) {
+      if (registry.instance.config.basePath === path) {
+        for (const route of registry.routes) {
+          if (!route.path) {
+            return {
+              registry,
+              router: registry.router,
+              instance: registry.instance,
+              route
+            };
+          }
         }
       }
     }
   }
 
   /**
-   * Reset the active state for all routes.
+   * This method finds the best match for a given path by traversing all registered router instances
+   * and returning the first match.
    *
-   * This is called when a route has changed and we need to reset
-   * the active state for all routes.
+   * It first starts from the most specific route and works its down up to the least specific route.
    *
-   * @returns {void}
+   * @param {RegistryInstance} registry The instance to find the match for.
+   * @param {string} path The path to find the match for.
+   *
+   * @returns {Route | undefined} The route for the given path.
    */
-  resetActive(): void {
-    for (const [_, entry] of this.instances) {
-      entry.instance.config.routes.filter(route => route.active).forEach(route => {
-        route.active = false;
-      });
-    }
+  private findBestMatch(registry: RegistryInstance, path: string): RegistryMatch | undefined {
+    // Guard against invalid inputs
+    // if (!registry || !path) return undefined;
+
+    // Normalize the path and split into segments
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    const segments = normalizedPath.split('/').filter(Boolean);
+
+    // Track matched paths to prevent loops
+    const matchStack = new Set<string>();
+
+    const findMatch = (
+      currentInstance: RegistryInstance,
+      remainingSegments: string[],
+      depth: number = 0,
+      basePath: string = ''
+    ): RegistryMatch | undefined => {
+      // Guard against deep recursion
+      if (depth > 10) {
+        console.warn('Maximum route nesting depth exceeded');
+        return undefined;
+      }
+
+      // Build current path to check
+      const currentPath = `/${remainingSegments.join('/')}`;
+      const fullPath = basePath + currentPath;
+
+      // Prevent processing same path twice
+      if (matchStack.has(fullPath)) return undefined;
+      matchStack.add(fullPath);
+
+      try {
+        // Check if current instance can handle this path
+        for (const route of currentInstance.routes) {
+          const match = route.test(currentPath, basePath);
+          if (match) {
+            // Found a match at this level
+            return {
+              registry: currentInstance,
+              router: currentInstance.router,
+              instance: currentInstance.instance,
+              route: {
+                ...route,
+                params: match.params,
+                path: match.path
+              }
+            };
+          }
+        }
+
+        // If no exact match found, look for default route
+        const defaultRoute = this.getDefaultRoute(currentPath);
+        console.warn("findMatch() -----> defaultRoute", currentInstance.instance.id, defaultRoute);
+        if (defaultRoute) {
+          return {
+            registry: currentInstance,
+            router: currentInstance.router,
+            instance: currentInstance.instance,
+            route: {
+              ...defaultRoute,
+              params: {},
+              path: currentPath
+            }
+          };
+        }
+
+        // If no match found, look for child routers that might handle remaining segments
+        for (const [id, childInstance] of this.instances) {
+          if (childInstance === currentInstance) continue;
+          console.warn("findMatch() -----> childInstance", childInstance.instance.id, childInstance.instance.responsible, basePath + currentPath);
+
+          // Check if this is a child router for current path
+          if (childInstance.instance.responsible?.startsWith(basePath + currentPath)) {
+            console.warn("recursing-----> childInstance", childInstance.instance.id, childInstance.instance.responsible, basePath + currentPath);
+            const childMatch = findMatch(
+              childInstance,
+              remainingSegments.slice(1),
+              depth + 1,
+              basePath + currentPath
+            );
+            if (childMatch) return childMatch;
+          }
+        }
+
+        // return findNoPathPresent(currentInstance);
+      } finally {
+        matchStack.delete(fullPath);
+      }
+    };
+
+    return findMatch(registry, segments);
   }
-};
+}
 
 /**
  * Expose a reference to the registry of router instances.

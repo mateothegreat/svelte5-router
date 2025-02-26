@@ -1,15 +1,21 @@
 import { type Component } from 'svelte';
 
 import type { PostHooks, PreHooks } from './hooks';
-import { logger } from './logger';
-import { normalizePath } from './paths';
-import { registry } from './registry.svelte';
+import { type RegistryMatch } from './registry.svelte';
 import { Route } from './route.svelte';
+import type Router from './router.svelte';
 
 /**
  * The configuration for a router instance.
  */
 export class InstanceConfig {
+  /**
+   * The id for the router instance.
+   *
+   * @optional If no value is provided, the id will be a random string of characters.
+   */
+  id?: string;
+
   /**
    * The base path for the router instance.
    *
@@ -66,6 +72,7 @@ export class InstanceConfig {
    * @param {InstanceConfig} config The config for this router instance.
    */
   constructor(config: InstanceConfig) {
+    this.id = config.id;
     this.basePath = config.basePath;
     this.pre = config.pre;
     this.post = config.post;
@@ -115,20 +122,22 @@ export class Instance {
   /**
    * The unique identifier for the router instance.
    *
-   * @type {string}
-   *
+   * @source
    * @default Defaults to a random string of characters.
    */
-  id = Math.random().toString(36).substring(2, 15);
+  id: string;
+
+  /**
+   * The router component that this instance belongs to.
+   */
+  router: Router;
 
   /**
    * The current route having been set when a route has been navigated to.
    *
-   * @type {Route}
-   *
-   * @default null
+   * @note Initially null when the router instance is created.
    */
-  current = $state<Route>(null);
+  // current = $state<Route>(null);
 
   /**
    * Whether the router is navigating to a new route.
@@ -146,31 +155,43 @@ export class Instance {
   config: InstanceConfig;
 
   /**
+   * The function to apply to the route.
+   */
+  applyFn: (match: RegistryMatch) => void;
+
+  /**
+   * The responsible for this router instance.
+   */
+  responsible: string;
+
+  /**
    * Creates a new router instance.
    *
    * @param {InstanceConfig} config The configuration for this router instance.
    */
-  constructor(config: InstanceConfig) {
+  constructor(responsible: string, config: InstanceConfig, applyFn: (match: RegistryMatch) => void) {
     this.config = config;
+    this.id = config.id || Math.random().toString(36).substring(2, 15);
+    this.applyFn = applyFn;
+    this.responsible = responsible;
 
-    /**
-     * If a current path is provided, find the route that matches the `initialPath`
-     * and set the current route to that route.
-     *
-     * This is typically caused when a page is refreshed or initially loaded.
-     */
-    if (config.initialPath) {
-      const route = this.get(config.initialPath);
-      if (route) {
-        route.active = true;
-        this.current = route;
-      }
-    } else {
-      this.current = this.get(location.pathname);
-      if (this.current) {
-        this.current.active = true;
-      }
-    }
+    // /**
+    //  * If a current path is provided, find the route that matches the `initialPath`
+    //  * and set the current route to that route.
+    //  *
+    //  * This is typically caused when a page is refreshed or initially loaded.
+    //  */
+    // if (config.initialPath) {
+    //   // const route = this.get(config.initialPath);
+    //   // if (route) {
+    //   //   // route.active = true;
+    //   //   this.current = route;
+    // }
+    // // this.get(location.pathname, true);
+    // const route = registry.get("/");
+    // console.log("initial route", this.id, route);
+    // // this.current = route.route;
+    // this.applyFn(route);
 
     /**
      * When the router instance is created we need to run the current route
@@ -184,229 +205,258 @@ export class Instance {
      * Register the router instance with the RouterRegistry and
      * add event listeners for the pushState, replaceState, and popstate events.
      */
-    const handlers = registry.register(this);
-    const { pushState, replaceState } = window.history;
+    // const handlers = registry.register(this);
+    // const { pushState, replaceState } = window.history;
 
-    window.addEventListener("pushState", handlers.pushStateHandler);
-    window.addEventListener("replaceState", handlers.replaceStateHandler);
-    window.addEventListener("popstate", handlers.popStateHandler);
+    // // window.addEventListener("pushState", handlers.pushStateHandler);
+    // // window.addEventListener("replaceState", handlers.replaceStateHandler);
+    // // window.addEventListener("popstate", handlers.popStateHandler);
 
-    /**
-     * Override the pushState and replaceState methods to
-     * dispatch the pushState and replaceState events.
-     */
-    window.history.pushState = function (...args) {
-      pushState.apply(window.history, args);
-      window.dispatchEvent(new Event("pushState"));
-    };
-    window.history.replaceState = function (...args) {
-      replaceState.apply(window.history, args);
-      window.dispatchEvent(new Event("replaceState"));
-    };
+    // /**
+    //  * Override the pushState and replaceState methods to
+    //  * dispatch the pushState and replaceState events.
+    //  */
+    // window.history.pushState = function (...args) {
+    //   pushState.apply(window.history, args);
+    //   window.dispatchEvent(new Event("pushState"));
+    // };
+    // window.history.replaceState = function (...args) {
+    //   replaceState.apply(window.history, args);
+    //   window.dispatchEvent(new Event("replaceState"));
+    // };
 
   }
 
-  /**
-   * Find a matching route for a given path checking if the path is a string or a RegExp.
-   *
-   * @param {string} path The path to find a matching route for.
-   * @returns {Route | undefined} The matching route (if found).
-   */
-  get(path: string): Route | undefined {
-    let route: Route;
-    let normalizedPath = normalizePath(path);
+  // /**
+  //  * Find a matching route for a given path checking if the path is a string or a RegExp.
+  //  *
+  //  * @param {string} path The path to find a matching route for.
+  //  * @returns {Route} The matching route.
+  //  */
+  // async get(path: string): Promise<Route> {
 
-    /**
-     * Handle base path by removing it from the normalizedPath:
-     */
-    if (this.config.basePath && this.config.basePath !== "/") {
-      normalizedPath = normalizedPath.replace(this.config.basePath, "");
-    }
+  //   const route = await registry.get(path);
+  //   console.log("get from instance", this.id, path, route);
 
-    /**
-     * Split path into segments, removing empty strings:
-     */
-    const segments = normalizedPath.split('/').filter(Boolean);
+  //   if (route) {
+  //     //   route = match.route;
+  //     //   return route;
+  //     // }
 
-    /**
-     * Iterate over the routes and find the matching route:
-     */
-    for (const r of this.config.routes) {
-      const routePath = typeof r.path === "string"
-        ? r.path.replace(/^\//, "")
-        : r.path;
+  //     // let normalizedPath = normalizePath(path);
 
-      if (segments.length === 0 || normalizedPath === "/") {
-        if (!routePath || routePath === "/" || routePath === "") {
-          route = r;
-          route.status = 200;
-        }
-        continue;
-      }
+  //     // /**
+  //     //  * Handle base path by removing it from the normalizedPath:
+  //     //  */
+  //     // if (this.config.basePath && this.config.basePath !== "/") {
+  //     //   normalizedPath = normalizedPath.replace(this.config.basePath, "");
+  //     // }
 
-      const routeable = r.test(normalizedPath, this.config.basePath);
-      if (routeable) {
-        r.params = routeable.params;
-        r.remaining = routeable.remaining;
-        return r;
-      }
+  //     // /**
+  //     //  * Split path into segments, removing empty strings:
+  //     //  */
+  //     // const segments = normalizedPath.split('/').filter(Boolean);
 
-      // Check for nested route match:
-      // if (routePath === firstSegment) {
-      //   const remainingSegments = segments.slice(1);
-      //   const remainingPath = remainingSegments.length
-      //     ? '/' + remainingSegments.join('/')
-      //     : '/';
+  //     // /**
+  //     //  * Iterate over the routes and find the matching route:
+  //     //  */
+  //     // for (const r of this.config.routes) {
+  //     //   const routePath = typeof r.path === "string"
+  //     //     ? r.path.replace(/^\//, "")
+  //     //     : r.path;
 
-      //   console.log("rasadf", remainingPath)
-      //   return {
-      //     ...r,
-      //     params: remainingSegments,
-      //     remaining: remainingPath
-      //   };
-      // }
+  //     //   if (segments.length === 0 || normalizedPath === "/") {
+  //     //     if (!routePath || routePath === "/" || routePath === "") {
+  //     //       route = r;
+  //     //       route.status = 200;
+  //     //     }
+  //     //     continue;
+  //     //   }
 
-      if (r.test(normalizedPath, this.config.basePath)) {
-        route = r;
-        route.status = 200;
-        route.active = true;
-      }
-    }
+  //     //   const routeable = r.test(normalizedPath, this.config.basePath);
+  //     //   if (routeable) {
+  //     //     r.params = routeable.params;
+  //     //     r.remaining = routeable.remaining;
+  //     //     return r;
+  //     //   }
 
-    if (!route) {
-      if (this.config.notFoundComponent) {
-        route = {
-          path: "/404",
-          component: this.config.notFoundComponent,
-          status: 404
-        };
-      } else {
-        route = {
-          path,
-          status: 404
-        }
-      }
-    }
+  //     //   // Check for nested route match:
+  //     //   // if (routePath === firstSegment) {
+  //     //   //   const remainingSegments = segments.slice(1);
+  //     //   //   const remainingPath = remainingSegments.length
+  //     //   //     ? '/' + remainingSegments.join('/')
+  //     //   //     : '/';
 
-    /**
-     * This allows us to log when we're in debug mode otherwise
-     * this statement is removed by the compiler (tree-shaking):
-     */
-    if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
-      logger.debug(this.id, `trying to get("${normalizedPath}")`, {
-        status: route?.status,
-        trying: route.path,
-        upstream: this.config.basePath || "",
-        downstream: normalizedPath,
-      });
-    }
+  //     //   //   console.log("rasadf", remainingPath)
+  //     //   //   return {
+  //     //   //     ...r,
+  //     //   //     params: remainingSegments,
+  //     //   //     remaining: remainingPath
+  //     //   //   };
+  //     //   // }
 
-    return route;
-  }
+  //     //   if (r.test(normalizedPath, this.config.basePath)) {
+  //     //     route = r;
+  //     //     route.status = 200;
+  //     //     route.active = true;
+  //     //   }
+  //     // }
 
-  /**
-   * Navigates to a given route, running  the pre and post hooks.
-   *
-   * @param {Route} route The route to navigate to.
-   * @returns {Promise<void>}
-   */
-  async run(route: Route): Promise<void> {
-    this.navigating = true;
+  //     if (!route) {
+  //       if (this.config.notFoundComponent) {
+  //         return {
+  //           path: "/404",
+  //           component: this.config.notFoundComponent,
+  //           status: 404
+  //         };
+  //       } else {
+  //         return {
+  //           path,
+  //           status: 404
+  //         }
+  //       }
+  //     }
 
-    // Then, run the route specific pre hooks
-    if (route.pre) {
-      if (Array.isArray(route.pre)) {
-        for (const pre of route.pre) {
-          const result = await pre(route);
-          if (result) route = result;
-        }
-      } else {
-        const result = await route.pre(route);
-        if (result) route = result;
-      }
-    }
+  //     /**
+  //      * This allows us to log when we're in debug mode otherwise
+  //      * this statement is removed by the compiler (tree-shaking):
+  //      */
+  //     // if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
+  //     //   log.debug(this.id, `trying to get("${normalizedPath}")`, {
+  //     //     status: route?.status,
+  //     //     trying: route.path,
+  //     //     upstream: this.config.basePath || "",
+  //     //     downstream: normalizedPath,
+  //     //   });
+  //     // }
 
-    // Then, set the current route and given `current` is
-    // a reactive $state() variable, it will trigger a render.
-    // Only set the current route if it's different from the
-    // current route to avoid unnecessary re-rendering.
-    // if (route.path !== this.current?.path) {
-    //   console.log("xxxxxxxsetting current", route.path, this.current?.path)
-    // }
+  //     // this.current = route.route;
+  //     // this.run(route.route);
+  //     console.log("returning route", this.id, route.route);
+  //     // return {
+  //     //   ...route.route,
+  //     //   status: 200
+  //     // };
+  //   } else {
+  //     console.log("no match", this.id, path);
+  //     if (this.config.notFoundComponent) {
+  //       return {
+  //         path: "/404",
+  //         component: this.config.notFoundComponent,
+  //         status: 404
+  //       };
+  //     } else {
+  //       return {
+  //         path,
+  //         status: 404
+  //       }
+  //     }
+  //   }
+  // }
 
-    // if (route.path === this.current.path) {
-    //   console.log('resetting')
-    //   this.current = null;
-    // }
-    //
-    // console.log("setting current", this.id, route.path, this.current?.path)
-    // const clonedRoute = Object.assign({}, route);
-    if (route.path === this.current?.path) {
-      this.current = null;
-    }
+  // /**
+  //  * Navigates to a given route, running  the pre and post hooks.
+  //  *
+  //  * @param {Route} route The route to navigate to.
+  //  * @returns {Promise<void>}
+  //  */
+  // async run(route: Route): Promise<void> {
+  //   this.navigating = true;
 
-    this.current = route;
-    // Run the route specific post hooks:
-    if (route && route.post) {
-      if (Array.isArray(route.post)) {
-        for (const post of route.post) {
-          await post(route);
-        }
-      } else {
-        await route.post(route);
-      }
-    }
+  //   // Then, run the route specific pre hooks
+  //   if (route.pre) {
+  //     if (Array.isArray(route.pre)) {
+  //       for (const pre of route.pre) {
+  //         const result = await pre(route);
+  //         if (result) route = result;
+  //       }
+  //     } else {
+  //       const result = await route.pre(route);
+  //       if (result) route = result;
+  //     }
+  //   }
 
-    // Finally, run the global post hooks:
-    if (this.config.post) {
-      if (Array.isArray(this.config.post)) {
-        for (const post of this.config.post) {
-          await post(route);
-        }
-      } else {
-        await this.config.post(route);
-      }
-    }
+  //   // Then, set the current route and given `current` is
+  //   // a reactive $state() variable, it will trigger a render.
+  //   // Only set the current route if it's different from the
+  //   // current route to avoid unnecessary re-rendering.
+  //   // if (route.path !== this.current?.path) {
+  //   //   console.log("xxxxxxxsetting current", route.path, this.current?.path)
+  //   // }
 
-    this.navigating = false;
-  }
+  //   // if (route.path === this.current.path) {
+  //   //   console.log('resetting')
+  //   //   this.current = null;
+  //   // }
+  //   //
+  //   // console.log("setting current", this.id, route.path, this.current?.path)
+  //   // const clonedRoute = Object.assign({}, route);
+  //   // if (route.path === this.current?.path) {
+  //   //   this.current = null;
+  //   // }
 
-  /**
-   * Whether the router is currently processing a state change.
-   */
-  #_processing = false;
+  //   // this.current = route;
+  //   // Run the route specific post hooks:
+  //   if (route && route.post) {
+  //     if (Array.isArray(route.post)) {
+  //       for (const post of route.post) {
+  //         await post(route);
+  //       }
+  //     } else {
+  //       await route.post(route);
+  //     }
+  //   }
 
-  /**
-   * Process a state change event.
-   *
-   * We use a quueing mechanism to ensure that only one state change event
-   * is processed at a time.
-   *
-   * @param {string} path The path to navigate to.
-   * @returns {void}
-   */
-  onStateChange(route: Route): void {
-    if (this.#_processing) return;
-    this.#_processing = true;
+  //   // Finally, run the global post hooks:
+  //   if (this.config.post) {
+  //     if (Array.isArray(this.config.post)) {
+  //       for (const post of this.config.post) {
+  //         await post(route);
+  //       }
+  //     } else {
+  //       await this.config.post(route);
+  //     }
+  //   }
 
-    if (route) {
-      this.run(route).finally(() => {
-        this.#_processing = false;
-      });
-    } else {
-      this.#_processing = false;
-    }
+  //   this.navigating = false;
+  // }
 
-    route.active = true;
-  }
+  // /**
+  //  * Whether the router is currently processing a state change.
+  //  */
+  // #_processing = false;
 
-  /**
-   * Called when the router instance needs to be destroyed
-   * (typically when the router instance is removed from the DOM).
-   *
-   * @returns {void}
-   */
-  destroy(): void {
-    registry.unregister(this.id);
-  }
+  // /**
+  //  * Process a state change event.
+  //  *
+  //  * We use a quueing mechanism to ensure that only one state change event
+  //  * is processed at a time.
+  //  *
+  //  * @param {string} path The path to navigate to.
+  //  * @returns {void}
+  //  */
+  // onStateChange(route: Route): void {
+  //   if (this.#_processing) return;
+  //   this.#_processing = true;
+
+  //   if (route) {
+  //     this.run(route).finally(() => {
+  //       this.#_processing = false;
+  //     });
+  //   } else {
+  //     this.#_processing = false;
+  //   }
+
+  //   route.active = true;
+  // }
+
+  // /**
+  //  * Called when the router instance needs to be destroyed
+  //  * (typically when the router instance is removed from the DOM).
+  //  *
+  //  * @returns {void}
+  //  */
+  // destroy(): void {
+  //   // registry.unregister(this.id);
+  // }
 }

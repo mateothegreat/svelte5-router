@@ -8,6 +8,7 @@
   import Delayed from "./lib/delayed.svelte";
   import Nested from "./lib/nested/nested.svelte";
   import NotFound from "./lib/not-found.svelte";
+  import DisplayParams from "./lib/params/display-params.svelte";
   import Params from "./lib/params/params.svelte";
   import Props from "./lib/props/props.svelte";
   import Protected from "./lib/protected/protected.svelte";
@@ -15,7 +16,7 @@
 
   const routes: Route[] = [
     {
-      path: "",
+      path: "/",
       component: Default,
       // Use an async pre hook to simulate a protected route:
       pre: async (route: Route): Promise<Route> => {
@@ -88,6 +89,11 @@
     {
       path: "query-redirect",
       component: QueryRedirect
+    },
+    {
+      path: "not-found",
+      component: NotFound,
+      status: 404
     }
   ];
 
@@ -143,13 +149,13 @@
           <tr>
             <td class="px-3 py-2">`instance.current`</td>
             <td class="px-3 py-2 text-pink-500">
-              {instance.current.path}
+              {instance?.current?.path}
             </td>
           </tr>
           <tr>
             <td class="px-3 py-2">`instance.current.params`</td>
             <td class="px-3 py-2 text-pink-500">
-              {JSON.stringify(instance.current.params)}
+              {JSON.stringify(instance?.current?.params || {})}
             </td>
           </tr>
           <tr>
@@ -241,8 +247,11 @@
     <div class="flex flex-col gap-4 rounded-sm bg-zinc-950 p-4 shadow-xl">
       <p class="text-center text-xs text-zinc-500">app.svelte</p>
       <Router
+        s={DisplayParams}
+        id="app-router"
         bind:instance
         {routes}
+        basePath="/"
         pre={globalAuthGuardHook}
         post={globalLoggerPostHook}
         notFoundComponent={NotFound} />
