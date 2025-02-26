@@ -92,7 +92,7 @@ export class RouterInstanceConfig {
         if (route instanceof Route) {
           this.routes.push(route);
         } else {
-          this.routes.push(new Route(new Route(route)));
+          this.routes.push(new Route(route));
         }
       }
     }

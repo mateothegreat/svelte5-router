@@ -10,7 +10,6 @@
   >();
 
   let RenderableComponent = $state<Component | null>(null);
-  let params: any = $state(null);
   let router: RouterInstance;
   let route: Route = $state();
 

@@ -17,9 +17,13 @@ export class Registry {
    */
   instances = new ReactiveMap<string, RouterInstance>();
 
-  count = $state<number>(0);
-
   constructor() {
+    // Prevent multiple instantiation during HMR by storing instance in window
+    if ((window as any).__SVELTE_SPA_ROUTER_REGISTERED__) {
+      return (window as any).__SVELTE_SPA_ROUTER_REGISTERED__;
+    }
+    (window as any).__SVELTE_SPA_ROUTER_REGISTERED__ = 1;
+
     const { pushState, replaceState } = window.history;
 
     window.history.pushState = function (...args) {
@@ -61,8 +65,6 @@ export class Registry {
       });
     }
 
-    this.count++;
-
     return registry;
   }
 
@@ -73,7 +75,6 @@ export class Registry {
    */
   unregister(id: string): void {
     this.instances.delete(id);
-    this.count--;
   }
 }
 
@@ -86,4 +87,4 @@ export class Registry {
  * This is a singleton and should not be instantiated directly and should
  * never be accessed outside of the scope of this package in most cases.
  */
-export const registry = new Registry();
+export const registry = (window as any).__SVELTE_SPA_ROUTER_REGISTRY__ || new Registry();

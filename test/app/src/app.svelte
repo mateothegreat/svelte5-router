@@ -12,6 +12,10 @@
   import Protected from "./lib/protected/protected.svelte";
   import QueryRedirect from "./lib/query/query-redirect.svelte";
 
+  // This is a state variable that will hold the router instance.
+  // It can be used to access the current route, navigate, etc:
+  let instance = $state<RouterInstance>();
+
   const routes: Route[] = [
     // Example of a route that redirects to the home route:
     {
@@ -23,26 +27,28 @@
       }
     },
     {
-      // Notice how no `path` is provided.
-      // This means that this route will be the default route.
+      // Here we use a regex to match the home route.
+      // This is useful if you want to match a route that has a dynamic path.
+      // The "?:" is used to group the regex without capturing the match:
       path: /(?:^$|home)/,
       component: Home,
-      // Use an async pre hook to simulate a protected route:
+      // Use hooks to perform actions before and after the route is resolved:
       hooks: {
         pre: async (route: Route): Promise<boolean> => {
           console.log("pre hook #1 fired for route");
-          return true;
+          return true; // Return true to continue down the route evaluation path.
         },
+        // Hooks can also be an array of functions (async too):
         post: [
           // This is a post hook that will be executed after the route is resolved:
           (route: Route): boolean => {
             console.log("post hook #1 fired for route");
-            return true;
+            return true; // Return true to continue down the route evaluation path.
           },
           // This is an async post hook that will be executed after the route is resolved:
           async (route: Route): Promise<boolean> => {
             console.log("post hook #2 (async) fired for route");
-            return true;
+            return true; // Return true to continue down the route evaluation path.
           }
         ]
       }
@@ -53,6 +59,8 @@
     },
     {
       path: "async",
+      // Routes can also be async functions that return a promise.
+      // This is useful if you want to load a component asynchronously aka "lazy loading":
       component: async () => import("./lib/async/async.svelte")
     },
     {
@@ -60,7 +68,7 @@
       component: Delayed,
       hooks: {
         pre: async (route: Route): Promise<boolean> => {
-          // Simulate a network delay by returning a promise that resolves after 1.5 seconds:
+          // Simulate a network delay by returning a promise that resolves after a second:
           return new Promise((resolve) =>
             setTimeout(() => {
               resolve(true);
@@ -83,14 +91,11 @@
     }
   ];
 
-  let instance = $state<RouterInstance>();
-
+  // This is a global pre hook that can be applied to all routes.
+  // Here you could check if the user is logged in or perform some other
+  // authentication checks:
   const globalAuthGuardHook = async (route: Route): Promise<boolean> => {
-    // This is a global pre hook that will be applied to all routes.
-    // Here you could check if the user is logged in or perform some other
-    // authentication checks.
     console.warn("globalAuthGuardHook");
-
     // Return true so that the route can continue down its evaluation path.
     return true;
   };
@@ -208,7 +213,6 @@
         id="my-main-router"
         bind:instance
         {routes}
-        basePath="/"
         hooks={{
           pre: globalAuthGuardHook
         }}

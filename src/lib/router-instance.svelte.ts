@@ -64,6 +64,30 @@ export class RouterInstance {
   }
 
   /**
+   * Unregister a router instance by removing it from the registry and
+   * restoring the original history methods.
+   *
+   * This is called when a router instance is removed from the DOM
+   * triggered by the `onDestroy` lifecycle method of the router instance.
+   */
+  unregister(): void {
+    window.removeEventListener("pushState", this.handlers.pushStateHandler);
+    window.removeEventListener("replaceState", this.handlers.replaceStateHandler);
+    window.removeEventListener("popstate", this.handlers.popStateHandler);
+
+    // This allows us to log when we're in debug mode otherwise
+    // this statement is removed by the compiler (tree-shaking):
+    if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
+      log.debug(this.config.id, "unregistered router instance", {
+        id: this.config.id,
+        routes: this.routes.size
+      });
+    }
+
+    registry.unregister(this.config.id);
+  }
+
+  /**
    * Handle a state change event by adding the instance to the processing queue for
    * the duration of the state change. This is to prevent multiple state changes from
    * happening at the same time.
@@ -72,7 +96,6 @@ export class RouterInstance {
    */
   async handleStateChange(path: string): Promise<void> {
     const route = this.get(path.replace(this.config.basePath || "/", ""));
-    console.log("handleStateChange", path, route);
     if (route) {
       this.navigating = true;
 
@@ -90,7 +113,14 @@ export class RouterInstance {
         }
       }
 
-      this.applyFn(route);
+      this.applyFn({
+        component: route.component,
+        status: route.status,
+        params: route.params,
+        query: route.query,
+        name: route.name,
+        path: route.path,
+      });
 
       // Run the route specific post hooks:
       if (route && route.hooks?.post) {
@@ -122,30 +152,6 @@ export class RouterInstance {
       }
     }
     return true;
-  }
-
-  /**
-   * Unregister a router instance by removing it from the registry and
-   * restoring the original history methods.
-   *
-   * This is called when a router instance is removed from the DOM
-   * triggered by the `onDestroy` lifecycle method of the router instance.
-   */
-  unregister(): void {
-    window.removeEventListener("pushState", this.handlers.pushStateHandler);
-    window.removeEventListener("replaceState", this.handlers.replaceStateHandler);
-    window.removeEventListener("popstate", this.handlers.popStateHandler);
-
-    // This allows us to log when we're in debug mode otherwise
-    // this statement is removed by the compiler (tree-shaking):
-    if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
-      log.debug(this.config.id, "unregistered router instance", {
-        id: this.config.id,
-        routes: this.routes.size
-      });
-    }
-
-    registry.unregister(this.config.id);
   }
 
   /**
@@ -206,13 +212,12 @@ export class RouterInstance {
     // Run `test()` on each route to see if it matches the path:
     for (const route of this.routes) {
       const match = route.test(normalize(path));
-      console.log("match", match?.params);
       if (match) {
         return {
-          component: route.component,
+          ...route,
           params: match?.params ? match.params : undefined,
           props: route.props,
-          path,
+          path: match.path.toString(),
           query
         };
       }
