@@ -2,10 +2,10 @@
   import type { Route, RouterInstance } from "@mateothegreat/svelte5-router";
   import { active, route, Router } from "@mateothegreat/svelte5-router";
   import { registry } from "@mateothegreat/svelte5-router/registry.svelte";
-  import { Github, Home } from "lucide-svelte";
+  import { Github, Home as HomeIcon } from "lucide-svelte";
   import { myDefaultRouteConfig } from "./lib/common-stuff";
-  import Default from "./lib/default.svelte";
   import Delayed from "./lib/delayed.svelte";
+  import Home from "./lib/home.svelte";
   import Nested from "./lib/nested/nested.svelte";
   import NotFound from "./lib/not-found.svelte";
   import Params from "./lib/params/params.svelte";
@@ -15,8 +15,7 @@
 
   const routes: Route[] = [
     {
-      path: "/",
-      component: Default,
+      component: Home,
       // Use an async pre hook to simulate a protected route:
       pre: async (route: Route): Promise<boolean> => {
         console.log("pre hook #1 fired for route");
@@ -112,7 +111,7 @@
           href="https://github.com/mateothegreat/svelte5-router"
           class="text-indigo-500 hover:text-green-500"
           target="_blank">
-          <Home />
+          <HomeIcon />
         </a>
       </div>
       <table class="divide-y divide-gray-800 overflow-hidden rounded-md bg-gray-900 text-xs text-gray-400">

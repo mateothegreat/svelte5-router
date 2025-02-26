@@ -70,7 +70,7 @@ export class RouterInstance {
    * @returns {Promise<void>}
    */
   async handleStateChange(path: string): Promise<void> {
-    const route = this.get(path.replace(this.config.basePath, "/"));
+    const route = this.get(path.replace(this.config.basePath || "/", ""));
     if (route) {
       this.navigating = true;
 
