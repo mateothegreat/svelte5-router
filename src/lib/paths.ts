@@ -4,7 +4,7 @@
  * @param {string} path The path to normalize.
  * @returns {string} The normalized path.
  */
-export const normalize = (path: string) => {
+export const normalize = (path: string): string => {
   if (path && !path.startsWith("/")) {
     path = "/" + path;
   }

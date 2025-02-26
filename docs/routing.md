@@ -1,6 +1,57 @@
 # Routing Usage
 
-## Example
+We provide an array of `Route` objects to the `Router` component.
+
+Each `Route` object describes a route and its associated component.
+
+## Patterns
+
+You can simply use static paths like `/foo` or dynamic paths like `/foo/(.*?)` with regex.
+
+Example patterns:
+
+| Pattern                                        | Description                                             |
+| ---------------------------------------------- | ------------------------------------------------------- |
+| `/`                                            | The root path.                                          |
+| `/foo`                                         | A static path.                                          |
+| `/foo/(.*?)`                                   | A dynamic path.                                         |
+| `/cool/(.*?)/(.*?)`                            | A dynamic path with two parameters.                     |
+| `(?<param1>.*)`                                | A dynamic path with a named parameter.                  |
+| `^/users/(?<id>[a-z0-9]{25})(?:/(?<tab>.*))?$` | A dynamic path with a named parameter and optional tab. |
+
+> When using named parameters, you can access them using the `$props()` function.
+>
+> For example, if the route is `/users/123/settings`, then `$props()` will be `{ id: "123", tab: "settings" }`.
+
+## Examples
+
+### Basic
+
+The following example demonstrates a basic route configuration with two routes:
+
+```ts
+const routes: Route[] = [
+  {
+    // Notice that we don't need to specify the path.
+    // The router will use this route as the default route when "/" is visited.
+    component: Home
+  },
+  {
+    path: "/about",
+    component: About
+  }
+];
+```
+
+Passing the routes to the `<Router />` component:
+
+```html
+<Router {routes} />
+```
+
+## Full Example
+
+The following example demonstrates a more complex route configuration with multiple routes and hooks:
 
 ```ts
 const routes: Route[] = [

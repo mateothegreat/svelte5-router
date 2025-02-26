@@ -8,10 +8,11 @@
   "files": [
     "./"
   ],
+  "readme": "readme.md",
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "build": "svelte-package && cp readme.md package.json dist",
-    "release": "svelte-package && cp package.json dist/package.json && cd dist && npm publish --access public",
+    "release": "npm run check && rm -rf dist; npm version from-git && cp -r src/lib dist && cp package.json dist",
     "docs": "typedoc --customTitle \"Svelte 5 Router\" --footerLastModified",
     "docs:watch": "typedoc --watch --customTitle \"Svelte 5 Router\" --footerLastModified"
   },

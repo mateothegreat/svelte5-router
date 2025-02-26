@@ -21,7 +21,6 @@ import type { RouteOptions } from "./options";
 export const active = (node: HTMLAnchorElement, options: Pick<RouteOptions, "active"> = {}) => {
   const applyActiveClass = () => {
     const path = normalize(new URL(node.href).pathname);
-    console.log(path, location.pathname);
     if (path === location.pathname || location.pathname.startsWith(path)) {
       if (Array.isArray(options.active?.class)) {
         node.classList.add(...options.active?.class);
@@ -40,6 +39,7 @@ export const active = (node: HTMLAnchorElement, options: Pick<RouteOptions, "act
   applyActiveClass();
 
   window.addEventListener("pushState", applyActiveClass);
+
   return {
     destroy() {
       window.removeEventListener("pushState", applyActiveClass);

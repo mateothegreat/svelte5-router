@@ -47,7 +47,7 @@ export const execute = async <T>(fn: () => T | Promise<T>): Promise<T> => {
 }
 
 /**
- * A reactive map that triggers a re-render when the map changes.
+ * A reactive map that can be observed for changes using `$state()`.
  */
 export class ReactiveMap<K, V> extends Map<K, V> {
   #state = $state(false);

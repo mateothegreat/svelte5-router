@@ -1,9 +1,10 @@
 import { log } from "./logger";
+import type { Route } from "./route.svelte";
 import { RouterInstanceConfig } from "./router-instance-config";
 import { RouterInstance } from "./router-instance.svelte";
 import { ReactiveMap } from "./utilities.svelte";
 
-import type { ApplyFn } from './registry/types';
+export type ApplyFn = (route: Route) => void;
 
 /**
  * Handles the dynamic registration and deregistration of router instances.

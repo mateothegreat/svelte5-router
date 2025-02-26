@@ -1,10 +1,8 @@
-import { registry, RouterInstanceConfig, type Hooks } from ".";
+import { registry, RouterInstanceConfig, type ApplyFn, type Hooks } from ".";
 import { log } from "./logger";
 import { normalize } from "./paths";
 import type { Route } from "./route.svelte";
 import { execute } from "./utilities.svelte";
-
-import type { ApplyFn } from "./registry/types";
 
 /**
  * The handlers type that is used when registering a router instance.
@@ -30,6 +28,7 @@ export type RouterHandlers = {
 }
 
 export class RouterInstance {
+  id: string;
   routes: Set<Route>;
   handlers: RouterHandlers;
   config: RouterInstanceConfig;
@@ -44,6 +43,7 @@ export class RouterInstance {
    * @param {ApplyFn} applyFn The apply function for the router instance.
    */
   constructor(config: RouterInstanceConfig, applyFn: ApplyFn) {
+    this.id = config.id;
     this.config = config;
     this.routes = new Set();
     this.applyFn = applyFn;

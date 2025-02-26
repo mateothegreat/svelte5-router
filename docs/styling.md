@@ -1,11 +1,11 @@
-# Routing
-
-## Active Route Styling
+# Routing Styling
 
 You can have the router apply a class to the active route by setting the `active.class` option
 when configuring your routes.
 
-### Configuration
+As the routes change, the router will apply the class to the active route while removing it from the previous active route(s).
+
+## Configuration
 
 This property can be a string or an array of strings:
 
@@ -32,7 +32,7 @@ export const myDefaultRouteConfig = {
 };
 ```
 
-### Usage
+## Usage
 
 With our common configuration declared we can use it in our routes:
 
@@ -44,7 +44,7 @@ Import the common configuration:
 </script>
 ```
 
-#### Using `use:route`
+### Using `use:route`
 
 ```html
 <a
@@ -55,7 +55,7 @@ Import the common configuration:
 </a>
 ```
 
-#### Using `use:active`
+### Using `use:active`
 
 You can also be more prescriptive and pass in the active class as an object.
 

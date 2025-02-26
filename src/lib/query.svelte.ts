@@ -1,4 +1,4 @@
-import { goto } from "./methods";
+import { goto } from "./helpers";
 
 export class QueryString {
   params: Record<string, string> = $state();
