@@ -63,6 +63,8 @@ You can also be more prescriptive and pass in the active class as an object.
 > This is functionally equivalent to using `use:route` with the same configuration.
 > It is just a convenience method for when you don't need to pass in any other options.
 
+{% raw %}
+
 ```html
 <a
   use:route
@@ -73,7 +75,8 @@ You can also be more prescriptive and pass in the active class as an object.
 </a>
 ```
 
+{% endraw %}
+
 We used two actions:
 
-- `use:route` will make the anchor element navigate to the href when clicked.
-- `use:active` will apply the active class to the anchor element.
+- `use:route`
