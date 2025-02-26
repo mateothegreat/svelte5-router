@@ -3,7 +3,9 @@
   import { active, goto, route, Router } from "@mateothegreat/svelte5-router";
   import { registry } from "@mateothegreat/svelte5-router/registry.svelte";
   import { Github, Home as HomeIcon } from "lucide-svelte";
+  import { setContext } from "svelte";
   import { myDefaultRouteConfig } from "./lib/common-stuff";
+  import Context from "./lib/context/context.svelte";
   import Delayed from "./lib/delayed.svelte";
   import Home from "./lib/home.svelte";
   import Nested from "./lib/nested/nested.svelte";
@@ -15,6 +17,10 @@
   // This is a state variable that will hold the router instance.
   // It can be used to access the current route, navigate, etc:
   let instance = $state<RouterInstance>();
+
+  // This is a global context that can be accessed by all routes.
+  // It can be retrieved using the `getContext("foo")` function.
+  setContext("foo", { bar: "baz" });
 
   const routes: Route[] = [
     // Example of a route that redirects to the home route:
@@ -88,6 +94,10 @@
     {
       path: "query-redirect",
       component: QueryRedirect
+    },
+    {
+      path: "context",
+      component: Context
     }
   ];
 
@@ -204,6 +214,12 @@
       href="/doesnt-exist"
       class="py-1hover:bg-pink-800 rounded bg-slate-600 px-3 py-1">
       /doesnt-exist
+    </a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/context"
+      class="py-1hover:bg-pink-800 rounded bg-slate-600 px-3 py-1">
+      /context
     </a>
   </div>
   <div class=" w-full flex-1 bg-zinc-900 p-6">
