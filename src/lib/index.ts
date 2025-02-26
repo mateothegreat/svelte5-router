@@ -1,5 +1,6 @@
 export { active } from "./actions/active.svelte";
-export { route, type RouteOptions } from "./actions/route.svelte";
+export type { RouteOptions } from "./actions/options";
+export { route } from "./actions/route.svelte";
 export type { Hooks, PostHooks, PreHooks } from "./hooks";
 export { log as logger } from "./logger";
 export { goto, query } from "./methods";
