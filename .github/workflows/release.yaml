@@ -43,6 +43,8 @@ jobs:
           tag_prefix: ""
       - name: configure git
         run: |
+          git config --global credential.helper store
+          echo "https://x-access-token:${{ steps.app.outputs.token }}@github.com" > ~/.git-credentials
           git config --global user.name "svelte5-router[bot]"
           git config --global user.email "svelte5-router[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${{ steps.app.outputs.token }}@github.com/${{ github.repository }}.git
