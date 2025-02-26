@@ -3,6 +3,7 @@ on:
     paths-ignore:
       - docs
       - test
+      - package.json
     branches:
       - main
 name: release
