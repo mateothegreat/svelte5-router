@@ -1,14 +1,17 @@
 import { registry, RouterInstanceConfig, type ApplyFn, type Hooks } from ".";
 import { log } from "./logger";
-import { normalize } from "./paths";
 import type { Route } from "./route.svelte";
 import { execute } from "./utilities.svelte";
+
+import { normalize } from "./helpers/normalize";
 
 /**
  * The handlers type that is used when registering a router instance.
  *
  * This is used to restore the original history methods when the last instance is destroyed
  * and to register & unregister the event listeners for the router instances to prevent memory leaks.
+ *
+ * @category router
  */
 export type RouterHandlers = {
   /**
@@ -27,6 +30,15 @@ export type RouterHandlers = {
   popStateHandler: () => void
 }
 
+/**
+ * A class that represents a router instance.
+ *
+ * @remarks
+ * This class should rarely be used directly. Instead, use the `Router` component
+ * to create a new router instance.
+ *
+ * @category router
+ */
 export class RouterInstance {
   id: string;
   routes: Set<Route>;

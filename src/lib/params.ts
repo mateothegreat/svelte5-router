@@ -1,5 +1,6 @@
 /**
  * A type that represents the parameters of a route for $props().
- * @category types
+ *
+ * @category router
  */
-export type Params = Record<string, string | number | boolean>;
+export type RouteParams = Record<string, string | number | boolean>;

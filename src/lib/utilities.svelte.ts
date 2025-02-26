@@ -4,6 +4,8 @@
  * @param predicate Function that returns boolean to check for
  * @param timeout Time in milliseconds to wait before timing out
  * @throws Error if timeout is reached before predicate becomes true
+ *
+ * @category utilities
  */
 export async function wait(predicate: () => boolean, timeout = 5000): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -26,8 +28,12 @@ export async function wait(predicate: () => boolean, timeout = 5000): Promise<vo
 
 /**
  * Check if a value is a promise.
+ *
  * @param value - The value to check.
+ *
  * @returns True if the value is a promise, false otherwise.
+ *
+ * @category utilities
  */
 export function isPromise(value: any): boolean {
   return !!value && (typeof value === 'object' || typeof value === 'function') && typeof value.then === 'function';
@@ -35,8 +41,12 @@ export function isPromise(value: any): boolean {
 
 /**
  * Execute a function and return a promise if the function is a promise.
+ *
  * @param fn - The function to execute.
+ *
  * @returns A promise if the function is a promise, otherwise the function result.
+ *
+ * @category utilities
  */
 export const execute = async <T>(fn: () => T | Promise<T>): Promise<T> => {
   if (isPromise(fn)) {
@@ -48,6 +58,8 @@ export const execute = async <T>(fn: () => T | Promise<T>): Promise<T> => {
 
 /**
  * A reactive map that can be observed for changes using `$state()`.
+ *
+ * @category utilities
  */
 export class ReactiveMap<K, V> extends Map<K, V> {
   #state = $state(false);

@@ -1,4 +1,4 @@
-import { normalize } from "../paths";
+import { normalize } from "../helpers/normalize";
 
 import type { RouteOptions } from "./options";
 

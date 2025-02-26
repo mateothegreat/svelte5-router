@@ -1,6 +1,11 @@
-import { goto } from "./helpers";
+import { goto } from "./goto";
 
-export class QueryString {
+/**
+ * Common interface for interacting with the query string of the current URL.
+ *
+ * @category helpers
+ */
+export class Query {
   params: Record<string, string> = $state();
 
   constructor() {

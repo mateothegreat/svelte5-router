@@ -10,6 +10,9 @@
   "externalPattern": [
     "**/*.md"
   ],
+  "excludeNotDocumented": true,
+  "excludeExternals": true,
+  "excludeInternal": true,
   "readme": "docs/readme.md",
   "cleanOutputDir": true,
   "hideGenerator": true,
@@ -24,10 +27,17 @@
     "typedoc-plugin-mermaid"
   ],
   "navigationLinks": {
-    "GitHub": "https://github.com/mateothegreat/svelte5-router"
+    "Demo": "https://demo.router.svelte.spa",
+    "GitHub": "https://github.com/mateothegreat/svelte5-router",
+    "NPM": "https://www.npmjs.com/package/@mateothegreat/svelte5-router",
+    "Releases": "https://github.com/mateothegreat/svelte5-router/releases",
+    "Report Issue": "https://github.com/mateothegreat/svelte5-router/issues"
   },
   "sidebarLinks": {
-    "GitHub": "https://github.com/mateothegreat/svelte5-router"
+    "Demo": "https://demo.router.svelte.spa",
+    "GitHub": "https://github.com/mateothegreat/svelte5-router",
+    "Releases": "https://github.com/mateothegreat/svelte5-router/releases",
+    "Report Issue": "https://github.com/mateothegreat/svelte5-router/issues"
   },
   "headings": {
     "readme": false,

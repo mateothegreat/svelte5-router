@@ -1,5 +1,7 @@
 /**
  * Options for the route action.
+ *
+ * @category router
  */
 export type RouteOptions = {
   /**

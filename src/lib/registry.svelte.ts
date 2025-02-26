@@ -1,16 +1,16 @@
+import type { ApplyFn } from "./applyfn";
 import { log } from "./logger";
-import type { Route } from "./route.svelte";
 import { RouterInstanceConfig } from "./router-instance-config";
 import { RouterInstance } from "./router-instance.svelte";
 import { ReactiveMap } from "./utilities.svelte";
-
-export type ApplyFn = (route: Route) => void;
 
 /**
  * Handles the dynamic registration and deregistration of router instances.
  *
  * @remarks
  * This is a singleton and should not be instantiated directly.
+ *
+ * @category registry
  */
 export class Registry {
   /**
@@ -97,5 +97,7 @@ export class Registry {
  *
  * This is a singleton and should not be instantiated directly and should
  * never be accessed outside of the scope of this package in most cases.
+ *
+ * @category registry
  */
 export const registry = (window as any).__SVELTE_SPA_ROUTER_REGISTRY__ || new Registry();

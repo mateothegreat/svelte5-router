@@ -1,15 +1,16 @@
 import type { Route } from "./route.svelte";
 
 /**
- * A pre hook that can be used to modify the route before it is navigated to.
+ * Hooks are functions that can be used to modify the behavior of routing
+ * when a route is navigated to (before and/or after).
+ *
+ * The return value of the hook is a boolean that determines if the route should
+ * be navigated to. If the hook returns `false`, navigation will be cancelled.
+ *
  * @category hooks
  */
-export type PreHooks = ((route: Route) => Route)[] | ((route: Route) => Promise<Route>)[] | ((route: Route) => void) | ((route: Route) => Route) | ((route: Route) => Promise<Route>);
-
-/**
- * A post hook that can be used to modify the route after it is navigated to.
- * @category hooks
- */
-export type PostHooks = ((route: Route) => void)[] | ((route: Route) => Promise<void>)[] | ((route: Route) => void) | ((route: Route) => Promise<void>);
-
-export type Hooks = PreHooks | PostHooks;
+export type Hooks =
+  ((route: Route) => boolean)[] |
+  ((route: Route) => Promise<boolean>)[] |
+  ((route: Route) => boolean) |
+  ((route: Route) => Promise<boolean>);

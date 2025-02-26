@@ -1,10 +1,16 @@
 import { type Component } from 'svelte';
 
-import type { PostHooks, PreHooks } from './hooks';
+import type { Hooks } from './hooks';
 import { Route } from './route.svelte';
 
 /**
- * The configuration for a router instance.
+ * The configuration for a new router instance.
+ *
+ * @remarks
+ * This class should rarely be used directly. Instead, use the `Router` component
+ * to create a new router instance.
+ *
+ * @category router
  */
 export class RouterInstanceConfig {
   /**
@@ -33,8 +39,8 @@ export class RouterInstanceConfig {
    * @optional If no value is provided, no hooks will be run.
    */
   hooks?: {
-    pre?: PreHooks;
-    post?: PostHooks;
+    pre?: Hooks;
+    post?: Hooks;
   };
 
   /**

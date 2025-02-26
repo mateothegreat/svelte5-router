@@ -29,6 +29,8 @@
  *   });
  * }
  * ```
+ *
+ * @category debugging
  */
 export const log = {
   debug: (id: string, msg: string, data?: any) => {

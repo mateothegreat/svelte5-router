@@ -1,6 +1,6 @@
 import type { Component, Snippet } from "svelte";
 
-import type { PostHooks, PreHooks } from "./hooks";
+import type { Hooks } from "./hooks";
 
 /**
  * The result of a route being matched.
@@ -21,6 +21,8 @@ import type { PostHooks, PreHooks } from "./hooks";
  *   }
  * }
  * ```
+ *
+ * @category router
  */
 export class Routed {
   /**
@@ -68,6 +70,8 @@ export class Routed {
  *   }
  * ]
  * ```
+ *
+ * @category router
  */
 export class Route {
   /**
@@ -113,8 +117,8 @@ export class Route {
    * @optional If no value is provided, no hooks will be run.
    */
   hooks?: {
-    pre?: PreHooks;
-    post?: PostHooks;
+    pre?: Hooks;
+    post?: Hooks;
   };
 
   /**
