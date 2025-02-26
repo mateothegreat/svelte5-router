@@ -13,6 +13,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: cicd app auth
+        id: app
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.CICD_APP_ID }}
+          private-key: ${{ secrets.CICD_APP_PRIVATE_KEY }}
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -35,14 +41,16 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: ""
+      - name: npm version
+        run: npm version ${{ steps.tag.outputs.new_tag }}
       - name: commit
         run: |
           git config --global user.name "svelte5-router[bot]"
           git config --global user.email "svelte5-router[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ steps.app.outputs.token }}@github.com/${{ github.repository }}.git
           git add .
           git commit -am "chore: update changelog and bumping package.json"
           git push origin HEAD:main
-          npm version ${{ steps.tag.outputs.new_tag }}
       - name: write to .npmrc
         run: echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > ~/.npmrc
       - name: install
@@ -53,9 +61,6 @@ jobs:
         run: npm run release
       - name: publish
         run: npm publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: create github release
         uses: softprops/action-gh-release@v2
         with:
