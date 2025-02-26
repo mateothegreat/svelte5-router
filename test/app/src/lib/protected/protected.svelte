@@ -5,11 +5,13 @@
   import BankAccount from "./bank-account.svelte";
   import Denied from "./denied.svelte";
   import Login from "./login.svelte";
-  import Logout from "./logout.svelte";
 </script>
 
 {#snippet snippet()}
-  <div class="flex flex-col gap-3 bg-gray-400 p-4">Some default stuff here.. <br />Click login!</div>
+  <div class="flex flex-col gap-3 bg-gray-400 p-4">
+    Some default stuff here..oh, and I'm a snippet! <br />
+    Click login!
+  </div>
 {/snippet}
 
 <div class="flex flex-col gap-3 bg-gray-400 p-4">
@@ -17,11 +19,26 @@
   <div class="flex gap-2 rounded-sm bg-black p-4">
     Links:
     {#if !getLoggedIn()}
-      <a use:route href="/protected/login" class="rounded-sm bg-green-500 px-2">Login</a>
-      <a use:route href="/protected/bankaccount" class="rounded-sm bg-red-500 px-2">View My Bank Account (will fail)</a>
+      <a
+        use:route
+        href="/protected/login"
+        class="rounded-sm bg-green-500 px-2">
+        Login
+      </a>
+      <a
+        use:route
+        href="/protected/bankaccount"
+        class="rounded-sm bg-red-500 px-2">
+        View My Bank Account (will fail)
+      </a>
     {/if}
     {#if getLoggedIn()}
-      <a use:route href="/protected/logout" class="rounded-sm bg-red-500 px-2">Logout</a>
+      <a
+        use:route
+        href="/protected/logout"
+        class="rounded-sm bg-red-500 px-2">
+        Logout
+      </a>
     {/if}
   </div>
   <div class="rounded-sm bg-black p-4 shadow-xl">
@@ -29,38 +46,42 @@
       basePath="/protected"
       routes={[
         {
+          component: snippet,
+          hooks: {
+            pre: () => {
+              if (getLoggedIn()) {
+                console.log("redirecting to bankaccount");
+                goto("/protected/bankaccount");
+              }
+              return true;
+            }
+          }
+        },
+        {
           path: "/login",
           component: Login
         },
         {
           path: "/bankaccount",
           component: BankAccount,
-          pre: authGuard
+          hooks: {
+            pre: authGuard
+          }
         },
         {
           path: "/logout",
-          component: Logout,
-          pre: () => {
-            localStorage.removeItem("token");
-          },
-          post: () => {
-            setLoggedIn(false);
-            goto("/protected");
+          hooks: {
+            pre: () => {
+              localStorage.removeItem("token");
+              setLoggedIn(false);
+              goto("/protected");
+              return true;
+            }
           }
         },
         {
           path: "/denied",
           component: Denied
-        },
-        {
-          path: "",
-          component: snippet,
-          post: () => {
-            if (getLoggedIn()) {
-              console.log("redirecting to bankaccount");
-              goto("/protected/bankaccount");
-            }
-          }
         }
       ]} />
   </div>

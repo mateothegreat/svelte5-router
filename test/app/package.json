@@ -4,13 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 5173 --host",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@tailwindcss/oxide": "^4.0.8",
     "@tailwindcss/postcss": "^4.0.8",
     "@tsconfig/svelte": "^5.0.4",
     "lucide-svelte": "^0.475.0",
@@ -23,7 +24,8 @@
     "tslib": "^2.8.1",
     "typescript": "^5.7.3",
     "vite": "^6.1.1",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "zimmerframe": "^1.1.2"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.8"

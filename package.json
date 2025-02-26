@@ -11,18 +11,28 @@
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "build": "svelte-package && cp readme.md package.json dist",
-    "release": "svelte-package && cp package.json dist/package.json && cd dist && npm publish --access public"
+    "release": "svelte-package && cp package.json dist/package.json && cd dist && npm publish --access public",
+    "docs": "typedoc --customTitle \"Svelte 5 Router\" --footerLastModified",
+    "docs:watch": "typedoc --watch --customTitle \"Svelte 5 Router\" --footerLastModified"
   },
   "devDependencies": {
+    "@shipgirl/typedoc-plugin-versions": "^0.3.0",
     "@sveltejs/package": "^2.3.10",
     "@tsconfig/svelte": "^5.0.4",
     "@types/node": "^22.13.5",
+    "@typhonjs-typedoc/typedoc-theme-dmt": "^0.3.1",
     "cpx": "^1.5.0",
-    "prettier": "^3.5.1",
+    "prettier": "^3.5.2",
     "prettier-plugin-svelte": "^3.3.3",
     "rimraf": "^6.0.1",
     "svelte": "^5.20.2",
     "svelte-check": "^4.1.4",
+    "typedoc": "^0.27.8",
+    "typedoc-github-theme": "^0.2.1",
+    "typedoc-plugin-extras": "^4.0.0",
+    "typedoc-plugin-include-example": "^2.0.2",
+    "typedoc-plugin-inline-sources": "^1.2.1",
+    "typedoc-plugin-mermaid": "^1.12.0",
     "typescript": "^5.7.3",
     "vitest": "^3.0.6"
   },

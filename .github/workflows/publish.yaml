@@ -1,6 +1,7 @@
 on:
   push:
     paths-ignore:
+      - "docs/**"
       - "test/**"
       - "**/*.md"
     tags:

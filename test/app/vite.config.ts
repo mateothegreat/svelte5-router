@@ -8,6 +8,9 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [tsconfigPaths(), svelte(), tailwindcss()],
+  build: {
+    sourcemap: true
+  },
   define: {
     'import.meta.env.SPA_ROUTER': {
       logLevel: "debug"

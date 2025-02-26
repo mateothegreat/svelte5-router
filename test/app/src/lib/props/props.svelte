@@ -1,13 +1,70 @@
 <script lang="ts">
-  let { myProp } = $props();
+  import { RouterInstance, route, type Route } from "@mateothegreat/svelte5-router";
+  import Router from "@mateothegreat/svelte5-router/router.svelte";
+  import { myDefaultRouteConfig } from "../common-stuff";
+  import DisplayParams from "./display-params.svelte";
 
-  // For debugging only:
+  const routes: Route[] = [
+    {
+      // This route will be used if there is no match above.
+      name: "props-default-snippet",
+      component: snippet
+    },
+    {
+      // This route will match any path and pass the pattern groups
+      // as an object to the component that is passed in $props().
+      //
+      // The component will access the params using $props() and the
+      // property "child" will contain the value extracted from the path.
+      name: "props-fancy-regex",
+      path: /\/(?<child>.*)/,
+      component: DisplayParams,
+      props: {
+        randomId: Math.random().toString(36).substring(2, 15),
+        someUserStuff: {
+          username: "mateothegreat",
+          userAgent: navigator.userAgent
+        }
+      }
+    }
+  ];
+
+  let instance = $state<RouterInstance>();
 </script>
 
-<div class="flex flex-col gap-3 bg-gray-400 p-10">
-  <p class="rounded-sm bg-black p-2 text-center text-xs text-green-500">props.svelte</p>
-  <h1>Props:</h1>
+{#snippet snippet()}
+  <div class="flex flex-col gap-3 bg-indigo-500 p-4">
+    <strong>Click on a link above to see the params --^</strong>
+    <em>Oh, and i'm a snippet that was rendered because I am the default route.</em>
+  </div>
+{/snippet}
+
+<div class="flex flex-col gap-3 bg-gray-400 p-4">
+  <p class="rounded-sm bg-black p-2 text-center text-xs text-green-500">params.svelte</p>
+  <p class="rounded-sm p-2 text-sm text-black">This demo shows how to use the `params` prop to pass the pattern groups from the current route to a component.</p>
+  <div class="flex gap-2 rounded-sm bg-black p-4">
+    Children Routes:
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/props/foo"
+      class="rounded-sm bg-blue-500 px-2">
+      /props/foo
+    </a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/props/bar?someQueryParam=123"
+      class="rounded-sm bg-blue-500 px-2">
+      /props/bar?someQueryParam=123
+    </a>
+  </div>
   <div class="rounded-sm bg-black p-4 shadow-xl">
-    <pre class="text-xs text-zinc-500">{JSON.stringify(myProp, null, 2)}</pre>
+    <!-- `basePath` is passed in so that the underlying routing
+         engine knows to use this router instance for routes that
+         start with "/params". -->
+    <Router
+      id="props-top-level-router"
+      basePath="/props"
+      {routes}
+      bind:instance />
   </div>
 </div>
