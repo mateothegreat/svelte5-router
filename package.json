@@ -20,7 +20,6 @@
   ],
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "build": "svelte-package && cp readme.md package.json dist",
     "release": "npm run check && rm -rf dist && cp -r src/lib dist && cp package.json docs/readme.md docs/logo.png dist && cd dist npm version from-git",
     "docs:build": "typedoc --footerLastModified --customTitle \"Svelte 5 Router\" ",
     "docs:watch": "typedoc --watch --footerLastModified --customTitle \"Svelte 5 Router\" "
