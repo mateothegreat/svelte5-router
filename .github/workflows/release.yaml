@@ -1,8 +1,8 @@
 on:
   push:
     paths-ignore:
-      - docs/**/*
-      - test/**/*
+      - "docs/**"
+      - "test/**"
       - package.json
     branches:
       - main
@@ -10,6 +10,9 @@ name: release
 permissions:
   contents: write
   packages: write
+concurrency:
+  group: release
+  cancel-in-progress: false
 jobs:
   build:
     runs-on: ubuntu-latest
