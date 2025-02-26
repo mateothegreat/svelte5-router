@@ -1,18 +1,5 @@
----
-title: External Markdown
-group: Documents
-category: Guides
-children:
-    - ./getting-started.md
-    - ./routing.md
-    - ./hooks.md
-    - ./helper-methods.md
-    - ./statuses.md
-    - ./registry.md
-    - ./styling.md
-    - ./props.md
-    - ./debugging.md
----
+# Svelte 5 SPA Router 🚀 🔥
+
 ![logo](./logo.png)
 
 An SPA router for Svelte that allows you to divide & conquer your app with nested routers, snippets, and more.
@@ -23,8 +10,8 @@ An SPA router for Svelte that allows you to divide & conquer your app with neste
 > API documentation: <https://mateothegreat.github.io/svelte5-router>.
 
 ## Features
-[pg-structure](https://www.npmjs.com/package/pg-structure)
 
+[pg-structure](https://www.npmjs.com/package/pg-structure)
 
 - Built for Svelte 5 🚀!
 - Divide & conquer - use nested routers all over the place.
