@@ -40,12 +40,39 @@ export type RouterHandlers = {
  * @category router
  */
 export class RouterInstance {
+  /**
+   * The id of the router instance.
+   */
   id: string;
+
+  /**
+   * The routes for the router instance.
+   */
   routes: Set<Route>;
+
+  /**
+   * The handlers for the router instance.
+   */
   handlers: RouterHandlers;
+
+  /**
+   * The config for the router instance.
+   */
   config: RouterInstanceConfig;
+
+  /**
+   * The apply function for the router instance.
+   */
   applyFn: ApplyFn;
+
+  /**
+   * Whether the router instance is navigating.
+   */
   navigating = $state(false);
+
+  /**
+   * The current route for the router instance.
+   */
   current = $state<Route>();
 
   /**
@@ -55,7 +82,7 @@ export class RouterInstance {
    * @param {ApplyFn} applyFn The apply function for the router instance.
    */
   constructor(config: RouterInstanceConfig, applyFn: ApplyFn) {
-    this.id = config.id;
+    this.id = config.id || Math.random().toString(36).substring(2, 15);
     this.config = config;
     this.routes = new Set();
     this.applyFn = applyFn;
