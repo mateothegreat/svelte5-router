@@ -70,7 +70,7 @@ jobs:
       - name: release
         run: npm run release
       - name: publish
-        run: npm publish
+        run: cd dist && npm publish
       - name: create github release
         uses: softprops/action-gh-release@v2
         with:
