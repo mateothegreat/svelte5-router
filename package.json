@@ -6,7 +6,7 @@
   "types": "./router.svelte.d.ts",
   "exports": "./index.ts",
   "files": [
-    "."
+    "./**/*"
   ],
   "readme": "README.md",
   "repository": {

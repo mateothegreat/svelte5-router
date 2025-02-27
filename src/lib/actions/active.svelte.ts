@@ -9,11 +9,6 @@ import type { RouteOptions } from "./options";
  *
  * Add `use:active` to an anchor element to manage active state.
  *
- * ```mermaid
- * graph TB
- *   \[route] --> Router
- *   use:active -->\[route]
- * ```
  * @param {HTMLAnchorElement} node The anchor element to handle.
  * @category actions
  * @source

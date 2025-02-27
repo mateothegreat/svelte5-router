@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "docs/**"
+      - "!docs/changelog.md"
       - "src/**"
     branches:
       - main

@@ -9,10 +9,6 @@ import type { RouteOptions } from "./options";
  *
  * Add `use:route` to an anchor element to handle routing and optionally manage active state.
  *
- * ```mermaid
- * graph TB
- *   mermaid.js --> TypeDoc;
- * ```
  * @param {HTMLAnchorElement} node The anchor element to handle.
  * @param {RouteOptions} options Options for the route action (optional).
  * @category actions
