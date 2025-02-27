@@ -2,6 +2,8 @@ import { svelte } from "@sveltejs/vite-plugin-svelte";
 
 import tailwindcss from "@tailwindcss/vite";
 
+import path from "path";
+
 import { defineConfig } from "vite";
 
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -15,5 +17,10 @@ export default defineConfig({
     'import.meta.env.SPA_ROUTER': {
       logLevel: "debug"
     },
+  },
+  resolve: {
+    alias: {
+      "@mateothegreat/svelte5-router": path.resolve(__dirname, "../src/lib")
+    }
   }
 });

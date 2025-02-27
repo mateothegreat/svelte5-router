@@ -1,0 +1,32 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "sourceMap": true,
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": true,
+    "isolatedModules": true,
+    "strict": true,
+    "noEmit": true,
+    "moduleResolution": "bundler",
+    "paths": {
+      "@mateothegreat/svelte5-router": [
+        "../src/lib/index"
+      ],
+      "@mateothegreat/svelte5-router/*": [
+        "../src/lib/*"
+      ]
+    }
+  },
+  "include": [
+    "./src/**/*",
+    "./../src/**/*"
+  ]
+}

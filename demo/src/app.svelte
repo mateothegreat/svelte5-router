@@ -29,6 +29,7 @@
       hooks: {
         pre: () => {
           goto("/home");
+          return false;
         }
       }
     },

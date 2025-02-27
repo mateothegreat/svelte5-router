@@ -1,17 +1,17 @@
-.PHONY: test
+.PHONY: demo
 
 install:
 	npm install
-	cd test/app && npm install --legacy-peer-deps
+	cd demo && npm install
 
-test:
-	if [ ! -d "test/app/node_modules" ]; then \
-	cd test/app && npm install --legacy-peer-deps; \
+demo:
+	if [ ! -d "demo/node_modules" ]; then \
+	cd demo && npm install; \
 	fi
-	cd test/app && npm run dev
+	cd demo && npm run dev
 
 clean:
-	rm -rf node_modules test/app/node_modules
+	rm -rf node_modules demo/node_modules
 
-test/build:
-	cd test/app && npm run build
+demo/build:
+	cd demo && npm run build

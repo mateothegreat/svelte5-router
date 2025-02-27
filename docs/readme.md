@@ -5,13 +5,11 @@
 An SPA router for Svelte that allows you to divide & conquer your app with nested routers, snippets, and more.
 
 > [!NOTE]
-> Live demo: <https://svelte5-router.vercel.app>
+> Live demo: <https://demo.router.svelte.spa>
 >
-> API documentation: <https://mateothegreat.github.io/svelte5-router>.
+> API documentation: <https://docs.router.svelte.spa>
 
 ## Features
-
-[pg-structure](https://www.npmjs.com/package/pg-structure)
 
 - Built for Svelte 5 🚀!
 - Divide & conquer - use nested routers all over the place.
