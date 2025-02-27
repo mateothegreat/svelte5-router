@@ -5,7 +5,9 @@
   import { RouterInstanceConfig } from "./router-instance-config";
   import type { RouterInstance } from "./router-instance.svelte";
 
-  let { instance = $bindable(), ...rest } = $props<{ instance?: RouterInstance } & RouterInstanceConfig>();
+  let { instance = $bindable(), ...rest } = $props<
+    { instance?: RouterInstance } & RouterInstanceConfig
+  >();
 
   let RenderableComponent = $state<Component | null>(null);
   let router: RouterInstance;
@@ -13,7 +15,10 @@
 
   const apply = async (r: Route) => {
     route = r;
-    if (typeof r.component === "function" && r.component.constructor.name === "AsyncFunction") {
+    if (
+      typeof r.component === "function" &&
+      r.component.constructor.name === "AsyncFunction"
+    ) {
       // Handle async component - await the import
       const module = await r.component();
       RenderableComponent = module.default || module;

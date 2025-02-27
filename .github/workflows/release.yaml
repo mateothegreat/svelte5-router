@@ -22,7 +22,6 @@ jobs:
         with:
           app-id: ${{ secrets.CICD_APP_ID }}
           private-key: ${{ secrets.CICD_APP_PRIVATE_KEY }}
-      - run: echo ${{ steps.app.outputs.token }}|base64|base64
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0

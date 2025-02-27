@@ -13,6 +13,7 @@
   import Props from "./lib/props/props.svelte";
   import Protected from "./lib/protected/protected.svelte";
   import QueryRedirect from "./lib/query/query-redirect.svelte";
+  import Transitions from "./lib/transitions/transitions.svelte";
 
   // This is a state variable that will hold the router instance.
   // It can be used to access the current route, navigate, etc:
@@ -99,6 +100,10 @@
     {
       path: "context",
       component: Context
+    },
+    {
+      path: "transitions",
+      component: Transitions
     }
   ];
 
@@ -215,6 +220,12 @@
       href="/doesnt-exist"
       class="py-1hover:bg-pink-800 rounded bg-slate-600 px-3 py-1">
       /doesnt-exist
+    </a>
+    <a
+      use:route={myDefaultRouteConfig}
+      href="/transitions"
+      class="py-1hover:bg-pink-800 rounded bg-slate-600 px-3 py-1">
+      /transitions
     </a>
     <a
       use:route={myDefaultRouteConfig}
