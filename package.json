@@ -28,7 +28,6 @@
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "build": "npm run check && rm -rf dist && npx svelte-package && cp -r src/lib dist && cp package.json docs/logo.png dist && cp docs/readme.md dist/README.md && cd dist npm version from-git",
-    "release": "npm run check && rm -rf dist && cp -r src/lib dist && cp package.json docs/logo.png dist && cp docs/readme.md dist/README.md && cd dist npm version from-git",
     "docs:build": "typedoc --footerLastModified --customTitle \"Svelte 5 Router\" ",
     "docs:watch": "typedoc --watch --footerLastModified --customTitle \"Svelte 5 Router\" "
   },
