@@ -7,18 +7,12 @@
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
   import type { Route, RouterInstance } from "@mateothegreat/svelte5-router";
-  import { type BadRouted, goto, registry, Router } from "@mateothegreat/svelte5-router";
+  import { type BadRouted, getStatusByValue, goto, registry, Router } from "@mateothegreat/svelte5-router";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
-  import { setContext } from "svelte";
-  import { getStatusByValue } from "./../../src/lib/statuses.ts";
 
   // This is a state variable that will hold the router instance.
   // It can be used to access the current route, navigate, etc:
   let instance = $state<RouterInstance>();
-
-  // This is a global context that can be accessed by all routes.
-  // It can be retrieved using the `getContext("foo")` function.
-  setContext("foo", { bar: "baz" });
 
   const routes: Route[] = [
     // Example of a route that redirects to the home route:

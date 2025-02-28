@@ -25,7 +25,9 @@ export enum Statuses {
  * @category helpers
  */
 export type StatusesType = Partial<{
-  [K in Statuses]: Component<any> | ((path: BadRouted) => void);
+  [K in Statuses]:
+    | ((path: BadRouted) => void | Promise<void> | { component: Component<any>; props?: Record<string, any> })
+    | Component<any>;
 }>;
 
 /**
