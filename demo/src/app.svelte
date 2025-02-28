@@ -6,8 +6,7 @@
   import Props from "$routes/props/props.svelte";
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
-  import type { Route, RouterInstance, StatusCode } from "@mateothegreat/svelte5-router";
-  import { type BadRouted, getStatusByValue, goto, registry, Router } from "@mateothegreat/svelte5-router";
+  import { type BadRouted, getStatusByValue, goto, registry, type Route, Router, type RouterInstance, StatusCode } from "@mateothegreat/svelte5-router";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
 
   // This is a state variable that will hold the router instance.
