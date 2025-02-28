@@ -2,6 +2,7 @@
   "name": "@mateothegreat/svelte5-router",
   "version": "2.0.53",
   "type": "module",
+  "moduleResolution": "bundler",
   "license": "MIT",
   "types": "./router.svelte.d.ts",
   "exports": {
