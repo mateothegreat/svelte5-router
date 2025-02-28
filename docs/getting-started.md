@@ -10,7 +10,7 @@ npm install @mateothegreat/svelte5-router
 
 In your `app.svelte` file, you can use the `Router` component to render your routes:
 
-```html
+```svelte
 <script lang="ts">
   import { Router, type Route } from "@mateothegreat/svelte5-router";
 

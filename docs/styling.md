@@ -46,7 +46,7 @@ Import the common configuration:
 
 ### Using `use:route`
 
-```html
+```svelte
 <a
   use:route={myDefaultRouteConfig}
   href="/props"
@@ -65,7 +65,7 @@ You can also be more prescriptive and pass in the active class as an object.
 
 {% raw %}
 
-```html
+```svelte
 <a
   use:route
   use:active={{ active: { class: "bg-pink-500" } }}

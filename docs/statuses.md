@@ -42,7 +42,7 @@ returns a 404 status code because the route `/bad` does not exist.
 
 First, we will create the `NotFound` component:
 
-```html
+```svelte
 <script lang="ts">
   let props = $props();
 </script>

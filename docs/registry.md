@@ -18,7 +18,7 @@ When `<Router />` is unmounted, it will unregister itself from the registry.
 
 You can access the __global__ registry to debug your application by adding the following to your application:
 
-```html
+```svelte
 <script lang="ts">
   import { registry } from "@mateothegreat/svelte5-router";
 </script>
@@ -37,7 +37,7 @@ You can access the __global__ registry to debug your application by adding the f
 
 Or, you can access the __local__ registry directly from your `<Router />` component:
 
-```html
+```svelte
 <script lang="ts">
   import type { RouterInstance } from "@mateothegreat/svelte5-router";
   import { Router } from "@mateothegreat/svelte5-router";

@@ -37,7 +37,7 @@ if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug
 
 Putting it all together:
 
-```html
+```svelte
 <script lang="ts">
   import { Router, type RouterInstance } from "@mateothegreat/svelte5-router";
 

@@ -45,7 +45,7 @@ const routes: Route[] = [
 
 Passing the routes to the `<Router />` component:
 
-```html
+```svelte
 <Router {routes} />
 ```
 

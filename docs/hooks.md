@@ -39,7 +39,7 @@ const globalPostHook2 = async (route: Route): Promise<boolean> => {
 You can pass an array or single method for the `pre` and `post` hooks and you can
 also mix and match asynchronous and synchronous hooks.
 
-```html
+```svelte
 <Router
   {routes}
   hooks={{
