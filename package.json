@@ -1,6 +1,6 @@
 {
   "name": "@mateothegreat/svelte5-router",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "type": "module",
   "moduleResolution": "bundler",
   "license": "MIT",
