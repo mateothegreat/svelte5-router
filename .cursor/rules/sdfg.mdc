@@ -1,7 +1,0 @@
----
-description: Svelte 5
-globs: **/*
-alwaysApply: true
----
-- Use the imports from [index.ts](mdc:src/lib/index.ts) as a base reference.
-- Ensure that svelte 5.0.0 or higher is considered when answering.
