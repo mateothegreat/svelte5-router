@@ -6,12 +6,14 @@ import type { BadRouted } from "./routed";
  *
  * @category helpers
  */
-export enum StatusesMapping {
+export enum StatusCode {
   OK = 200,
-  NotFound = 404,
+  PermanentRedirect = 301,
+  TemporaryRedirect = 302,
   BadRequest = 400,
   Unauthorized = 401,
   Forbidden = 403,
+  NotFound = 404,
   InternalServerError = 500
 }
 
@@ -25,7 +27,7 @@ export enum StatusesMapping {
  * @category helpers
  */
 export type Statuses = Partial<{
-  [K in StatusesMapping]:
+  [K in StatusCode]:
     | ((path: BadRouted) => void | Promise<void> | { component: Component<any>; props?: Record<string, any> })
     | Component<any>;
 }>;
@@ -34,10 +36,10 @@ export type Statuses = Partial<{
  * Get the status by value.
  *
  * @param {number} value The value to get the status for.
- * @returns {StatusesMapping} The status.
+ * @returns {StatusCode} The status.
  *
  * @category helpers
  */
 export const getStatusByValue = (value: number) => {
-  return Object.keys(StatusesMapping)[Object.values(StatusesMapping).indexOf(value)];
+  return Object.keys(StatusCode)[Object.values(StatusCode).indexOf(value)];
 };

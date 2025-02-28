@@ -1,5 +1,5 @@
 import type { Route } from "./route.svelte";
-import type { StatusesMapping } from "./statuses";
+import type { StatusCode } from "./statuses";
 
 /**
  * The result of a route being matched.
@@ -64,7 +64,7 @@ export class Routed {
    *
    * @optional If no value is provided, the route will not have a status.
    */
-  status: StatusesMapping;
+  status: StatusCode;
 
   constructor(route: Route) {
     this.name = route.name;
@@ -76,5 +76,5 @@ export class Routed {
 
 export type BadRouted = {
   path: { before: string };
-  status: StatusesMapping;
+  status: StatusCode;
 };

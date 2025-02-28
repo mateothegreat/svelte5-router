@@ -8,7 +8,7 @@ specified in the `statuses` prop for that status code.
 
 ## Status Codes
 
-The following status codes are to be supported:
+Using the `StatusesMapping` enum, the following status codes are to be supported:
 
 > [!NOTE]
 > Currently, the `404` status code is implemented. We will be adding the
@@ -16,6 +16,8 @@ The following status codes are to be supported:
 
 | Code    | Description           | Status          |
 | ------- | --------------------- | --------------- |
+| 301     | Permanent Redirect    | Coming Soon     |
+| 302     | Temporary Redirect    | Coming Soon     |
 | 400     | Bad Request           | Coming Soon     |
 | 401     | Unauthorized          | Coming Soon     |
 | 403     | Forbidden             | Coming Soon     |
@@ -59,18 +61,20 @@ First, we will create the `NotFound` component:
 Next, we will create the `Router` component and pass the `NotFound` component
 to the `statuses` prop:
 
-```html
+```svelte
 <script lang="ts">
-  import { Router } from "@mateothegreat/svelte5-router";
+  import { Router, Route, StatusCode } from "@mateothegreat/svelte5-router";
   import NotFound from "./lib/not-found.svelte";
 
-  const routes: Route[] = [];
+  const routes: Route[] = [
+    // add routes here
+  ];
 </script>
 
 <Router
   {routes}
   statuses={{
-    404: NotFound
+    [StatusCode.NotFound]: NotFound
   }} />
 ```
 
@@ -81,13 +85,22 @@ the route `/bad` does not exist.
 
 You can also pass a function to the `statuses` prop to have more control over the rendered component. The function receives a `BadRouted` object containing information about the failed route and must return an object with the component to render and any additional props:
 
-```html
+```svelte
+<script lang="ts">
+  import { Router, Route, StatusCode } from "@mateothegreat/svelte5-router";
+  import NotFound from "./lib/not-found.svelte";
+
+  const routes: Route[] = [
+    // add routes here
+  ];
+</script>
+
 <Router
   id="my-main-router"
   bind:instance
   {routes}
   statuses={{
-    404: (routed: BadRouted) => {
+     [StatusCode.NotFound]: (routed: BadRouted) => {
       console.warn(
         `Route "${routed.path.before}" could not be found :(`,
         {

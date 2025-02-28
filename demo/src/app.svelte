@@ -6,7 +6,7 @@
   import Props from "$routes/props/props.svelte";
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
-  import type { Route, RouterInstance } from "@mateothegreat/svelte5-router";
+  import type { Route, RouterInstance, StatusCode } from "@mateothegreat/svelte5-router";
   import { type BadRouted, getStatusByValue, goto, registry, Router } from "@mateothegreat/svelte5-router";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
 
@@ -134,7 +134,7 @@
         bind:instance
         {routes}
         statuses={{
-          404: (routed: BadRouted) => {
+          [StatusCode.NotFound]: (routed: BadRouted) => {
             console.warn(
               `Route "${routed.path.before}" could not be found :(`,
               {
