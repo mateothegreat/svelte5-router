@@ -130,10 +130,6 @@
           label: "/nested"
         },
         {
-          href: "/query-redirect",
-          label: "/query-redirect"
-        },
-        {
           href: "/transitions",
           label: "/transitions"
         }
@@ -142,9 +138,6 @@
         id="my-main-router"
         bind:instance
         {routes}
-        hooks={{
-          // pre: globalAuthGuardHook
-        }}
         statuses={{
           404: NotFound
         }} />
