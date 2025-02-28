@@ -27,8 +27,10 @@ export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
     } else {
       if (Array.isArray(options.active?.class)) {
         node.classList.remove(...options.active?.class);
+        node.classList.add(...options.default?.class);
       } else {
         node.classList.remove(options.active?.class);
+        node.classList.add(...options.default?.class);
       }
     }
   };
@@ -50,6 +52,6 @@ export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
     destroy() {
       node.removeEventListener("click", handleClick);
       window.removeEventListener("pushState", applyActiveClass);
-    },
+    }
   };
-}
+};

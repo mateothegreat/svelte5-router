@@ -15,7 +15,7 @@
     "noEmit": true,
     "isolatedModules": true,
     "moduleResolution": "bundler",
-    "allowArbitraryExtensions": true,
+    "allowArbitraryExtensions": true
   },
   "include": [
     "./src/**/*"

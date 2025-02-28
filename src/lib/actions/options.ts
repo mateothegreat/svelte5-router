@@ -1,3 +1,10 @@
+export type RouteOptionState = {
+  /**
+   * The css class(es) to add when this state is currently active.
+   */
+  class?: string | string[];
+};
+
 /**
  * Options for the route action.
  *
@@ -5,12 +12,22 @@
  */
 export type RouteOptions = {
   /**
+   * When the route is inactive, these options are applied.
+   */
+  default?: RouteOptionState;
+
+  /**
    * When the route is active, these options are applied.
    */
-  active?: {
-    /**
-     * The css class(es) to add when route is active.
-     */
-    class?: string | string[];
-  };
+  active?: RouteOptionState;
+
+  /**
+   * The css class(es) to add when route is loading.
+   */
+  loading?: RouteOptionState;
+
+  /**
+   * When the route is disabled, these options are applied.
+   */
+  disabled?: RouteOptionState;
 };

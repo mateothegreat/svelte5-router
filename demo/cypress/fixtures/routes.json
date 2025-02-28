@@ -1,0 +1,46 @@
+[
+  {
+    "path": "/home",
+    "id": "home.svelte",
+    "active": 2
+  },
+  {
+    "path": "/props",
+    "id": "props.svelte",
+    "active": 1,
+    "children": [
+      {
+        "path": "/foo",
+        "id": "display-params.svelte",
+        "active": 1
+      },
+      {
+        "path": "/bar?someQueryParam=123",
+        "id": "display-params.svelte",
+        "active": 1
+      }
+    ]
+  },
+  {
+    "path": "/nested",
+    "id": "nested.svelte",
+    "active": 1,
+    "children": [
+      {
+        "path": "/foo",
+        "id": "display-params.svelte",
+        "active": 1
+      }
+    ]
+  },
+  {
+    "path": "/async",
+    "id": "async.svelte",
+    "active": 1
+  },
+  {
+    "path": "/delayed",
+    "id": "delayed.svelte",
+    "active": 1
+  }
+]

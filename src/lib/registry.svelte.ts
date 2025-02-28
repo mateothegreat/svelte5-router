@@ -48,7 +48,9 @@ export class Registry {
    */
   register(config: RouterInstanceConfig, applyFn: ApplyFn): RouterInstance {
     if (this.instances.has(config.id)) {
-      throw new Error(`Router instance with id ${config.id} already registered`);
+      throw new Error(
+        `Router instance with id ${config.id} already registered`
+      );
     }
 
     const instance = new RouterInstance(config, applyFn);
@@ -63,7 +65,8 @@ export class Registry {
         id: config.id,
         routes: config.routes.length,
         registries: this.instances.size,
-        basePath: config.basePath
+        basePath: config.basePath,
+        config
       });
     }
 
@@ -100,4 +103,5 @@ export class Registry {
  *
  * @category registry
  */
-export const registry = (window as any).__SVELTE_SPA_ROUTER_REGISTRY__ || new Registry();
+export const registry =
+  (window as any).__SVELTE_SPA_ROUTER_REGISTRY__ || new Registry();

@@ -15,20 +15,20 @@
 {/snippet}
 
 <div class="flex flex-col gap-3 bg-gray-400 p-4">
-  <p class="rounded-sm bg-slate-900 p-2 text-center text-xs text-green-500">/protected</p>
-  <div class="flex gap-2 rounded-sm bg-black p-4">
+  <p class="rounded-md bg-slate-900 p-2 text-center text-xs text-green-500">/protected</p>
+  <div class="flex gap-2 rounded-md bg-black p-4">
     Links:
     {#if !getLoggedIn()}
       <a
         use:route
         href="/protected/login"
-        class="rounded-sm bg-green-500 px-2">
+        class="rounded-md bg-green-500 px-2">
         Login
       </a>
       <a
         use:route
         href="/protected/bankaccount"
-        class="rounded-sm bg-red-500 px-2">
+        class="rounded-md bg-red-500 px-2">
         View My Bank Account (will fail)
       </a>
     {/if}
@@ -36,12 +36,12 @@
       <a
         use:route
         href="/protected/logout"
-        class="rounded-sm bg-red-500 px-2">
+        class="rounded-md bg-red-500 px-2">
         Logout
       </a>
     {/if}
   </div>
-  <div class="rounded-sm bg-black p-4 shadow-xl">
+  <div class="rounded-md bg-black p-4 shadow-xl">
     <Router
       basePath="/protected"
       routes={[

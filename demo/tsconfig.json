@@ -22,6 +22,18 @@
       ],
       "@mateothegreat/svelte5-router/*": [
         "../src/lib/*"
+      ],
+      "$lib": [
+        "./src/lib"
+      ],
+      "$lib/*": [
+        "./src/lib/*"
+      ],
+      "$routes": [
+        "./src/routes"
+      ],
+      "$routes/*": [
+        "./src/routes/*"
       ]
     }
   },
