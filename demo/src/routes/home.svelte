@@ -1,12 +1,13 @@
 <script lang="ts">
   import Code from "$lib/components/code.svelte";
+  import Container from "$lib/components/container.svelte";
   import InlineCode from "$lib/components/inline-code.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
-  import { goto, type Route } from "@mateothegreat/svelte5-router";
+  import { goto, type Route, type Routed } from "@mateothegreat/svelte5-router";
   import Router from "@mateothegreat/svelte5-router/router.svelte";
   import { Github, MessageCircleQuestion, Newspaper } from "lucide-svelte";
 
-  let props = $props();
+  let { route }: { route: Routed } = $props();
 
   const routes: Route[] = [
     {
@@ -91,21 +92,28 @@
 {/snippet}
 
 {#snippet displayParams()}
-  {@const code = "{JSON.stringify(props.route.query, null, 2)}"}
-  <div class="flex flex-col gap-3 rounded-md border-2 border-indigo-300 bg-indigo-500 p-3">
-    <div>
-      The route is mapped to <InlineCode text="/home/with-query-params" />
-      and it's <InlineCode text="component" /> property is using a snippet that renders <InlineCode text={code} />
+  <Container
+    title={"{#snippet snippet()}"}
+    file="src/routes/home.svelte">
+    <div class="m-4 flex flex-col gap-4">
+      <div>
+        The route is mapped to <InlineCode text="/home/with-query-params" />
+        and it's <InlineCode text="component" /> property is using a snippet that renders <InlineCode text={"{JSON.stringify(props.route.query, null, 2)}"} />
+      </div>
+      <Code
+        title="props.route.query"
+        class="bg-black/50">
+        <div>{JSON.stringify(route.query, null, 2)}</div>
+      </Code>
     </div>
-    <Code title="props.route.query:">
-      <div>{JSON.stringify(props.route.query, null, 2)}</div>
-    </Code>
-  </div>
+  </Container>
 {/snippet}
 
 <RouteWrapper
-  router="my-main-router"
-  name="/home"
+  router="home-router"
+  name="home-router"
+  {route}
+  end={true}
   title={{
     file: "src/routes/home.svelte",
     content: "This route is a child of the main app router where you are redirected to /home/welcome when landing on /home using a `pre` hook."

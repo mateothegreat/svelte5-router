@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Badge from "$lib/components/badge.svelte";
+  import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
   import { Router, type Route } from "@mateothegreat/svelte5-router";
   import Level_2 from "./level-2/level-2.svelte";
@@ -12,27 +14,39 @@
       component: snippet
     }
   ];
+
+  let { route } = $props();
 </script>
 
 {#snippet snippet()}
-  <div class="flex flex-col gap-3 bg-green-500 p-4">
-    Default path routed and output using a snippet.
-    <br />
-    <strong>Click on a link above to see the params..</strong>
-  </div>
+  <Container
+    title={"{#snippet snippet()}"}
+    file="src/routes/nested/level-1/level-1.svelte">
+    <div class="flex flex-col items-center gap-6 p-10 text-center">
+      <Badge>There was no path provided to the router, so the default route was used (declared as a snippet).</Badge>
+      Click on a link above to see the different effects!
+    </div>
+  </Container>
 {/snippet}
 
 <RouteWrapper
   router="nested-level-1-router"
   name="/nested/level-1"
+  end={true}
+  {route}
   title={{
     file: "src/routes/nested/level-1/level-1.svelte",
-    content: "This route is a child of the main app router where you are redirected to /home/welcome when landing on /home using a `pre` hook."
+    content: "This demo shows how to use nested routing with the router where multiple routers can be nested within each other."
   }}
   links={[
     {
       href: "/nested/level-1",
-      label: "/nested/level-1"
+      label: "default path",
+      options: {
+        active: {
+          absolute: true
+        }
+      }
     },
     {
       href: "/nested/level-1/level-2",

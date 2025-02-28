@@ -1,5 +1,5 @@
 export { active } from "./actions/active.svelte";
-export type { RouteOptions } from "./actions/options";
+export { RouteOptions } from "./actions/options";
 export { route } from "./actions/route.svelte";
 export type { ApplyFn } from "./applyfn";
 export { goto } from "./helpers/goto";
@@ -14,4 +14,3 @@ export type { Route, Routed } from "./route.svelte";
 export { RouterInstanceConfig } from "./router-instance-config";
 export { RouterInstance } from "./router-instance.svelte";
 export { default as Router } from "./router.svelte";
-

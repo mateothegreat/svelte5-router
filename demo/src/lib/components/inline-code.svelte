@@ -7,8 +7,8 @@
   let { text, class: className }: InlineCodeProps = $props();
 
   if (!className) {
-    className = "text-green-400 bg-zinc-900/70";
+    className = "text-green-400 bg-black/50";
   }
 </script>
 
-<span class="rounded-md p-1 px-2 font-mono text-sm {className}">{text}</span>
+<span class="whitespace-nowrap rounded-md p-1 px-2 font-mono text-sm {className}">{text}</span>

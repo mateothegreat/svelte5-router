@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { route, type RouteOptions } from "@mateothegreat/svelte5-router";
+  import { route, RouteOptions } from "@mateothegreat/svelte5-router";
 
   export type RouteLinkProps = {
     options?: RouteOptions;
@@ -8,22 +8,43 @@
   };
 
   let { options, href, label }: RouteLinkProps = $props();
-
   if (!options) {
-    options = {
-      default: {
-        class: ["inactive", "text-slate-300", "border-slate-600"]
-      },
-      active: {
-        class: ["active", "bg-indigo-600", "text-white", "border-indigo-400"]
-      },
-      loading: {
-        class: ["loading", "bg-orange-500"]
-      },
-      disabled: {
-        class: ["disabled", "bg-gray-500"]
-      }
+    options = new RouteOptions();
+  }
+
+  if (!options.active) {
+    options.active = {
+      class: ["active", "bg-indigo-600", "text-white", "border-indigo-400"]
     };
+  }
+  if (!options.default) {
+    options.default = {
+      class: ["inactive", "text-slate-300", "border-slate-600"]
+    };
+  }
+  if (!options.loading) {
+    options.loading = {
+      class: ["loading", "bg-orange-500"]
+    };
+  }
+  if (!options.disabled) {
+    options.disabled = {
+      class: ["disabled", "bg-gray-500"]
+    };
+  }
+
+  if (!options.active.class) {
+    options.active.class = ["active", "bg-indigo-600", "text-white", "border-indigo-400"];
+  }
+
+  if (!options.default.class) {
+    options.default.class = ["inactive", "text-slate-300", "border-slate-600"];
+  }
+  if (!options.loading.class) {
+    options.loading.class = ["loading", "bg-orange-500"];
+  }
+  if (!options.disabled.class) {
+    options.disabled.class = ["disabled", "bg-gray-500"];
   }
 </script>
 

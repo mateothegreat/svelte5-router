@@ -18,7 +18,10 @@ import type { RouteOptions } from "./options";
 export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
   const applyActiveClass = () => {
     const path = normalize(new URL(node.href).pathname);
-    if (path === location.pathname || location.pathname.startsWith(path)) {
+    if (
+      path === location.pathname ||
+      (!options.active?.absolute && location.pathname.startsWith(path))
+    ) {
       if (Array.isArray(options.active?.class)) {
         node.classList.add(...options.active?.class);
       } else {

@@ -1,13 +1,9 @@
 <script lang="ts">
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
-  import Context from "$routes/context/context.svelte";
-  import Delayed from "$routes/delayed.svelte";
   import Home from "$routes/home.svelte";
   import Nested from "$routes/nested/nested.svelte";
   import NotFound from "$routes/not-found.svelte";
   import Props from "$routes/props/props.svelte";
-  import Protected from "$routes/protected/protected.svelte";
-  import QueryRedirect from "$routes/query/query-redirect.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
   import type { Route, RouterInstance } from "@mateothegreat/svelte5-router";
   import { goto, registry, Router } from "@mateothegreat/svelte5-router";
@@ -65,40 +61,12 @@
       component: Nested
     },
     {
-      path: "async",
-      // Routes can also be async functions that return a promise.
-      // This is useful if you want to load a component asynchronously aka "lazy loading":
-      component: async () => import("$routes/async/async.svelte")
-    },
-    {
-      path: "delayed",
-      component: Delayed,
-      hooks: {
-        pre: async (route: Route): Promise<boolean> => {
-          // Simulate a network delay by returning a promise that resolves after a second:
-          return new Promise((resolve) =>
-            setTimeout(() => {
-              resolve(true);
-            }, 1000)
-          );
-        }
-      }
-    },
-    {
       path: "props",
       component: Props
     },
     {
       path: "protected",
-      component: Protected
-    },
-    {
-      path: "query-redirect",
-      component: QueryRedirect
-    },
-    {
-      path: "context",
-      component: Context
+      component: async () => import("$routes/protected/main.svelte")
     },
     {
       path: "transitions",
@@ -138,6 +106,7 @@
   </div>
   <div class="flex-1 overflow-auto">
     <RouteWrapper
+      router="my-main-router"
       name="main app router"
       title={{
         file: "src/app.svelte",
@@ -157,24 +126,8 @@
           label: "/nested"
         },
         {
-          href: "/async",
-          label: "/async"
-        },
-        {
-          href: "/delayed",
-          label: "/delayed"
-        },
-        {
           href: "/protected",
           label: "/protected"
-        },
-        {
-          href: "/query-redirect",
-          label: "/query-redirect"
-        },
-        {
-          href: "/context",
-          label: "/context"
         },
         {
           href: "/transitions",

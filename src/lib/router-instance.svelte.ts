@@ -17,18 +17,18 @@ export type RouterHandlers = {
   /**
    * The handler for the pushState event.
    */
-  pushStateHandler: () => void,
+  pushStateHandler: () => void;
 
   /**
    * The handler for the replaceState event.
    */
-  replaceStateHandler: () => void,
+  replaceStateHandler: () => void;
 
   /**
    * The handler for the popState event.
    */
-  popStateHandler: () => void
-}
+  popStateHandler: () => void;
+};
 
 /**
  * A class that represents a router instance.
@@ -111,12 +111,18 @@ export class RouterInstance {
    */
   unregister(): void {
     window.removeEventListener("pushState", this.handlers.pushStateHandler);
-    window.removeEventListener("replaceState", this.handlers.replaceStateHandler);
+    window.removeEventListener(
+      "replaceState",
+      this.handlers.replaceStateHandler
+    );
     window.removeEventListener("popstate", this.handlers.popStateHandler);
 
     // This allows us to log when we're in debug mode otherwise
     // this statement is removed by the compiler (tree-shaking):
-    if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
+    if (
+      import.meta.env.SPA_ROUTER &&
+      import.meta.env.SPA_ROUTER.logLevel === "debug"
+    ) {
       log.debug(this.config.id, "unregistered router instance", {
         id: this.config.id,
         routes: this.routes.size
@@ -158,9 +164,7 @@ export class RouterInstance {
       }
 
       // Call the downstream router instance to apply the route:
-      this.applyFn({
-        component: route.component,
-        status: route.status,
+      this.applyFn(route.component, {
         params: route.params,
         props: route.props,
         query,
@@ -168,7 +172,7 @@ export class RouterInstance {
         path: {
           before: route.path?.toString(),
           after: path
-        },
+        }
       });
 
       // Run the route specific post hooks:
@@ -229,7 +233,7 @@ export class RouterInstance {
       const defaultRoute = this.getDefaultRoute();
       if (defaultRoute) {
         return {
-          ...defaultRoute,
+          ...defaultRoute
         };
       }
     }
@@ -246,7 +250,7 @@ export class RouterInstance {
     // No route matches, try to return a 404 route:
     if (this.config.statuses?.[404]) {
       return {
-        component: this.config.statuses[404],
+        component: this.config.statuses[404]
       };
     }
   }

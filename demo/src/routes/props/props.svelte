@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Badge from "$lib/components/badge.svelte";
+  import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
   import { type Route } from "@mateothegreat/svelte5-router";
   import Router from "@mateothegreat/svelte5-router/router.svelte";
@@ -27,23 +29,40 @@
       }
     }
   ];
+
+  let { route } = $props();
 </script>
 
 {#snippet snippet()}
-  <div class="flex flex-col gap-3 rounded-md border-2 border-slate-900/80 p-4 text-gray-400">
-    <strong>Click on a link above to see the params --^</strong>
-    <em>Oh, and i'm a snippet that was rendered because I am the default route.</em>
-  </div>
+  <Container
+    title={"{#snippet snippet()}"}
+    file="src/routes/props/props.svelte">
+    <div class="flex flex-col items-center gap-6 p-10 text-center">
+      <Badge>There was no path provided to the router, so the default route was used (declared as a snippet).</Badge>
+      Click on a link above to see the different effects!
+    </div>
+  </Container>
 {/snippet}
 
 <RouteWrapper
-  router="my-main-router"
+  router="props-router"
   name="/props"
+  {route}
+  end={true}
   title={{
     file: "src/routes/props/props.svelte",
-    content: "This demo shows how to use the `params` prop to pass the pattern groups from the current route to a component."
+    content: "This demo shows how to pass values downstream to the component that is rendered."
   }}
   links={[
+    {
+      href: "/props",
+      label: "default path",
+      options: {
+        active: {
+          absolute: true
+        }
+      }
+    },
     {
       href: "/props/foo",
       label: "/props/foo"

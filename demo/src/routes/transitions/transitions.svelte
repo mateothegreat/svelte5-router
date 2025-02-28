@@ -1,59 +1,82 @@
 <script lang="ts">
-  import { myDefaultRouteConfig } from "$lib/default-route-config";
-  import { route, Router, type Route } from "@mateothegreat/svelte5-router";
-  import { fade } from "svelte/transition";
-  import One from "./one.svelte";
-  import Two from "./two.svelte";
+  import Badge from "$lib/components/badge.svelte";
+  import Container from "$lib/components/container.svelte";
+  import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
+  import { Router, RouterInstance, type Route } from "@mateothegreat/svelte5-router";
+  import Fade from "./fade.svelte";
+  import Slide from "./slide.svelte";
+
+  let { route } = $props();
+  let instance: RouterInstance;
 
   const routes: Route[] = [
     {
       component: snippet
     },
     {
-      path: "one",
-      component: One
+      path: "fade",
+      component: Fade,
+      props: {
+        file: "src/routes/transitions/fade.svelte"
+      }
     },
     {
-      path: "two",
-      component: Two
+      path: "slide",
+      component: Slide,
+      props: {
+        file: "src/routes/transitions/slide.svelte"
+      }
     }
   ];
+
+  let file = $state<string>();
+  $effect(() => {
+    file = instance?.current.props?.file || "src/routes/transitions/transitions.svelte";
+  });
 </script>
 
 {#snippet snippet()}
-  <div
-    class="flex flex-col gap-3 bg-green-500 p-4"
-    in:fade={{ duration: 300 }}>
-    Default path routed and output using a snippet.
-    <br />
-    <strong>Click on a link above..</strong>
-  </div>
+  <Container
+    title={"{#snippet snippet()}"}
+    file="src/routes/transitions/transitions.svelte">
+    <div class="flex flex-col items-center gap-6 p-10 text-center">
+      <Badge>There was no path provided to the router, so the default route was used (declared as a snippet).</Badge>
+      Click on a link above to see the different effects!
+    </div>
+  </Container>
 {/snippet}
-<div class="flex flex-col gap-3 bg-slate-600 p-10">
-  <p class="rounded-md bg-slate-900 p-2 text-center text-xs text-green-500">transitions.svelte</p>
-  <h1 class="text-xl font-bold text-white">Transitions Demo</h1>
-  <div class="text-sm text-slate-300">
-    <p>Transitions are applied at the content level rather than within the router itself.</p>
-    <p>This allows for more flexibility in how transitions are applied and reduces the complexity of the router.</p>
-  </div>
-  <div class="flex gap-2 rounded-md bg-black p-4">
-    <a
-      use:route={myDefaultRouteConfig}
-      href="/transitions/one"
-      class="rounded-md bg-blue-500 px-2">
-      /transitions/one
-    </a>
-    <a
-      use:route={myDefaultRouteConfig}
-      href="/transitions/two"
-      class="rounded-md bg-blue-500 px-2">
-      /transitions/two
-    </a>
-  </div>
-  <div class="rounded-md bg-black p-4 shadow-xl">
-    <Router
-      basePath="/transitions"
-      children={routes}
-      {routes} />
-  </div>
-</div>
+
+<RouteWrapper
+  router="transitions-router"
+  name="/transitions"
+  {route}
+  end={true}
+  title={{
+    file,
+    content: "Demo to show how to use transitions with the router (spoiler: they're applied at the content level rather than within the router itself)."
+  }}
+  links={[
+    {
+      href: "/transitions",
+      label: "default path",
+      options: {
+        active: {
+          absolute: true
+        }
+      }
+    },
+    {
+      href: "/transitions/fade",
+      label: "/transitions/fade"
+    },
+    {
+      href: "/transitions/slide",
+      label: "/transitions/slide"
+    }
+  ]}>
+  <Router
+    id="transitions-router"
+    basePath="/transitions"
+    bind:instance
+    {routes} />
+</RouteWrapper>

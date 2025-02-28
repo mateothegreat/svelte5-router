@@ -37,10 +37,7 @@ export class Routed {
    * The path of the route to match against the current path.
    *
    */
-  path: RegExp | string | number | {
-    before: RegExp | string | number;
-    after: string;
-  };
+  path: { before: RegExp | string | number; after: string };
 
   /**
    * The params of the route.
@@ -49,10 +46,25 @@ export class Routed {
    */
   params?: string[] | Record<string, string>;
 
+  /**
+   * The props to pass to the component.
+   *
+   * @optional If a value is provided, the component will receive this value in $props().
+   */
+  props?: Record<string, any>;
+
+  /**
+   * The query params of the route.
+   *
+   * @optional If no value is provided, there are no query params.
+   */
+  query?: Record<string, string>;
+
   constructor(route: Route) {
     this.name = route.name;
-    this.path = route.path;
+    this.path = { before: route.path, after: "" };
     this.params = route.params;
+    this.query = route.query;
   }
 }
 
@@ -85,14 +97,10 @@ export class Route {
   /**
    * The path of the route to match against the current path.
    *
-   * @type {RegExp | string | number}
    * @optional If not provided, the route will match any path
    * as it will be the default route.
    */
-  path?: RegExp | string | number | {
-    before: RegExp | string | number;
-    after: string;
-  };
+  path?: RegExp | string | number;
 
   /**
    * The component to render when the route is active.
@@ -101,7 +109,12 @@ export class Route {
    * This is useful if you want to use pre or post hooks to render a component
    * or snippet conditionally.
    */
-  component?: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
+  component?:
+    | Component<any>
+    | Snippet
+    | (() => Promise<Component<any> | Snippet>)
+    | Function
+    | any;
 
   /**
    * The props to pass to the component.
@@ -205,7 +218,7 @@ export class Route {
     this.props = route.props;
     this.hooks = route.hooks;
     this.status = route.status;
-    this.children = route.children?.map(child => new Route(child));
+    this.children = route.children?.map((child) => new Route(child));
   }
 
   /**
@@ -213,13 +226,13 @@ export class Route {
    * @param path The path to parse against the route.
    */
   test?(path: RegExp | string | number): Routed {
-    const segments = path.toString().split('/').filter(Boolean);
+    const segments = path.toString().split("/").filter(Boolean);
     // Handle string paths
-    if (typeof this.path === 'string') {
+    if (typeof this.path === "string") {
       // Detect possible paths that use regex syntax:
       if (/[[\]{}()*+?.,\\^$|#\s]/.test(this.path)) {
         // Path is a regex, so we need to test it against the path passed in:
-        const match = new RegExp(this.path).exec(segments.join('/'));
+        const match = new RegExp(this.path).exec(segments.join("/"));
         if (match) {
           return new Routed({
             path: this.path,
@@ -234,7 +247,7 @@ export class Route {
           });
         } else if (this.path === segments[0]) {
           return new Routed({
-            path: this.path,
+            path: this.path
           });
         }
       }
@@ -245,14 +258,14 @@ export class Route {
       if (match) {
         return new Routed({
           path: this.path,
-          params: match.groups || match.slice(1),
+          params: match.groups || match.slice(1)
         });
       }
     }
     // Handle numeric paths
-    else if (typeof this.path === 'number' && this.path === path) {
+    else if (typeof this.path === "number" && this.path === path) {
       return new Routed({
-        path: this.path,
+        path: this.path
       });
     }
   }

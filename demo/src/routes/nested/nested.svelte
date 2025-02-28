@@ -1,45 +1,58 @@
 <script lang="ts">
+  import Badge from "$lib/components/badge.svelte";
+  import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
-  import { goto, Router, type Route } from "@mateothegreat/svelte5-router";
+  import { Router, RouterInstance, type Route } from "@mateothegreat/svelte5-router";
   import Level_1 from "./level-1/level-1.svelte";
   const routes: Route[] = [
     {
-      hooks: {
-        pre: () => {
-          goto("/nested/home");
-        }
-      }
+      component: snippet
     },
     {
       path: "level-1",
       component: Level_1
-    },
-    {
-      path: "home",
-      component: snippet
     }
   ];
+
+  let { route } = $props();
+
+  let end = $state(false);
+  let instance: RouterInstance;
+  let file = $state<string>();
+  $effect(() => {
+    file = instance?.current.props?.file || "src/routes/nested/nested.svelte";
+  });
 </script>
 
 {#snippet snippet()}
-  <div class="flex flex-col gap-3 bg-green-500 p-4">
-    Default path routed and output using a snippet.
-    <br />
-    <strong>Click on a link above to trigger nested routing..</strong>
-  </div>
+  <Container
+    title={"{#snippet snippet()}"}
+    file="src/routes/nested/nested.svelte">
+    <div class="flex flex-col items-center gap-6 p-10 text-center">
+      <Badge>There was no path provided to the router, so the default route was used (declared as a snippet).</Badge>
+      Click on a link above to see the different effects!
+    </div>
+  </Container>
 {/snippet}
 
 <RouteWrapper
-  router="my-main-router"
+  router="nested-router"
   name="/nested"
+  {route}
+  {end}
   title={{
     file: "src/routes/nested/nested.svelte",
-    content: "This route is a child of the main app router where you are redirected to /home/welcome when landing on /home using a `pre` hook."
+    content: "This demo shows how to use nested routing with the router where multiple routers can be nested within each other."
   }}
   links={[
     {
-      href: "/nested/home",
-      label: "/nested/home"
+      href: "/nested",
+      label: "default path",
+      options: {
+        active: {
+          absolute: true
+        }
+      }
     },
     {
       href: "/nested/level-1",
@@ -49,5 +62,6 @@
   <Router
     id="nested-router"
     basePath="/nested"
+    bind:instance
     {routes} />
 </RouteWrapper>
