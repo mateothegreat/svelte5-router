@@ -7,9 +7,9 @@
   "types": "./router.svelte.d.ts",
   "exports": {
     ".": {
-      "types": "./index.ts",
-      "import": "./index.ts",
-      "svelte": "./index.ts"
+      "types": "./index.js",
+      "import": "./index.js",
+      "svelte": "./index.js"
     }
   },
   "files": [
@@ -27,11 +27,13 @@
   ],
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json",
+    "build": "npm run check && rm -rf dist && npx svelte-package && cp -r src/lib dist && cp package.json docs/logo.png dist && cp docs/readme.md dist/README.md && cd dist npm version from-git",
     "release": "npm run check && rm -rf dist && cp -r src/lib dist && cp package.json docs/logo.png dist && cp docs/readme.md dist/README.md && cd dist npm version from-git",
     "docs:build": "typedoc --footerLastModified --customTitle \"Svelte 5 Router\" ",
     "docs:watch": "typedoc --watch --footerLastModified --customTitle \"Svelte 5 Router\" "
   },
   "devDependencies": {
+    "@sveltejs/package": "^2.3.10",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tsconfig/svelte": "^5.0.4",
     "@types/node": "^22.13.5",
