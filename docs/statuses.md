@@ -3,6 +3,9 @@
 Each router instance can have a set of statuses that are rendered when a route
 returns a specific status code such as 404 for "Not Found".
 
+When a route returns a status code, the router will render the component or execute the function
+specified in the `statuses` prop for that status code.
+
 ## Status Codes
 
 The following status codes are to be supported:
@@ -18,6 +21,13 @@ The following status codes are to be supported:
 | 403     | Forbidden             | Coming Soon     |
 | __404__ | __Not Found__         | __Implemented__ |
 | 500     | Internal Server Error | Coming Soon     |
+
+## Bad Routed Object
+
+The [`BadRouted`](../src/lib/routed.ts) object is passed to the function in the `statuses` prop. It contains the following properties:
+
+- `path`: The path that was attempted to be accessed
+- `status`: The status code that was returned
 
 ## Usage
 
@@ -62,3 +72,36 @@ to the `statuses` prop:
 
 When you navigate to `/bad`, the `NotFound` component will be rendered because
 the route `/bad` does not exist.
+
+You can also pass a function to the `statuses` prop to have more control over the rendered component. The function receives a `BadRouted` object containing information about the failed route and must return an object with the component to render and any additional props:
+
+```html
+<Router
+  id="my-main-router"
+  bind:instance
+  {routes}
+  statuses={{
+    404: (routed: BadRouted) => {
+      console.warn(
+        `Route "${routed.path.before}" could not be found :(`,
+        {
+          statusName: getStatusByValue(routed.status),
+          statusValue: routed.status
+        },
+        routed
+      );
+      return {
+        component: NotFound,
+        props: {
+          somethingExtra: new Date().toISOString()
+        }
+      };
+    }
+  }} />
+```
+
+In this example, when a 404 error occurs:
+
+1. The function logs a warning with details about the failed route
+2. Returns the `NotFound` component with an additional prop `somethingExtra` containing the current timestamp
+3. The `NotFound` component will receive both its default props and the extra props specified in the function
