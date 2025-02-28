@@ -65,7 +65,8 @@ export class Registry {
         id: config.id,
         routes: config.routes.length,
         registries: this.instances.size,
-        basePath: config.basePath
+        basePath: config.basePath,
+        config
       });
     }
 

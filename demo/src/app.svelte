@@ -1,22 +1,19 @@
 <script lang="ts">
-  import type { Route } from "@mateothegreat/svelte5-router";
-  import { active, goto, registry, route, Router } from "@mateothegreat/svelte5-router";
-  import { Github, Home as HomeIcon } from "lucide-svelte";
+  import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
+  import Home from "$routes/home.svelte";
+  import Nested from "$routes/nested/nested.svelte";
+  import NotFound from "$routes/not-found.svelte";
+  import Props from "$routes/props/props.svelte";
+  import Protected from "$routes/protected/main.svelte";
+  import Transitions from "$routes/transitions/transitions.svelte";
+  import type { Route, RouterInstance } from "@mateothegreat/svelte5-router";
+  import { goto, registry, Router } from "@mateothegreat/svelte5-router";
+  import { BookHeart, Github, HelpCircle } from "lucide-svelte";
   import { setContext } from "svelte";
-  import { myDefaultRouteConfig } from "./lib/common-stuff";
-  import Context from "./lib/context/context.svelte";
-  import Delayed from "./lib/delayed.svelte";
-  import Home from "./lib/home.svelte";
-  import Nested from "./lib/nested/nested.svelte";
-  import NotFound from "./lib/not-found.svelte";
-  import Props from "./lib/props/props.svelte";
-  import Protected from "./lib/protected/protected.svelte";
-  import QueryRedirect from "./lib/query/query-redirect.svelte";
-  import Transitions from "./lib/transitions/transitions.svelte";
 
   // This is a state variable that will hold the router instance.
   // It can be used to access the current route, navigate, etc:
-  let instance = $state<any>();
+  let instance = $state<RouterInstance>();
 
   // This is a global context that can be accessed by all routes.
   // It can be retrieved using the `getContext("foo")` function.
@@ -37,24 +34,24 @@
       // Here we use a regex to match the home route.
       // This is useful if you want to match a route that has a dynamic path.
       // The "?:" is used to group the regex without capturing the match:
-      path: /(?:^$|home)/,
+      path: /(?:^$|^\/home)/,
       component: Home,
       // Use hooks to perform actions before and after the route is resolved:
       hooks: {
         pre: async (route: Route): Promise<boolean> => {
-          console.log("pre hook #1 fired for route");
+          // console.log("pre hook #1 fired for route");
           return true; // Return true to continue down the route evaluation path.
         },
         // Hooks can also be an array of functions (async too):
         post: [
           // This is a post hook that will be executed after the route is resolved:
           (route: Route): boolean => {
-            console.log("post hook #1 fired for route");
+            // console.log("post hook #1 fired for route");
             return true; // Return true to continue down the route evaluation path.
           },
           // This is an async post hook that will be executed after the route is resolved:
           async (route: Route): Promise<boolean> => {
-            console.log("post hook #2 (async) fired for route");
+            // console.log("post hook #2 (async) fired for route");
             return true; // Return true to continue down the route evaluation path.
           }
         ]
@@ -65,40 +62,12 @@
       component: Nested
     },
     {
-      path: "async",
-      // Routes can also be async functions that return a promise.
-      // This is useful if you want to load a component asynchronously aka "lazy loading":
-      component: async () => import("./lib/async/async.svelte")
-    },
-    {
-      path: "delayed",
-      component: Delayed,
-      hooks: {
-        pre: async (route: Route): Promise<boolean> => {
-          // Simulate a network delay by returning a promise that resolves after a second:
-          return new Promise((resolve) =>
-            setTimeout(() => {
-              resolve(true);
-            }, 1000)
-          );
-        }
-      }
-    },
-    {
       path: "props",
       component: Props
     },
     {
       path: "protected",
       component: Protected
-    },
-    {
-      path: "query-redirect",
-      component: QueryRedirect
-    },
-    {
-      path: "context",
-      component: Context
     },
     {
       path: "transitions",
@@ -116,136 +85,120 @@
   };
 </script>
 
-<div class="absolute flex h-full w-full flex-col items-center gap-4 bg-black">
-  <div class="flex w-full items-center justify-between p-6">
-    <div class="flex w-full justify-between">
-      <h1 class="text-center font-mono text-lg text-indigo-500">Svelte SPA Router Demo</h1>
-      <div class="flex gap-2">
-        <a
-          href="https://github.com/mateothegreat/svelte5-router"
-          class="text-slate-500 hover:text-green-500"
-          target="_blank">
-          <Github />
-        </a>
-        <a
-          href="https://github.com/mateothegreat/svelte5-router"
-          class="text-indigo-500 hover:text-green-500"
-          target="_blank">
-          <HomeIcon />
-        </a>
-      </div>
-      <table class="divide-y divide-gray-800 overflow-hidden rounded-md bg-gray-900 text-xs text-gray-400">
-        <thead>
-          <tr>
-            <th class="px-3 py-2 text-left font-medium tracking-wider text-gray-600">Router Name</th>
-            <th class="px-3 py-2 text-left font-medium tracking-wider text-gray-600">Routes</th>
-            <th class="px-3 py-2 text-left font-medium tracking-wider text-gray-600">Active</th>
-            <th class="px-3 py-2 text-left font-medium tracking-wider text-gray-600">Current Path</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-800 font-mono">
-          {#each registry.instances.entries() as [key, instance]}
-            <tr>
-              <td class="w-50 px-3 py-2 text-indigo-400">
-                {key}
-              </td>
-              <td class="px-3 py-2 text-pink-500">
-                {instance.routes.size}
-              </td>
-              <td class="px-3 py-2">
-                {#if instance.navigating}
-                  <span class="text-green-500">yes</span>
-                {:else}
-                  <span class="text-gray-500">no</span>
-                {/if}
-              </td>
-              <td class="w-40 px-3 py-2">
-                {instance.current?.path || "<default>"}
-              </td>
-            </tr>
-          {/each}
-        </tbody>
-      </table>
+<div class="flex h-screen flex-col gap-4 bg-zinc-950 p-4">
+  <div class="flex">
+    <div class="mt-3 flex flex-1 flex-col items-center justify-center">
+      <div class="logo h-[130px] w-[360px]"></div>
+    </div>
+    <div class="flex flex-col justify-center gap-4">
+      <a
+        href="https://github.com/mateothegreat/svelte5-router"
+        class="text-slate-400 hover:text-green-500"
+        target="_blank">
+        <Github class="h-6 w-6" />
+      </a>
+      <a
+        href="https://github.com/mateothegreat/svelte5-router"
+        class="text-slate-400 hover:text-green-500"
+        target="_blank">
+        <BookHeart class="h-6 w-6 text-fuchsia-500" />
+      </a>
     </div>
   </div>
-  <div class="flex w-full flex-wrap gap-3 bg-zinc-900 p-3 text-xs text-white">
-    <span class="flex items-center text-xs text-zinc-500">Demos:</span>
-    <a
-      use:route
-      use:active={{ active: { class: "bg-pink-500" } }}
-      href="/"
-      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
-      /
-    </a>
-    <a
-      use:route={myDefaultRouteConfig}
-      href="/props"
-      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
-      /props
-    </a>
-    <a
-      use:route={myDefaultRouteConfig}
-      href="/nested"
-      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
-      /nested
-    </a>
-    <a
-      use:route
-      use:active={{ active: { class: "bg-pink-500" } }}
-      href="/async"
-      class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
-      /async
-    </a>
-    <a
-      use:route={myDefaultRouteConfig}
-      href="/delayed"
-      class="rounded bg-blue-600 px-3 py-1 hover:bg-blue-800">
-      /delayed
-    </a>
-    <a
-      use:route={myDefaultRouteConfig}
-      href="/protected"
-      class="py-1hover:bg-pink-800 rounded bg-pink-600 px-3 py-1">
-      /protected
-    </a>
-    <a
-      use:route={myDefaultRouteConfig}
-      href="/query-redirect"
-      class="py-1hover:bg-pink-800 rounded bg-blue-600 px-3 py-1">
-      /query-redirect
-    </a>
-    <a
-      use:route={myDefaultRouteConfig}
-      href="/doesnt-exist"
-      class="py-1hover:bg-pink-800 rounded bg-slate-600 px-3 py-1">
-      /doesnt-exist
-    </a>
-    <a
-      use:route={myDefaultRouteConfig}
-      href="/transitions"
-      class="py-1hover:bg-pink-800 rounded bg-slate-600 px-3 py-1">
-      /transitions
-    </a>
-    <a
-      use:route={myDefaultRouteConfig}
-      href="/context"
-      class="py-1hover:bg-pink-800 rounded bg-slate-600 px-3 py-1">
-      /context
-    </a>
-  </div>
-  <div class=" w-full flex-1 bg-zinc-900 p-6">
-    <div class="flex flex-col gap-4 rounded-sm bg-zinc-950 p-4 shadow-xl">
-      <p class="text-center text-xs text-zinc-500">app.svelte</p>
+  <div class="flex-1 overflow-auto">
+    <RouteWrapper
+      name="main app router"
+      title={{
+        file: "src/app.svelte",
+        content: "This is the main app component that contains the router and the routes."
+      }}
+      links={[
+        {
+          href: "/home",
+          label: "/home"
+        },
+        {
+          href: "/protected",
+          label: "/protected"
+        },
+        {
+          href: "/props",
+          label: "/props"
+        },
+        {
+          href: "/nested",
+          label: "/nested"
+        },
+        {
+          href: "/query-redirect",
+          label: "/query-redirect"
+        },
+        {
+          href: "/transitions",
+          label: "/transitions"
+        }
+      ]}>
       <Router
         id="my-main-router"
         bind:instance
         {routes}
         hooks={{
-          pre: globalAuthGuardHook
+          // pre: globalAuthGuardHook
         }}
         statuses={{
           404: NotFound
         }} />
-    </div>
+    </RouteWrapper>
   </div>
 </div>
+<div class="fixed bottom-0 right-10 overflow-hidden rounded-t-md border-2 border-b-0 bg-neutral-950 text-xs text-gray-400">
+  <p class="flex items-center gap-1.5 bg-black/80 p-2 text-sm font-medium text-slate-400">
+    <a
+      href="https://github.com/mateothegreat/svelte5-router/blob/main/docs/registry.md"
+      class="text-yellow-300/70 hover:text-pink-500"
+      target="_blank">
+      <HelpCircle class="h-5 w-5" />
+    </a>
+    router registry
+  </p>
+  <table class="divide-y divide-gray-900 overflow-hidden rounded-md border-2 text-xs text-gray-400">
+    <thead>
+      <tr class="text-center tracking-wider text-slate-500">
+        <th class="px-3 py-2 text-left font-medium">Router Name</th>
+        <th class="px-3 py-2 font-medium">Routes</th>
+        <th class="px-3 py-2 font-medium">Active</th>
+        <th class="px-3 py-2 font-medium">Current Path</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-800 text-center font-mono">
+      {#each registry.instances.entries() as [key, instance]}
+        <tr>
+          <td class="px-3 py-2 text-left text-indigo-400">
+            {key}
+          </td>
+          <td class="px-3 py-2 text-pink-500">
+            {instance.routes.size}
+          </td>
+          <td class="px-3 py-2">
+            {#if instance.navigating}
+              <span class="text-green-500">yes</span>
+            {:else}
+              <span class="text-gray-500">no</span>
+            {/if}
+          </td>
+          <td class="px-3 py-2 text-green-500">
+            {instance.current?.path || "<default>"}
+          </td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+</div>
+
+<style lang="scss">
+  .logo {
+    background-image: url("https://github.com/mateothegreat/svelte5-router/raw/main/docs/logo.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+</style>

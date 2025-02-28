@@ -13,23 +13,25 @@
   let router: RouterInstance;
   let route: Route = $state();
 
-  const apply = async (r: Route) => {
+  const apply = async (component: any, r: Route) => {
     route = r;
     if (
-      typeof r.component === "function" &&
-      r.component.constructor.name === "AsyncFunction"
+      typeof component === "function" &&
+      component.constructor.name === "AsyncFunction"
     ) {
       // Handle async component - await the import
-      const module = await r.component();
+      const module = await component();
       RenderableComponent = module.default || module;
     } else {
       // Handle regular component
-      RenderableComponent = r.component;
+      RenderableComponent = component;
     }
   };
 
   router = registry.register(new RouterInstanceConfig(rest), apply);
   router.handleStateChange(location.pathname);
+
+  instance = router;
 
   onDestroy(() => {
     router.unregister();

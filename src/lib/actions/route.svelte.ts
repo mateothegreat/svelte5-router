@@ -18,7 +18,10 @@ import type { RouteOptions } from "./options";
 export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
   const applyActiveClass = () => {
     const path = normalize(new URL(node.href).pathname);
-    if (path === location.pathname || location.pathname.startsWith(path)) {
+    if (
+      path === location.pathname ||
+      (!options.active?.absolute && location.pathname.startsWith(path))
+    ) {
       if (Array.isArray(options.active?.class)) {
         node.classList.add(...options.active?.class);
       } else {
@@ -27,8 +30,10 @@ export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
     } else {
       if (Array.isArray(options.active?.class)) {
         node.classList.remove(...options.active?.class);
+        node.classList.add(...options.default?.class);
       } else {
         node.classList.remove(options.active?.class);
+        node.classList.add(...options.default?.class);
       }
     }
   };
@@ -50,6 +55,6 @@ export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
     destroy() {
       node.removeEventListener("click", handleClick);
       window.removeEventListener("pushState", applyActiveClass);
-    },
+    }
   };
-}
+};
