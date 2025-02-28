@@ -4,7 +4,13 @@
   "type": "module",
   "license": "MIT",
   "types": "./router.svelte.d.ts",
-  "exports": "./index.ts",
+  "exports": {
+    ".": {
+      "types": "./index.ts",
+      "import": "./index.ts",
+      "svelte": "./index.ts"
+    }
+  },
   "files": [
     "./**/*"
   ],
