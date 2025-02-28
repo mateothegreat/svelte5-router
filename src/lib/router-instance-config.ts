@@ -1,7 +1,8 @@
-import { type Component } from 'svelte';
+import { type Component } from "svelte";
 
-import type { Hooks } from './hooks';
-import { Route } from './route.svelte';
+import type { Hooks } from "./hooks";
+import { Route } from "./route.svelte";
+import type { StatusesType } from "./statuses";
 
 /**
  * The configuration for a new router instance.
@@ -71,9 +72,7 @@ export class RouterInstanceConfig {
    * 400, 401, 403, 404, 500
    * @optional If no value is provided, the default components will not be rendered.
    */
-  statuses?: Partial<{
-    [K in 400 | 401 | 403 | 404 | 500]: Component<any>;
-  }> = {};
+  statuses?: StatusesType;
 
   /**
    * The constructor for this router instance.

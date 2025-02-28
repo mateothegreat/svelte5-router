@@ -7,9 +7,10 @@
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
   import type { Route, RouterInstance } from "@mateothegreat/svelte5-router";
-  import { goto, registry, Router } from "@mateothegreat/svelte5-router";
+  import { type BadRouted, goto, registry, Router } from "@mateothegreat/svelte5-router";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
   import { setContext } from "svelte";
+  import { getStatusByValue } from "./../../src/lib/statuses.ts";
 
   // This is a state variable that will hold the router instance.
   // It can be used to access the current route, navigate, etc:
@@ -139,7 +140,22 @@
         bind:instance
         {routes}
         statuses={{
-          404: NotFound
+          404: (routed: BadRouted) => {
+            console.warn(
+              `Route "${routed.path.before}" could not be found :(`,
+              {
+                statusName: getStatusByValue(routed.status),
+                statusValue: routed.status
+              },
+              routed
+            );
+            return {
+              component: NotFound,
+              props: {
+                somethingExtra: new Date().toISOString()
+              }
+            };
+          }
         }} />
     </RouteWrapper>
   </div>

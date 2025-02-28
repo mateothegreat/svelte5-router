@@ -1,6 +1,8 @@
 import { registry, RouterInstanceConfig, type ApplyFn, type Hooks } from ".";
 import { log } from "./logger";
 import type { Route } from "./route.svelte";
+import type { BadRouted } from "./routed";
+import { Statuses } from "./statuses";
 import { execute } from "./utilities.svelte";
 
 import { normalize } from "./helpers/normalize";
@@ -111,18 +113,12 @@ export class RouterInstance {
    */
   unregister(): void {
     window.removeEventListener("pushState", this.handlers.pushStateHandler);
-    window.removeEventListener(
-      "replaceState",
-      this.handlers.replaceStateHandler
-    );
+    window.removeEventListener("replaceState", this.handlers.replaceStateHandler);
     window.removeEventListener("popstate", this.handlers.popStateHandler);
 
     // This allows us to log when we're in debug mode otherwise
     // this statement is removed by the compiler (tree-shaking):
-    if (
-      import.meta.env.SPA_ROUTER &&
-      import.meta.env.SPA_ROUTER.logLevel === "debug"
-    ) {
+    if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
       log.debug(this.config.id, "unregistered router instance", {
         id: this.config.id,
         routes: this.routes.size
@@ -169,10 +165,14 @@ export class RouterInstance {
         props: route.props,
         query,
         name: route.name,
-        path: {
-          before: route.path?.toString(),
-          after: path
-        }
+        path:
+          route.status > 399
+            ? {
+                before: route.path?.toString(),
+                after: path
+              }
+            : undefined,
+        status: route.status
       });
 
       // Run the route specific post hooks:
@@ -233,7 +233,8 @@ export class RouterInstance {
       const defaultRoute = this.getDefaultRoute();
       if (defaultRoute) {
         return {
-          ...defaultRoute
+          ...defaultRoute,
+          status: Statuses.OK
         };
       }
     }
@@ -243,14 +244,25 @@ export class RouterInstance {
       const match = route.test(normalize(path));
       if (match) {
         route.params = match?.params ? match.params : undefined;
+        route.status = Statuses.OK;
         return route;
       }
     }
 
     // No route matches, try to return a 404 route:
-    if (this.config.statuses?.[404]) {
+    const statuses = this.config.statuses;
+    if (statuses?.[404]) {
+      const status = statuses[404];
+      if (typeof status === "function") {
+        const ret = (status as (path: BadRouted) => Route)({ path: { before: path }, status: Statuses.NotFound });
+        return {
+          ...ret,
+          status: Statuses.NotFound
+        };
+      }
       return {
-        component: this.config.statuses[404]
+        component: status,
+        status: Statuses.NotFound
       };
     }
   }

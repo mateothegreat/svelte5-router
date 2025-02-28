@@ -1,6 +1,6 @@
 import type { Component } from "svelte";
 
-import type { Routed } from "./route.svelte";
+import type { Routed } from "./routed";
 
 /**
  * The function that is used to apply a route to the DOM.
