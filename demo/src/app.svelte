@@ -1,7 +1,6 @@
 <script lang="ts">
-  import type { Route, RouterInstance } from "@mateothegreat/svelte5-router";
-  import { active, goto, route, Router } from "@mateothegreat/svelte5-router";
-  import { registry } from "@mateothegreat/svelte5-router/registry.svelte";
+  import type { Route } from "@mateothegreat/svelte5-router";
+  import { active, goto, registry, route, Router } from "@mateothegreat/svelte5-router";
   import { Github, Home as HomeIcon } from "lucide-svelte";
   import { setContext } from "svelte";
   import { myDefaultRouteConfig } from "./lib/common-stuff";
@@ -17,7 +16,7 @@
 
   // This is a state variable that will hold the router instance.
   // It can be used to access the current route, navigate, etc:
-  let instance = $state<RouterInstance>();
+  let instance = $state<any>();
 
   // This is a global context that can be accessed by all routes.
   // It can be retrieved using the `getContext("foo")` function.

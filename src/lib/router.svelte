@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, type Component } from "svelte";
-  import { registry } from "./registry.svelte";
+  import { registry } from "./registry";
   import type { Route } from "./route.svelte";
   import { RouterInstanceConfig } from "./router-instance-config";
   import type { RouterInstance } from "./router-instance.svelte";
