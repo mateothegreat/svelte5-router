@@ -18,9 +18,8 @@
 
   let end = $state(false);
   let instance: RouterInstance;
-  let file = $state<string>();
   $effect(() => {
-    file = instance?.current.props?.file || "src/routes/nested/nested.svelte";
+    end = route.path.after === "/nested";
   });
 </script>
 

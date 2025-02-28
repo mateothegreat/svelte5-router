@@ -4,6 +4,7 @@
   import Nested from "$routes/nested/nested.svelte";
   import NotFound from "$routes/not-found.svelte";
   import Props from "$routes/props/props.svelte";
+  import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
   import type { Route, RouterInstance } from "@mateothegreat/svelte5-router";
   import { goto, registry, Router } from "@mateothegreat/svelte5-router";
@@ -66,7 +67,7 @@
     },
     {
       path: "protected",
-      component: async () => import("$routes/protected/main.svelte")
+      component: Protected
     },
     {
       path: "transitions",
@@ -106,7 +107,6 @@
   </div>
   <div class="flex-1 overflow-auto">
     <RouteWrapper
-      router="my-main-router"
       name="main app router"
       title={{
         file: "src/app.svelte",
@@ -118,6 +118,10 @@
           label: "/home"
         },
         {
+          href: "/protected",
+          label: "/protected"
+        },
+        {
           href: "/props",
           label: "/props"
         },
@@ -126,8 +130,8 @@
           label: "/nested"
         },
         {
-          href: "/protected",
-          label: "/protected"
+          href: "/query-redirect",
+          label: "/query-redirect"
         },
         {
           href: "/transitions",

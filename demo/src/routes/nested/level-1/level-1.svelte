@@ -2,7 +2,7 @@
   import Badge from "$lib/components/badge.svelte";
   import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
-  import { Router, type Route } from "@mateothegreat/svelte5-router";
+  import { Router, RouterInstance, type Route } from "@mateothegreat/svelte5-router";
   import Level_2 from "./level-2/level-2.svelte";
 
   const routes: Route[] = [
@@ -15,7 +15,14 @@
     }
   ];
 
+  let instance: RouterInstance;
   let { route } = $props();
+
+  let end = $state(false);
+  $effect(() => {
+    console.log("instance", route, instance?.current.path);
+    end = route.path.after === "/nested/level-1";
+  });
 </script>
 
 {#snippet snippet()}
@@ -32,7 +39,7 @@
 <RouteWrapper
   router="nested-level-1-router"
   name="/nested/level-1"
-  end={true}
+  {end}
   {route}
   title={{
     file: "src/routes/nested/level-1/level-1.svelte",
@@ -56,5 +63,6 @@
   <Router
     id="nested-level-1-router"
     basePath="/nested/level-1"
+    bind:instance
     {routes} />
 </RouteWrapper>
