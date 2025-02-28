@@ -22,14 +22,18 @@ The following status codes are to be supported:
 | __404__ | __Not Found__         | __Implemented__ |
 | 500     | Internal Server Error | Coming Soon     |
 
-## Bad Routed Object
+## `BadRouted` Object
 
-The [`BadRouted`](../src/lib/routed.ts) object is passed to the function in the `statuses` prop. It contains the following properties:
+When passing a function to the `statuses` value, the [`BadRouted`](../src/lib/routed.ts) object is passed to that function.
+
+It contains the following properties:
 
 - `path`: The path that was attempted to be accessed
 - `status`: The status code that was returned
 
 ## Usage
+
+### Basic Usage
 
 In this example, we will use the `NotFound` component to render when the router
 returns a 404 status code because the route `/bad` does not exist.
@@ -72,6 +76,8 @@ to the `statuses` prop:
 
 When you navigate to `/bad`, the `NotFound` component will be rendered because
 the route `/bad` does not exist.
+
+### Custom Usage
 
 You can also pass a function to the `statuses` prop to have more control over the rendered component. The function receives a `BadRouted` object containing information about the failed route and must return an object with the component to render and any additional props:
 

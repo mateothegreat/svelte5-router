@@ -6,7 +6,7 @@ import type { BadRouted } from "./routed";
  *
  * @category helpers
  */
-export enum Statuses {
+export enum StatusesMapping {
   OK = 200,
   NotFound = 404,
   BadRequest = 400,
@@ -24,8 +24,8 @@ export enum Statuses {
  *
  * @category helpers
  */
-export type StatusesType = Partial<{
-  [K in Statuses]:
+export type Statuses = Partial<{
+  [K in StatusesMapping]:
     | ((path: BadRouted) => void | Promise<void> | { component: Component<any>; props?: Record<string, any> })
     | Component<any>;
 }>;
@@ -34,10 +34,10 @@ export type StatusesType = Partial<{
  * Get the status by value.
  *
  * @param {number} value The value to get the status for.
- * @returns {Statuses} The status.
+ * @returns {StatusesMapping} The status.
  *
  * @category helpers
  */
 export const getStatusByValue = (value: number) => {
-  return Object.keys(Statuses)[Object.values(Statuses).indexOf(value)];
+  return Object.keys(StatusesMapping)[Object.values(StatusesMapping).indexOf(value)];
 };

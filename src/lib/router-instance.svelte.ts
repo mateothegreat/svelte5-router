@@ -2,7 +2,7 @@ import { registry, RouterInstanceConfig, type ApplyFn, type Hooks } from ".";
 import { log } from "./logger";
 import type { Route } from "./route.svelte";
 import type { BadRouted } from "./routed";
-import { Statuses } from "./statuses";
+import { StatusesMapping } from "./statuses";
 import { execute } from "./utilities.svelte";
 
 import { normalize } from "./helpers/normalize";
@@ -234,7 +234,7 @@ export class RouterInstance {
       if (defaultRoute) {
         return {
           ...defaultRoute,
-          status: Statuses.OK
+          status: StatusesMapping.OK
         };
       }
     }
@@ -244,7 +244,7 @@ export class RouterInstance {
       const match = route.test(normalize(path));
       if (match) {
         route.params = match?.params ? match.params : undefined;
-        route.status = Statuses.OK;
+        route.status = StatusesMapping.OK;
         return route;
       }
     }
@@ -254,15 +254,18 @@ export class RouterInstance {
     if (statuses?.[404]) {
       const status = statuses[404];
       if (typeof status === "function") {
-        const ret = (status as (path: BadRouted) => Route)({ path: { before: path }, status: Statuses.NotFound });
+        const ret = (status as (path: BadRouted) => Route)({
+          path: { before: path },
+          status: StatusesMapping.NotFound
+        });
         return {
           ...ret,
-          status: Statuses.NotFound
+          status: StatusesMapping.NotFound
         };
       }
       return {
         component: status,
-        status: Statuses.NotFound
+        status: StatusesMapping.NotFound
       };
     }
   }
