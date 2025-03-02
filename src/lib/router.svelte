@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onDestroy, type Component } from "svelte";
+  import { Query } from "./query.svelte";
   import { registry } from "./registry.svelte";
   import type { Route } from "./route.svelte";
   import { RouterInstanceConfig } from "./router-instance-config";
@@ -24,7 +25,7 @@
   };
 
   router = registry.register(new RouterInstanceConfig(rest), apply);
-  router.handleStateChange(location.pathname);
+  router.handleStateChange(location.pathname, new Query());
 
   instance = router;
 

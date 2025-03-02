@@ -3,6 +3,9 @@ import type { Component, Snippet } from "svelte";
 import type { Hooks } from "./hooks";
 import { Routed } from "./routed";
 
+import type { PathType } from "./path";
+import type { Query, QueryTest, QueryType } from "./query.svelte";
+
 /**
  * A route that can be navigated to.
  * @example
@@ -35,7 +38,14 @@ export class Route {
    * @optional If not provided, the route will match any path
    * as it will be the default route.
    */
-  path?: RegExp | string | number;
+  path?: PathType;
+
+  /**
+   * The query params of the route.
+   *
+   * @optional If no value is provided, there are no query params.
+   */
+  query?: QueryType;
 
   /**
    * The component to render when the route is active.
@@ -100,41 +110,12 @@ export class Route {
    *
    * @optional If no value is provided, there are no params that could be extracted from the path.
    */
-  params?: string[] | Record<string, string>;
-
-  /**
-   * The query params of the route.
-   *
-   * @optional If no value is provided, there are no query params.
-   */
-  query?: Record<string, string>;
-
-  /**
-   * The remaining path of the route.
-   *
-   * @optional If no value is provided, there is no remaining path.
-   */
-  remaining?: string;
+  params?: string[] | Record<string, string> | QueryTest;
 
   /**
    * The status of the route once it has been matched or otherwise processed.
-   * Values can be:
-   * - `200`: A match was found and the route is active.
-   * - `404`: No route was found.
-   * - `500`: An error occurred while processing the route (check the console for more details).
-   *
    */
   status?: number;
-
-  /**
-   * The active state of the route.
-   */
-  // active? = $state(false);
-
-  /**
-   * The route instance.
-   */
-  // #instance?: Instance;
 
   /**
    * The constructor for the `Route` class.
@@ -144,6 +125,7 @@ export class Route {
   constructor(route: Route) {
     this.name = route.name;
     this.path = route.path;
+    this.query = route.query;
     this.component = route.component;
     this.props = route.props;
     this.hooks = route.hooks;
@@ -155,7 +137,7 @@ export class Route {
    * Parse the route against the given path.
    * @param path The path to parse against the route.
    */
-  test?(path: RegExp | string | number): Routed {
+  test?(path: RegExp | string | number, query?: Query): Routed {
     const segments = path.toString().split("/").filter(Boolean);
     // Handle string paths
     if (typeof this.path === "string") {
@@ -164,10 +146,19 @@ export class Route {
         // Path is a regex, so we need to test it against the path passed in:
         const match = new RegExp(this.path).exec(segments.join("/"));
         if (match) {
-          return new Routed({
-            path: this.path,
-            params: match.groups || match.slice(1)
-          });
+          if (query) {
+            if (query.test(this.query)) {
+              return new Routed({
+                path: this.path,
+                params: match.groups || match.slice(1)
+              });
+            }
+          } else {
+            return new Routed({
+              path: this.path,
+              params: match.groups || match.slice(1)
+            });
+          }
         }
       } else {
         // Path is not a regex, so we then check if the path passed in is a direct match:
@@ -186,10 +177,19 @@ export class Route {
     else if (this.path instanceof RegExp) {
       const match = this.path.exec(path.toString());
       if (match) {
-        return new Routed({
-          path: this.path,
-          params: match.groups || match.slice(1)
-        });
+        if (query) {
+          if (query.test(this.query)) {
+            return new Routed({
+              path: this.path,
+              params: match.groups || match.slice(1)
+            });
+          }
+        } else {
+          return new Routed({
+            path: this.path,
+            params: match.groups || match.slice(1)
+          });
+        }
       }
     }
     // Handle numeric paths

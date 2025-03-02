@@ -1,7 +1,6 @@
-import { registry, RouterInstanceConfig, type ApplyFn, type Hooks } from ".";
+import { Query, registry, Routed, RouterInstanceConfig, type ApplyFn, type Hooks } from ".";
 import { log } from "./logger";
 import type { Route } from "./route.svelte";
-import type { BadRouted } from "./routed";
 import { StatusCode } from "./statuses";
 import { execute } from "./utilities.svelte";
 
@@ -90,9 +89,9 @@ export class RouterInstance {
     this.applyFn = applyFn;
 
     this.handlers = {
-      pushStateHandler: () => this.handleStateChange(location.pathname),
-      replaceStateHandler: () => this.handleStateChange(location.pathname),
-      popStateHandler: () => this.handleStateChange(location.pathname)
+      pushStateHandler: () => this.handleStateChange(location.pathname, new Query()),
+      replaceStateHandler: () => this.handleStateChange(location.pathname, new Query()),
+      popStateHandler: () => this.handleStateChange(location.pathname, new Query())
     };
 
     window.addEventListener("pushState", this.handlers.pushStateHandler);
@@ -116,8 +115,6 @@ export class RouterInstance {
     window.removeEventListener("replaceState", this.handlers.replaceStateHandler);
     window.removeEventListener("popstate", this.handlers.popStateHandler);
 
-    // This allows us to log when we're in debug mode otherwise
-    // this statement is removed by the compiler (tree-shaking):
     if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
       log.debug(this.config.id, "unregistered router instance", {
         id: this.config.id,
@@ -135,8 +132,16 @@ export class RouterInstance {
    *
    * @param {string} path The path to handle the state change for.
    */
-  async handleStateChange(path: string): Promise<void> {
-    const route = this.get(path.replace(this.config.basePath || "/", ""));
+  async handleStateChange(path: string, search: Query): Promise<void> {
+    if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
+      log.debug(this.config.id, "router instance handleStateChange():", {
+        router: this.config.id,
+        path,
+        search: search.toString()
+      });
+    }
+
+    const route = this.get(path.replace(this.config.basePath || "/", ""), search);
     if (route) {
       this.navigating = true;
 
@@ -159,21 +164,8 @@ export class RouterInstance {
         }
       }
 
-      // Call the downstream router instance to apply the route:
-      this.applyFn(route.component, {
-        params: route.params,
-        props: route.props,
-        query,
-        name: route.name,
-        path:
-          route.status > 399
-            ? {
-                before: route.path?.toString(),
-                after: path
-              }
-            : undefined,
-        status: route.status
-      });
+      // Contact the downstream router component to apply the route:
+      this.applyFn(route.component, new Routed(route));
 
       // Run the route specific post hooks:
       if (route && route.hooks?.post) {
@@ -227,7 +219,7 @@ export class RouterInstance {
    *
    * @returns {RegistryMatch} The matched route for the given path.
    */
-  get(path: string): Route {
+  get(path: string, query?: Query): Route {
     // If the path is empty, return the default route:
     if (path.length === 0) {
       const defaultRoute = this.getDefaultRoute();
@@ -239,25 +231,47 @@ export class RouterInstance {
       }
     }
 
-    // Run `test()` on each route to see if it matches the path:
     for (const route of this.routes) {
       const match = route.test(normalize(path));
       if (match) {
         route.params = match?.params ? match.params : undefined;
-        route.status = StatusCode.OK;
-        return route;
+        if (route.query && query) {
+          const matches = query.test(route.query);
+          if (matches && typeof matches !== "boolean") {
+            route.params = matches;
+            route.status = StatusCode.OK;
+            return route;
+          } else {
+            if (this.config.statuses?.[404]) {
+              if (typeof this.config.statuses[404] === "function") {
+                return {
+                  ...(this.config.statuses[404] as (path: string) => Route)(path),
+                  status: StatusCode.Forbidden,
+                  path,
+                  query: query.params,
+                  props: route.props
+                };
+              }
+              // If the status is a component, return the route:
+              return {
+                component: this.config.statuses[404],
+                status: StatusCode.NotFound
+              };
+            }
+          }
+        } else {
+          route.status = StatusCode.OK;
+          return route;
+        }
       }
     }
 
     // No route matches, try to return a 404 route:
-    const statuses = this.config.statuses;
-    if (statuses?.[404]) {
-      const status = statuses[404];
+    if (this.config.statuses?.[404]) {
+      const status = this.config.statuses[404];
       if (typeof status === "function") {
-        const ret = (status as (path: BadRouted) => Route)({
-          path: { before: path },
-          status: StatusCode.NotFound
-        });
+        const ret = (status as (path: string, query?: Query) => Route)(path, query);
+        console.log("ret", ret);
         return {
           ...ret,
           status: StatusCode.NotFound

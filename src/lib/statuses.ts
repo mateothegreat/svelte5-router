@@ -1,10 +1,13 @@
 import type { Component } from "svelte";
 
-import type { BadRouted } from "./routed";
+import type { Route } from "./route.svelte";
+
 /**
- * The statuses that a route can have.
+ * The available status codes that a route can have called out from the statuses
+ * handler mapping.
  *
- * @category helpers
+ * @see {@link Statuses}
+ * @category router
  */
 export enum StatusCode {
   OK = 200,
@@ -18,17 +21,40 @@ export enum StatusCode {
 }
 
 /**
- * The type for the route statuses.
+ * Route status handler mapping.
  *
- * @remarks
- * A status can be a number or a function that is called
- * when the status is matched.
+ * Status handlers are called with a path and should return a new route
+ * or a promise that resolves to a new route.
  *
- * @category helpers
+ * @example
+ * ```ts
+ * const statuses: Statuses = {
+ *   [StatusCode.NotFound]: {
+ *     component: NotFound,
+ *     props: {
+ *       importantInfo: "lets go!"
+ *     }
+ *   },
+ *   [StatusCode.BadRequest]: (path) => {
+ *     notifySomething(path);
+ *     return {
+ *       component: BadRequest,
+ *       props: {
+ *         importantInfo: "something went wrong..."
+ *       }
+ *     };
+ *   }
+ * }
+ * ```
+ *
+ * @see {@link Route}
+ * @see {@link StatusCode}
+ * @see {@link getStatusByValue}
+ * @category router
  */
 export type Statuses = Partial<{
   [K in StatusCode]:
-    | ((path: BadRouted) => void | Promise<void> | { component: Component<any>; props?: Record<string, any> })
+    | ((path: string) => Route | Promise<Route> | { component: Component<any>; props?: Record<string, any> })
     | Component<any>;
 }>;
 
@@ -38,7 +64,8 @@ export type Statuses = Partial<{
  * @param {number} value The value to get the status for.
  * @returns {StatusCode} The status.
  *
- * @category helpers
+ * @see {@link StatusCode}
+ * @category router
  */
 export const getStatusByValue = (value: number) => {
   return Object.keys(StatusCode)[Object.values(StatusCode).indexOf(value)];
