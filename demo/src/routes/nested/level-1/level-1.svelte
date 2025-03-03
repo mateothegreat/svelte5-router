@@ -15,7 +15,7 @@
     }
   ];
 
-  let instance: RouterInstance;
+  let instance: RouterInstance = $state();
   let { route } = $props();
 
   let end = $state(false);
@@ -43,7 +43,8 @@
   {route}
   title={{
     file: "src/routes/nested/level-1/level-1.svelte",
-    content: "This demo shows how to use nested routing with the router where multiple routers can be nested within each other."
+    content:
+      "This demo shows how to use nested routing with the router where multiple routers can be nested within each other."
   }}
   links={[
     {

@@ -1,5 +1,6 @@
 import type { Component } from "svelte";
 
+import type { Query } from "./query.svelte";
 import type { Route } from "./route.svelte";
 
 /**
@@ -54,7 +55,10 @@ export enum StatusCode {
  */
 export type Statuses = Partial<{
   [K in StatusCode]:
-    | ((path: string) => Route | Promise<Route> | { component: Component<any>; props?: Record<string, any> })
+    | ((
+        path: string,
+        query?: Query
+      ) => Route | Promise<Route> | { component: Component<any>; props?: Record<string, any> })
     | Component<any>;
 }>;
 

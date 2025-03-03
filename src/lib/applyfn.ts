@@ -1,5 +1,6 @@
 import type { Component } from "svelte";
 
+import type { Span } from "./helpers/tracing.svelte";
 import type { Routed } from "./routed";
 
 /**
@@ -7,4 +8,4 @@ import type { Routed } from "./routed";
  *
  * @category router
  */
-export type ApplyFn = (component: Component, route: Routed) => void;
+export type ApplyFn = (component: Component, route: Routed, span?: Span) => void;

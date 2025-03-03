@@ -1,8 +1,10 @@
 import type { ApplyFn } from "./applyfn";
-import { log } from "./logger";
 import { RouterInstanceConfig } from "./router-instance-config";
 import { RouterInstance } from "./router-instance.svelte";
 import { ReactiveMap } from "./utilities.svelte";
+
+import { logging } from "./helpers/logging";
+import type { Span } from "./helpers/tracing.svelte";
 
 /**
  * Handles the dynamic registration and deregistration of router instances.
@@ -46,11 +48,20 @@ export class Registry {
    *
    * @see {@link unregister}: The opposite of this method.
    */
-  register(config: RouterInstanceConfig, applyFn: ApplyFn): RouterInstance {
+  register(config: RouterInstanceConfig, applyFn: ApplyFn, span?: Span): RouterInstance {
+    if (span) {
+      span.trace({
+        name: "register",
+        description: "registering a new router instance",
+        metadata: {
+          location: "/src/lib/registry.svelte:register()",
+          config
+        }
+      });
+    }
+
     if (this.instances.has(config.id)) {
-      throw new Error(
-        `Router instance with id ${config.id} already registered`
-      );
+      throw new Error(`router instance with id ${config.id} already registered`);
     }
 
     const instance = new RouterInstance(config, applyFn);
@@ -61,11 +72,11 @@ export class Registry {
      * this statement is removed by the compiler (tree-shaking):
      */
     if (import.meta.env.SPA_ROUTER?.logLevel === "debug") {
-      log.debug(config.id, "registered router instance", {
-        id: config.id,
-        routes: config.routes.length,
-        registries: this.instances.size,
-        basePath: config.basePath,
+      logging.debug(config.id, "registered router instance", {
+        router: {
+          id: config.id,
+          basePath: config.basePath
+        },
         config
       });
     }
@@ -80,13 +91,16 @@ export class Registry {
    */
   unregister(id: string): void {
     const instance = this.instances.get(id);
+    if (import.meta.env.SPA_ROUTER?.logLevel === "debug") {
+      logging.debug(id, "unregistered router instance", {
+        id,
+        router: {
+          id,
+          basePath: instance.config.basePath
+        }
+      });
+    }
     if (instance) {
-      if (import.meta.env.SPA_ROUTER?.logLevel === "debug") {
-        log.debug(id, "unregistered router instance", {
-          id: id,
-          routes: instance.config.routes.length
-        });
-      }
       this.instances.delete(id);
     }
   }
@@ -103,5 +117,4 @@ export class Registry {
  *
  * @category registry
  */
-export const registry =
-  (window as any).__SVELTE_SPA_ROUTER_REGISTRY__ || new Registry();
+export const registry = (window as any).__SVELTE_SPA_ROUTER_REGISTRY__ || new Registry();

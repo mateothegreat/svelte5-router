@@ -1,10 +1,15 @@
 import type { Component, Snippet } from "svelte";
 
 import type { Hooks } from "./hooks";
+import { paths, type PathType } from "./path";
+import type { Query, QueryEvaluationResult, QueryType } from "./query.svelte";
 import { Routed } from "./routed";
 
-import type { PathType } from "./path";
-import type { Query, QueryTest, QueryType } from "./query.svelte";
+import { evaluators, type Evaluation } from "./helpers/evaluators";
+import { Identities } from "./helpers/identify";
+import { normalize } from "./helpers/normalize";
+import { regexp } from "./helpers/regexp";
+import type { Trace } from "./helpers/tracing.svelte";
 
 /**
  * A route that can be navigated to.
@@ -110,12 +115,18 @@ export class Route {
    *
    * @optional If no value is provided, there are no params that could be extracted from the path.
    */
-  params?: string[] | Record<string, string> | QueryTest;
+  params?: string[] | Record<string, string> | QueryEvaluationResult;
 
   /**
    * The status of the route once it has been matched or otherwise processed.
    */
   status?: number;
+
+  /**
+   * Traces are a list of objects that describe the route's path and query params
+   * as it is processed by the router.
+   */
+  traces?: Trace[] = $state([]);
 
   /**
    * The constructor for the `Route` class.
@@ -124,7 +135,7 @@ export class Route {
    */
   constructor(route: Route) {
     this.name = route.name;
-    this.path = route.path;
+    this.path = typeof route.path === "string" ? normalize(route.path) : route.path;
     this.query = route.query;
     this.component = route.component;
     this.props = route.props;
@@ -137,66 +148,83 @@ export class Route {
    * Parse the route against the given path.
    * @param path The path to parse against the route.
    */
-  test?(path: RegExp | string | number, query?: Query): Routed {
-    const segments = path.toString().split("/").filter(Boolean);
-    // Handle string paths
+  test?(path: PathType, query?: Query): Evaluation {
+    const evaluation: Evaluation = {
+      path: {
+        condition: "no-match"
+      }
+    };
+
+    // Handle string paths being passed in at the route.path level:
     if (typeof this.path === "string") {
-      // Detect possible paths that use regex syntax:
-      if (/[[\]{}()*+?.,\\^$|#\s]/.test(this.path)) {
+      // Detect if this path contains regex syntax:
+      if (regexp.can(this.path)) {
         // Path is a regex, so we need to test it against the path passed in:
-        const match = new RegExp(this.path).exec(segments.join("/"));
+        const match = regexp.from(this.path).exec(path.toString());
         if (match) {
-          if (query) {
-            if (query.test(this.query)) {
-              return new Routed({
-                path: this.path,
-                params: match.groups || match.slice(1)
-              });
-            }
-          } else {
-            return new Routed({
-              path: this.path,
-              params: match.groups || match.slice(1)
-            });
-          }
+          evaluation.path = {
+            condition: "exact-match",
+            params: match.groups
+          };
         }
       } else {
         // Path is not a regex, so we then check if the path passed in is a direct match:
-        if (this.path === path) {
-          return new Routed({
-            path: this.path
-          });
-        } else if (this.path === segments[0]) {
-          return new Routed({
-            path: this.path
-          });
+        if (normalize(this.path) === path) {
+          evaluation.path = {
+            condition: "exact-match"
+          };
+        } else if (paths.base(this.path, path.toString())) {
+          evaluation.path = {
+            condition: "base-match"
+          };
         }
       }
     }
-    // Handle RegExp paths
+    // Handle RegExp instances being passed in at the route.path level:
     else if (this.path instanceof RegExp) {
-      const match = this.path.exec(path.toString());
-      if (match) {
-        if (query) {
-          if (query.test(this.query)) {
-            return new Routed({
-              path: this.path,
-              params: match.groups || match.slice(1)
-            });
-          }
-        } else {
-          return new Routed({
-            path: this.path,
-            params: match.groups || match.slice(1)
-          });
-        }
+      const res = evaluators[Identities.regexp](this.path, path);
+      if (res) {
+        evaluation.path = {
+          condition: "exact-match"
+        };
       }
     }
-    // Handle numeric paths
+    // Handle numeric paths being passed in at the route.path level:
     else if (typeof this.path === "number" && this.path === path) {
-      return new Routed({
-        path: this.path
-      });
+      throw new Error("numbered route match not supported at the route.path level");
     }
+
+    if (query) {
+      const evaluation = query.test(this.query);
+      if (evaluation.condition === "exact-match") {
+        return new Routed(this, {
+          path: "5exact-match",
+          querystring: "exact-match"
+        });
+      } else {
+        return new Routed(this, {
+          path: "6exact-match",
+          querystring: evaluation.condition
+        });
+      }
+    } else {
+      // return new Routed(this, {
+      //   path: "no-match",
+      //   querystring: "skipped-not-present"
+      // });
+    }
+    return evaluation;
   }
 }
+
+/**
+ * A route result that includes the evaluation results of the route.
+ *
+ * @remarks
+ * This type is necessary for the internal workings of the router to ensure that
+ * the evaluation results are included in the route result and to avoid requiring
+ * it to be merged in the original route instance.
+ */
+export type RouteResult = {
+  evaluation: Evaluation;
+} & Route;

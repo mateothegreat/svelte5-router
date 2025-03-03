@@ -4,6 +4,8 @@ import type { Hooks } from "./hooks";
 import { Route } from "./route.svelte";
 import type { Statuses } from "./statuses";
 
+import { normalize } from "./helpers/normalize";
+
 /**
  * The configuration for a new router instance.
  *
@@ -75,6 +77,12 @@ export class RouterInstanceConfig {
   statuses?: Statuses;
 
   /**
+   * Whether to allow the same route to be rendered if the conditions are the
+   * same (taking in to account the path, query, and status code).
+   */
+  renavigation?: boolean;
+
+  /**
    * The constructor for this router instance.
    *
    * @param {RouterInstanceConfig} config The config for this router instance.
@@ -95,6 +103,9 @@ export class RouterInstanceConfig {
       this.routes = [];
       for (let route of config.routes) {
         if (route instanceof Route) {
+          if (typeof route.path === "string") {
+            route.path = normalize(route.path);
+          }
           this.routes.push(route);
         } else {
           this.routes.push(new Route(route));

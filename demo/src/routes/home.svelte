@@ -20,11 +20,21 @@
       }
     },
     {
+      // Starting paths with "/" is not required, but it's a good idea to
+      // do so for clarity in some cases.
+      //
+      // The router will match this route if the path is "/welcome" or "/home/welcome"
+      // because the base path is passed in as "/home" below.
       path: "/welcome",
       component: welcome
     },
     {
-      path: "/with-query-params",
+      // Starting paths with "/" is not required, but it's a good idea to
+      // do so for clarity in some cases.
+      //
+      // The router will match this route if the path is "/with-query-params" or "/home/with-query-params"
+      // because the base path is passed in as "/home" below.
+      path: "with-query-params",
       component: displayParams
     }
   ];
@@ -36,10 +46,12 @@
     <p>
       <InlineCode
         text="@mateothegreat/svelte5-router"
-        class="bg-black text-blue-500" /> is an SPA router for Svelte that allows you to divide & conquer your app with nested routers, snippets, and more.
+        class="bg-black text-blue-500" /> is an SPA router for Svelte that allows you to divide & conquer your app with nested
+      routers, snippets, and more.
     </p>
     <div class="flex gap-3">
-      <div class="flex h-9 cursor-pointer items-center gap-1 rounded-sm border-2 border-slate-400 bg-violet-600 p-2 transition-all duration-500 hover:bg-blue-600">
+      <div
+        class="flex h-9 cursor-pointer items-center gap-1 rounded-sm border-2 border-slate-400 bg-violet-600 p-2 transition-all duration-500 hover:bg-blue-600">
         <Newspaper class="h-5 w-5" />
         <a
           target="_blank"
@@ -48,7 +60,8 @@
           Documentation
         </a>
       </div>
-      <div class="flex h-9 cursor-pointer items-center gap-1 rounded-sm border-2 border-slate-400 bg-slate-600 p-2 transition-all duration-500 hover:bg-blue-600">
+      <div
+        class="flex h-9 cursor-pointer items-center gap-1 rounded-sm border-2 border-slate-400 bg-slate-600 p-2 transition-all duration-500 hover:bg-blue-600">
         <Github class="h-5 w-5" />
         <a
           target="_blank"
@@ -57,7 +70,8 @@
           GitHub Repository
         </a>
       </div>
-      <div class="flex h-9 cursor-pointer items-center gap-1 rounded-sm border-2 border-slate-400 bg-slate-600 p-2 transition-all duration-500 hover:bg-blue-600">
+      <div
+        class="flex h-9 cursor-pointer items-center gap-1 rounded-sm border-2 border-slate-400 bg-slate-600 p-2 transition-all duration-500 hover:bg-blue-600">
         <MessageCircleQuestion class="h-5 w-5" />
         <a href="https://github.com/mateothegreat/svelte5-router/issues">GitHub Issues</a>
       </div>
@@ -98,12 +112,13 @@
     <div class="m-4 flex flex-col gap-4">
       <div>
         The route is mapped to <InlineCode text="/home/with-query-params" />
-        and it's <InlineCode text="component" /> property is using a snippet that renders <InlineCode text={"{JSON.stringify(props.route.query, null, 2)}"} />
+        and it's <InlineCode text="component" /> property is using a snippet that renders <InlineCode
+          text={"{JSON.stringify(props.route.query, null, 2)}"} />
       </div>
       <Code
         title="props.route.query"
         class="bg-black/50">
-        <div>{JSON.stringify(route.query, null, 2)}</div>
+        <div>{JSON.stringify(route, null, 2)}</div>
       </Code>
     </div>
   </Container>
@@ -116,7 +131,8 @@
   end={true}
   title={{
     file: "src/routes/home.svelte",
-    content: "This route is a child of the main app router where you are redirected to /home/welcome when landing on /home using a `pre` hook."
+    content:
+      "This route is a child of the main app router where you are redirected to /home/welcome when landing on /home using a `pre` hook."
   }}
   links={[
     {

@@ -6,8 +6,14 @@
   import Props from "$routes/props/props.svelte";
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
-  import { type BadRouted, getStatusByValue, goto, registry, type Route, Router, type RouterInstance, StatusCode } from "@mateothegreat/svelte5-router";
+  import { registry, type Route, Router, type RouterInstance, StatusCode } from "@mateothegreat/svelte5-router";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
+
+  if (import.meta.hot) {
+    import.meta.hot.accept(() => {
+      import.meta.hot!.invalidate();
+    });
+  }
 
   // This is a state variable that will hold the router instance.
   // It can be used to access the current route, navigate, etc:
@@ -16,19 +22,22 @@
   const routes: Route[] = [
     // Example of a route that redirects to the home route:
     {
-      path: "",
-      hooks: {
-        pre: () => {
-          goto("/home");
-          return false;
-        }
-      }
+      name: "custom-name-for-tracking-purposes",
+      component: Home
+      // path: "",
+      // hooks: {
+      //   pre: () => {
+      //     goto("/home");
+      //     return false;
+      //   }
+      // }
     },
     {
       // Here we use a regex to match the home route.
       // This is useful if you want to match a route that has a dynamic path.
       // The "?:" is used to group the regex without capturing the match:
-      path: /(?:^$|^\/home)/,
+      path: "/home",
+      // path: /^\/($|home)$/,
       component: Home,
       // Use hooks to perform actions before and after the route is resolved:
       hooks: {
@@ -133,27 +142,19 @@
         bind:instance
         {routes}
         statuses={{
-          [StatusCode.NotFound]: (routed: BadRouted) => {
-            console.warn(
-              `Route "${routed.path.before}" could not be found :(`,
-              {
-                statusName: getStatusByValue(routed.status),
-                statusValue: routed.status
-              },
-              routed
-            );
-            return {
-              component: NotFound,
-              props: {
-                somethingExtra: new Date().toISOString()
-              }
-            };
-          }
+          [StatusCode.NotFound]: (path: string) => ({
+            component: NotFound,
+            props: {
+              path,
+              somethingExtra: new Date().toISOString()
+            }
+          })
         }} />
     </RouteWrapper>
   </div>
 </div>
-<div class="fixed bottom-0 right-10 overflow-hidden rounded-t-md border-2 border-b-0 bg-neutral-950 text-xs text-gray-400">
+<div
+  class="fixed bottom-0 right-10 overflow-hidden rounded-t-md border-2 border-b-0 bg-neutral-950 text-xs text-gray-400">
   <p class="flex items-center gap-1.5 bg-black/80 p-2 text-sm font-medium text-slate-400">
     <a
       href="https://github.com/mateothegreat/svelte5-router/blob/main/docs/registry.md"
@@ -166,13 +167,13 @@
   <table class="divide-y divide-gray-900 overflow-hidden rounded-md border-2 text-xs text-gray-400">
     <thead>
       <tr class="text-center tracking-wider text-slate-500">
-        <th class="px-3 py-2 text-left font-medium">Router Name</th>
+        <th class="px-3 py-2 font-medium">Router Name</th>
         <th class="px-3 py-2 font-medium">Routes</th>
-        <th class="px-3 py-2 font-medium">Active</th>
+        <th class="px-3 py-2 font-medium">State</th>
         <th class="px-3 py-2 font-medium">Current Path</th>
       </tr>
     </thead>
-    <tbody class="divide-y divide-gray-800 text-center font-mono">
+    <tbody class="divide-y divide-gray-800 font-mono">
       {#each registry.instances.entries() as [key, instance]}
         <tr>
           <td class="px-3 py-2 text-left text-indigo-400">
@@ -183,9 +184,9 @@
           </td>
           <td class="px-3 py-2">
             {#if instance.navigating}
-              <span class="text-green-500">yes</span>
+              <span class="text-green-500">busy</span>
             {:else}
-              <span class="text-gray-500">no</span>
+              <span class="text-gray-500">idle</span>
             {/if}
           </td>
           <td class="px-3 py-2 text-green-500">
@@ -197,7 +198,7 @@
   </table>
 </div>
 
-<style lang="scss">
+<style>
   .logo {
     background-image: url("https://github.com/mateothegreat/svelte5-router/raw/main/docs/logo.png");
     background-size: contain;

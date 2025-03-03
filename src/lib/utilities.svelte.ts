@@ -36,7 +36,7 @@ export async function wait(predicate: () => boolean, timeout = 5000): Promise<vo
  * @category utilities
  */
 export function isPromise(value: any): boolean {
-  return !!value && (typeof value === 'object' || typeof value === 'function') && typeof value.then === 'function';
+  return !!value && (typeof value === "object" || typeof value === "function") && typeof value.then === "function";
 }
 
 /**
@@ -54,7 +54,7 @@ export const execute = async <T>(fn: () => T | Promise<T>): Promise<T> => {
   } else {
     return fn();
   }
-}
+};
 
 /**
  * A reactive map that can be observed for changes using `$state()`.
@@ -64,13 +64,26 @@ export const execute = async <T>(fn: () => T | Promise<T>): Promise<T> => {
 export class ReactiveMap<K, V> extends Map<K, V> {
   #state = $state(false);
 
-  get size() { this.#state; return super.size; }
+  get size() {
+    this.#state;
+    return super.size;
+  }
 
   #trig() {
     this.#state = !this.#state;
   }
 
-  get(key: K) { this.#state; return super.get(key); }
+  add(key: K, value: V) {
+    if (this.has(key)) {
+      throw new Error(`key ${key} already exists`);
+    }
+    return this.set(key, value);
+  }
+
+  get(key: K) {
+    this.#state;
+    return super.get(key);
+  }
 
   set(key: K, value: V) {
     const result = super.set(key, value);
@@ -90,13 +103,25 @@ export class ReactiveMap<K, V> extends Map<K, V> {
     return result;
   }
 
-  keys() { this.#state; return super.keys(); }
-  values() { this.#state; return super.values(); }
-  entries() { this.#state; return super.entries(); }
+  keys() {
+    this.#state;
+    return super.keys();
+  }
+  values() {
+    this.#state;
+    return super.values();
+  }
+  entries() {
+    this.#state;
+    return super.entries();
+  }
   forEach(fn: (value: V, key: K, map: Map<K, V>) => void) {
     this.#state;
     return super.forEach(fn);
   }
 
-  [Symbol.iterator]() { this.#state; return super[Symbol.iterator](); }
+  [Symbol.iterator]() {
+    this.#state;
+    return super[Symbol.iterator]();
+  }
 }

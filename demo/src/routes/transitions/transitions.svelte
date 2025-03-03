@@ -7,7 +7,7 @@
   import Slide from "./slide.svelte";
 
   let { route } = $props();
-  let instance: RouterInstance;
+  let instance: RouterInstance = $state();
 
   const routes: Route[] = [
     {
@@ -53,7 +53,8 @@
   end={true}
   title={{
     file,
-    content: "Demo to show how to use transitions with the router (spoiler: they're applied at the content level rather than within the router itself)."
+    content:
+      "Demo to show how to use transitions with the router (spoiler: they're applied at the content level rather than within the router itself)."
   }}
   links={[
     {

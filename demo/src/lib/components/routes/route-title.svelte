@@ -22,7 +22,7 @@
         {#if route}
           the path
           <span class="px-1 py-0.5 text-green-400">
-            {route?.path?.after || "(all paths)"}
+            {route?.path || "(all paths)"}
           </span>
           routed through
           <span class="px-1 py-0.5 text-fuchsia-400">

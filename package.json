@@ -50,7 +50,8 @@
     "typedoc-plugin-mermaid": "^1.12.0",
     "typedoc-plugin-pages": "^1.1.0",
     "typescript": "^5.7.3",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.7"
   },
   "peerDependencies": {
     "svelte": "^5.0.0"

@@ -1,7 +1,9 @@
+import type { Condition } from "./route.svelte";
+
+import { evaluators } from "./helpers/evaluators";
 import { goto } from "./helpers/goto";
 import { Identities, type Identity } from "./helpers/identify";
 import { marshal } from "./helpers/marshal";
-import { comparators } from "./helpers/matchers";
 
 /**
  * The types of values that can be used as a query.
@@ -15,18 +17,22 @@ export type QueryType = Record<string, Extract<Identity, string | number | RegEx
  *
  * @category router
  */
-export type QueryTest = Record<string, string | Record<string, string> | boolean | string[] | object> | boolean;
+export type QueryEvaluationResult = {
+  condition: Condition;
+  matches?: Record<string, string | Record<string, string> | boolean | string[] | object>;
+};
 
 /**
- * Common interface for interacting with the query string of the current URL.
+ * Query string operations.
  *
  * @category helpers
  */
 export class Query {
   params: Record<string, string> = $state();
 
-  constructor() {
-    this.params = Object.fromEntries(new URLSearchParams(window.location.search));
+  constructor(query: Record<string, string>) {
+    console.log("query", query);
+    this.params = query;
   }
 
   get<T>(key: string, defaultValue: T): T {
@@ -55,11 +61,7 @@ export class Query {
     goto(path, this.params);
   }
 
-  isRegExp(value: unknown): boolean {
-    return value instanceof RegExp || (typeof value === "string" && /[[\]{}()*+?.,\\^$|#\s]/.test(value));
-  }
-
-  test(matcher: QueryType): QueryTest {
+  test(matcher: QueryType): QueryEvaluationResult {
     if (typeof matcher === "object") {
       const matches: Record<string, string | Record<string, string> | boolean | string[] | object> = {};
 
@@ -68,8 +70,8 @@ export class Query {
         const marshalled = marshal(value);
 
         if (marshalled.identity === Identities.regexp) {
-          const res = comparators[Identities.regexp](marshalled.value, param);
-          console.log("res", res);
+          const res = evaluators[Identities.regexp](marshalled.value, param);
+          console.log("test", key, res);
           if (res) {
             if (Array.isArray(res)) {
               if (res.length === 1) {
@@ -81,31 +83,17 @@ export class Query {
               matches[key] = res;
             }
           } else {
-            return false;
+            return {
+              condition: "one-or-more-no-match"
+            };
           }
-          // if (result) {
-          //   if (result.groups) {
-          //     matches[key] = result.groups;
-          //   } else {
-          //     if (result.length > 1 && !!result[0]) {
-          //       matches[key] = result.slice(1).filter((v) => v !== undefined);
-          //       if (Array.isArray(matches[key])) {
-          //         if (matches[key].length === 1) {
-          //           matches[key] = matches[key][0];
-          //         }
-          //       }
-          //     }
-          //   }
-          // } else {
-          //   return false;
-          // }
         }
 
         if (marshalled.identity === Identities.string) {
           matches[key] = marshalled.value === param;
         }
 
-        if (marshalled.identity === Identities.number) {
+        if (marshalled.identity === Identities.number && marshalled.value === Number(param)) {
           matches[key] = marshalled.value === Number(param);
         }
 
@@ -124,12 +112,18 @@ export class Query {
             const marshalled = marshal<unknown>(value);
           });
         }
-        console.log("matches", matches);
       }
-      console.log("matches", matches);
-      return matches;
+
+      if (Object.keys(matches).length > 0) {
+        return {
+          condition: "exact-match",
+          matches
+        };
+      }
+
+      return {
+        condition: "one-or-more-no-match"
+      };
     }
-    console.log("false");
-    return false;
   }
 }

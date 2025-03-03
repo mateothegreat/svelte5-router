@@ -1,9 +1,9 @@
-import type { Route } from "./route.svelte";
-import type { StatusCode } from "./statuses";
-import type { Trace } from "./trace";
-
 import { type PathType } from "./path";
-import type { QueryTest, QueryType } from "./query.svelte";
+import type { QueryEvaluationResult, QueryType } from "./query.svelte";
+import type { Evaluation, Route } from "./route.svelte";
+import type { StatusCode } from "./statuses";
+
+import type { Trace } from "./helpers/tracing.svelte";
 
 /**
  * The result of a route being matched.
@@ -47,7 +47,7 @@ export class Routed {
    *
    * @optional If no value is provided, there are no params that could be extracted from the path.
    */
-  params?: string[] | Record<string, string> | QueryTest;
+  params?: string[] | Record<string, string> | QueryEvaluationResult;
 
   /**
    * The props to pass to the component.
@@ -77,13 +77,19 @@ export class Routed {
    */
   trace?: Trace[];
 
-  constructor(route: Route) {
+  /**
+   * The evaluation results of the route.
+   */
+  evaluation: Evaluation;
+
+  constructor(route: Route, evaluation: Evaluation) {
     this.name = route.name;
     this.path = route.path;
     this.params = route.params;
     this.query = route.query;
     this.status = route.status;
     this.props = route.props;
+    this.evaluation = evaluation;
   }
 }
 
