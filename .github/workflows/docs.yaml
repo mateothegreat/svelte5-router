@@ -2,12 +2,8 @@ name: publish api docs
 on:
   workflow_dispatch:
   push:
-    paths:
-      - "docs/**"
-      - "!docs/changelog.md"
-      - "src/**"
     branches:
-      - main
+      - "*"
 jobs:
   publish-documentation:
     permissions:

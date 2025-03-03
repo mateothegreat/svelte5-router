@@ -1,10 +1,8 @@
 on:
   workflow_dispatch:
   push:
-    paths:
-      - "src/**"
     branches:
-      - main
+      - "*"
 name: release
 permissions:
   contents: write
