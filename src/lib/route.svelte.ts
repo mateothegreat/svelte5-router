@@ -1,15 +1,50 @@
 import type { Component, Snippet } from "svelte";
 
 import type { Hooks } from "./hooks";
+import type { Params } from "./params";
 import { paths, type PathType } from "./path";
-import type { Query, QueryEvaluationResult, QueryType } from "./query.svelte";
-import { Routed } from "./routed";
+import type { QueryType } from "./query.svelte";
+import type { RouterInstance } from "./router-instance.svelte";
 
-import { evaluators, type Evaluation } from "./helpers/evaluators";
+import { evaluators, type Condition, type Evaluation } from "./helpers/evaluators";
 import { Identities } from "./helpers/identify";
 import { normalize } from "./helpers/normalize";
 import { regexp } from "./helpers/regexp";
-import type { Trace } from "./helpers/tracing.svelte";
+import type { Span, Trace } from "./helpers/tracing.svelte";
+
+/**
+ * A route result that includes the evaluation results of the route.
+ *
+ * @remarks
+ * This type is necessary for the internal workings of the router to ensure that
+ * the evaluation results are included in the route result and to avoid requiring
+ * it to be merged in the original route instance.
+ */
+export type RouteResult = {
+  router: RouterInstance;
+  route: Route;
+  result: {
+    path: {
+      condition: Condition;
+      original: string;
+      params?: Params;
+    };
+    querystring: {
+      condition: Condition;
+      original: string;
+      params?: Params;
+    };
+    component: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
+    status: number;
+  };
+};
+
+/**
+ * The function that is used to apply a route to the DOM.
+ *
+ * @category router
+ */
+export type ApplyFn = (result: RouteResult, span?: Span) => void;
 
 /**
  * A route that can be navigated to.
@@ -110,12 +145,12 @@ export class Route {
    */
   children?: Route[];
 
-  /**
-   * The params of the route.
-   *
-   * @optional If no value is provided, there are no params that could be extracted from the path.
-   */
-  params?: string[] | Record<string, string> | QueryEvaluationResult;
+  // /**
+  //  * The params of the route.
+  //  *
+  //  * @optional If no value is provided, there are no params that could be extracted from the path.
+  //  */
+  // params?: string[] | Record<string, string> | QueryEvaluationResult;
 
   /**
    * The status of the route once it has been matched or otherwise processed.
@@ -148,13 +183,7 @@ export class Route {
    * Parse the route against the given path.
    * @param path The path to parse against the route.
    */
-  test?(path: PathType, query?: Query): Evaluation {
-    const evaluation: Evaluation = {
-      path: {
-        condition: "no-match"
-      }
-    };
-
+  test?(path: PathType): Evaluation {
     // Handle string paths being passed in at the route.path level:
     if (typeof this.path === "string") {
       // Detect if this path contains regex syntax:
@@ -162,7 +191,7 @@ export class Route {
         // Path is a regex, so we need to test it against the path passed in:
         const match = regexp.from(this.path).exec(path.toString());
         if (match) {
-          evaluation.path = {
+          return {
             condition: "exact-match",
             params: match.groups
           };
@@ -170,12 +199,14 @@ export class Route {
       } else {
         // Path is not a regex, so we then check if the path passed in is a direct match:
         if (normalize(this.path) === path) {
-          evaluation.path = {
-            condition: "exact-match"
+          return {
+            condition: "exact-match",
+            params: this.path
           };
         } else if (paths.base(this.path, path.toString())) {
-          evaluation.path = {
-            condition: "base-match"
+          return {
+            condition: "left-partial-match",
+            params: {}
           };
         }
       }
@@ -184,8 +215,9 @@ export class Route {
     else if (this.path instanceof RegExp) {
       const res = evaluators[Identities.regexp](this.path, path);
       if (res) {
-        evaluation.path = {
-          condition: "exact-match"
+        return {
+          condition: "exact-match",
+          params: res
         };
       }
     }
@@ -194,37 +226,9 @@ export class Route {
       throw new Error("numbered route match not supported at the route.path level");
     }
 
-    if (query) {
-      const evaluation = query.test(this.query);
-      if (evaluation.condition === "exact-match") {
-        return new Routed(this, {
-          path: "5exact-match",
-          querystring: "exact-match"
-        });
-      } else {
-        return new Routed(this, {
-          path: "6exact-match",
-          querystring: evaluation.condition
-        });
-      }
-    } else {
-      // return new Routed(this, {
-      //   path: "no-match",
-      //   querystring: "skipped-not-present"
-      // });
-    }
-    return evaluation;
+    return {
+      condition: "no-match",
+      params: {}
+    };
   }
 }
-
-/**
- * A route result that includes the evaluation results of the route.
- *
- * @remarks
- * This type is necessary for the internal workings of the router to ensure that
- * the evaluation results are included in the route result and to avoid requiring
- * it to be merged in the original route instance.
- */
-export type RouteResult = {
-  evaluation: Evaluation;
-} & Route;

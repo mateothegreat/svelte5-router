@@ -1,4 +1,4 @@
-import { Query, registry, Routed, RouterInstanceConfig, Span, type ApplyFn, type Hooks } from ".";
+import { Query, registry, RouterInstanceConfig, Span, type ApplyFn, type Hooks } from ".";
 import type { Route, RouteResult } from "./route.svelte";
 import { StatusCode } from "./statuses";
 import { execute } from "./utilities.svelte";
@@ -76,7 +76,7 @@ export class RouterInstance {
   /**
    * The current route for the router instance.
    */
-  current = $state<Route>();
+  current = $state<RouteResult>();
 
   /**
    * The constructor for the RouterInstance class.
@@ -180,11 +180,11 @@ export class RouterInstance {
       }
     });
 
-    const route = this.get(path, query, span);
-    if (route) {
+    const result = await this.get(path, query, span);
+    if (result) {
       span?.trace({
         name: "router-instance.handleStateChange",
-        description: `${this.config.id} with base path "${this.config.basePath || "/"}" found an applicable route for path "${path}"`,
+        description: `route found for path "${path}"`,
         metadata: {
           location: "/src/lib/router-instance.svelte:handleStateChange()",
           router: {
@@ -193,32 +193,32 @@ export class RouterInstance {
           },
           path,
           query: query?.params || false,
-          route
+          route: result
         }
       });
 
       // Run the global pre hooks:
       if (this.config.hooks?.pre) {
-        if (!(await this.evaluateHooks(route, this.config.hooks.pre))) {
+        if (!(await this.evaluateHooks(result.route, this.config.hooks.pre))) {
           this.navigating = false;
           return;
         }
       }
 
       // Run the route specific pre hooks:
-      if (route.hooks?.pre) {
-        if (!(await this.evaluateHooks(route, route.hooks.pre))) {
+      if (result.route.hooks?.pre) {
+        if (!(await this.evaluateHooks(result.route, result.route.hooks.pre))) {
           this.navigating = false;
           return;
         }
       }
 
       // Contact the downstream router component to apply the route:
-      this.applyFn(route.component, new Routed(route, route.evaluation), span);
+      this.applyFn(result, span);
 
       // Run the route specific post hooks:
-      if (route && route.hooks?.post) {
-        if (!(await this.evaluateHooks(route, route.hooks.post))) {
+      if (result && result.route.hooks?.post) {
+        if (!(await this.evaluateHooks(result.route, result.route.hooks.post))) {
           this.navigating = false;
           return;
         }
@@ -226,11 +226,12 @@ export class RouterInstance {
 
       // Finally, run the global post hooks:
       if (this.config.hooks?.post) {
-        await this.evaluateHooks(route, this.config.hooks.post);
+        await this.evaluateHooks(result.route, this.config.hooks.post);
       }
 
-      this.current = route;
+      this.current = result;
     }
+
     this.navigating = false;
   }
 
@@ -256,8 +257,49 @@ export class RouterInstance {
    *
    * @returns {RegistryMatch} The matched route for the given path.
    */
-  get(path: string, query?: Query, span?: Span): RouteResult {
+  async get(path: string, query?: Query, span?: Span): Promise<RouteResult> {
     const normalized = normalize(path.replace(this.config.basePath || "/", ""));
+
+    const renderDefaultRoute = (reason: string): RouteResult => {
+      const defaultRoute = Array.from(this.routes).find(
+        (route) => !route.path || route.path === "" || route.path === "/"
+      );
+      span?.trace({
+        name: "router-instance.getDefaultRoute",
+        description: `get default route because "${reason}"`,
+        metadata: {
+          location: "/src/lib/router-instance.svelte:get()",
+          router: {
+            id: this.config.id,
+            basePath: this.config.basePath
+          },
+          path,
+          query: query?.params || false,
+          normalized,
+          route: defaultRoute
+        }
+      });
+      if (defaultRoute) {
+        return {
+          router: this,
+          route: defaultRoute,
+          result: {
+            path: {
+              condition: "default-match",
+              original: path
+            },
+            querystring: {
+              condition: "no-conditions",
+              original: query?.toString(),
+              params: query?.params
+            },
+            component: defaultRoute.component,
+            status: StatusCode.OK
+          }
+        };
+      }
+    };
+
     span?.trace({
       name: "router-instance.get",
       description: `${this.config.id} with base path "${this.config.basePath || "/"}" is attempting to get a route for path "${path}"`,
@@ -273,47 +315,18 @@ export class RouterInstance {
       }
     });
 
-    // If the path is empty, return the default route:
-    if (normalized.length === 0) {
-      const defaultRoute = this.getDefaultRoute();
-      span?.trace({
-        name: "router-instance.getDefaultRoute",
-        description: "get default route",
-        metadata: {
-          location: "/src/lib/router-instance.svelte:get()",
-          router: {
-            id: this.config.id,
-            basePath: this.config.basePath
-          },
-          path,
-          query: query?.params || false,
-          normalized,
-          route: defaultRoute
-        }
-      });
-      if (defaultRoute) {
-        return {
-          ...defaultRoute,
-          path: normalized,
-          status: StatusCode.OK,
-          evaluation: {
-            path: {
-              condition: "default-match"
-            },
-            querystring: {
-              condition: "skipped-not-present"
-            }
-          }
-        };
-      }
+    if (this.config.basePath === path) {
+      return renderDefaultRoute("base path is the same as the path");
     }
 
+    let candidate: RouteResult;
+
     for (const route of this.routes) {
-      const evaluation = route.test(normalized);
-      if (evaluation && SuccessfulConditions.includes(evaluation?.path?.condition)) {
+      const pathEvaluation = route.test(normalized);
+      if (pathEvaluation && SuccessfulConditions.includes(pathEvaluation.condition)) {
         span?.trace({
           name: "router-instance.get:routesloop",
-          description: `${evaluation.path.condition} for inbound path "${path}" against route.path "${route.path}"${route.name ? ` (name: "${route.name}")` : ""}`,
+          description: `${pathEvaluation.condition} for inbound path "${path}"${route.name ? ` (named: "${route.name}")` : ""}`,
           metadata: {
             location: "/src/lib/router-instance.svelte:get():forloop",
             router: {
@@ -324,109 +337,134 @@ export class RouterInstance {
             query: query?.params || false,
             normalized,
             route,
-            evaluation
+            evaluation: {
+              path: pathEvaluation
+            }
           }
         });
 
         if (route.query && query) {
-          if (route.path === normalized) {
-            const matches = query.test(route.query);
-            span?.trace({
-              name: "router-instance.get.evaluateQuery",
-              description: `evaluating the query string for the route "${route.path}"`,
-              metadata: {
-                location: "/src/lib/router-instance.svelte:get()",
-                router: {
-                  id: this.config.id,
-                  basePath: this.config.basePath
-                },
-                path,
-                query: query?.params || false,
-                normalized,
-                evaluation: matches
+          const queryEvaluation = query.test(route.query);
+          span?.trace({
+            name: "router-instance.get.evaluateQuery",
+            description: `evaluating query string "${query?.toString()}" ${SuccessfulConditions.includes(queryEvaluation?.condition) ? "passed" : "failed"} for the route "${path}"`,
+            metadata: {
+              location: "/src/lib/router-instance.svelte:get()",
+              router: {
+                id: this.config.id,
+                basePath: this.config.basePath
+              },
+              path,
+              query: query?.params || false,
+              normalized,
+              evaluation: {
+                path: pathEvaluation,
+                querystring: queryEvaluation
               }
-            });
-            if (matches) {
-              route.params = matches;
-              route.status = StatusCode.OK;
-              return {
-                ...route,
-                evaluation
-              };
-              // } else {
-              //   if (this.config.statuses?.[404]) {
-              //     if (typeof this.config.statuses[404] === "function") {
-              //       return {
-              //         ...(this.config.statuses[404] as (path: string) => Route)(path),
-              //         status: StatusCode.Forbidden,
-              //         path,
-              //         query: query.params,
-              //         props: route.props
-              //       };
-              //     }
-              //     // If the status is a component, return the route:
-              //     return {
-              //       component: this.config.statuses[404],
-              //       status: StatusCode.NotFound
-              //     };
-              //   }
             }
+          });
+          if (SuccessfulConditions.includes(queryEvaluation?.condition)) {
+            candidate = {
+              router: this,
+              route,
+              result: {
+                path: {
+                  condition: "exact-match",
+                  ...pathEvaluation,
+                  original: normalized
+                },
+                querystring: {
+                  condition: "exact-match",
+                  ...queryEvaluation,
+                  original: query?.toString()
+                },
+                component: route.component,
+                status: StatusCode.OK
+              }
+            };
           }
-          // } else {
-          //   route.status = StatusCode.OK;
-          //   route.query = query?.params;
-          //   console.log("route", route);
-          //   return {
-          //     ...route,
-          //     path: normalized,
-          //     query: query?.params,
-          //     evaluation: {
-          //       path: "exact-match",
-          //       querystring: "skipped-not-present"
-          //     }
-          //   };
         } else {
-          return {
-            ...route,
-            path: normalized,
-            status: StatusCode.OK,
-            evaluation
+          candidate = {
+            router: this,
+            route,
+            result: {
+              path: {
+                ...pathEvaluation,
+                original: normalized
+              },
+              querystring: {
+                condition: "no-conditions",
+                original: query?.toString() || "",
+                params: query?.params || {}
+              },
+              component: route.component,
+              status: StatusCode.OK
+            }
           };
         }
       }
     }
 
-    throw new Error("No route found");
+    /**
+     * If we've made it this far, we should default to trying to find
+     * a route that has no path configured. This will be treated as
+     * the "default" route:
+     */
+    if (path === "/") {
+      return renderDefaultRoute("no routes match, last resort is to find a default route");
+    }
 
-    // // No route matches, try to return a 404 route:
-    // if (this.config.statuses?.[404]) {
-    //   const status = this.config.statuses[404];
-    //   if (typeof status === "function") {
-    //     const ret = (status as (path: string, query?: Query) => Route)(normalized, query);
-    //     console.log("ret", ret, 1, query, 2, normalized);
-    //     return {
-    //       ...ret,
-    //       path: normalized,
-    //       status: StatusCode.NotFound
-    //     };
-    //   }
-    //   return {
-    //     component: status,
-    //     status: StatusCode.NotFound
-    //   };
-    // }
-  }
-
-  /**
-   * Retrieve the default route for the router instance (if one exists).
-   *
-   * @returns {Route} The default route for the router instance.
-   */
-  getDefaultRoute(): Route {
-    for (const route of this.routes) {
-      if (!route.path) {
-        return route;
+    /**
+     * We've exhaausted all options, so we will attempt to locate
+     * a 404 route from the statuses configuration applied to this
+     * router instance.
+     */
+    if (this.config.statuses?.[404]) {
+      const status = this.config.statuses[404];
+      if (typeof status === "function") {
+        const ret = (status as (path: string, query?: Query) => Route)(normalized, query);
+        candidate = {
+          router: this,
+          route: {
+            ...ret,
+            path: normalized
+          },
+          result: {
+            path: {
+              condition: "no-conditions",
+              original: path
+            },
+            querystring: {
+              condition: "no-conditions",
+              original: query?.toString() || "",
+              params: query?.params || {}
+            },
+            component: ret.component,
+            status: StatusCode.NotFound
+          }
+        };
+      } else {
+        candidate = {
+          router: this,
+          route: {
+            path: normalized
+          },
+          result: {
+            path: {
+              condition: "no-match",
+              original: path
+            },
+            querystring: {
+              condition: "no-match",
+              original: query?.toString() || ""
+            },
+            component: status,
+            status: StatusCode.NotFound
+          }
+        };
       }
     }
+
+    return candidate;
   }
 }

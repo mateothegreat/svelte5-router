@@ -1,55 +1,38 @@
-import { identify, Identities, type Identity } from "./identify";
+import type { Params } from "../params";
+
+import { identify, Identities } from "./identify";
 
 /**
  * Path or querystring evaluation result.
  */
-export type Condition =
-  | "exact-match"
-  | "base-match"
-  | "default-match"
-  | "no-match"
-  | "one-or-more-no-match"
-  | "skipped-not-present";
+export type Condition = "exact-match" | "left-partial-match" | "default-match" | "no-match" | "no-conditions";
 
 /**
  * The conditions that are considered successful.
  */
-export const SuccessfulConditions: Condition[] = ["exact-match", "base-match", "default-match"];
+export const SuccessfulConditions: Condition[] = [
+  "exact-match",
+  "left-partial-match",
+  "default-match",
+  "no-conditions"
+];
 
 /**
  * The conditions that are considered failed.
  */
-export const FailedConditions: Condition[] = ["no-match", "one-or-more-no-match", "skipped-not-present"];
-
-/**
- * The returned param values of the evaluation result.
- *
- * @remarks
- * Multiple types are supported to allow for flexibility in the
- * types of params such as when an evaluation uses regex with match grouping.
- *
- * Every param value is a string, array of string, or a record
- * of string keys and values.
- *
- * Params are extracted and converted to the appropriate type
- * later in the route lifecycle
- *
- * @category router
- */
-export type EvaluationParams = Record<string, Extract<Identity, string | string[] | boolean | Record<string, string>>>;
+export const FailedConditions: Condition[] = ["no-match"];
 
 /**
  * The evaluation results of the route.
  */
 export type Evaluation = {
-  path: {
-    condition: Condition;
-    params?: EvaluationParams;
-  };
-  querystring?: {
-    condition: Condition;
-    params?: EvaluationParams;
-  };
+  condition: Condition;
+  params?: Params;
+};
+
+export type EvaluationResult = {
+  path: Evaluation;
+  querystring: Evaluation;
 };
 
 /**

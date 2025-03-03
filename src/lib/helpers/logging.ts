@@ -1,6 +1,10 @@
 import { runtime } from "./runtime";
-import type { Span, Trace } from "./tracing.svelte";
 
+/**
+ * Logging facility.
+ *
+ * @category helpers
+ */
 export namespace logging {
   /**
    * Acceptable log levels (applies to all logging methods).
@@ -8,85 +12,90 @@ export namespace logging {
    * @category helpers
    */
   export enum LogLevel {
-    NONE = 0,
+    FATAL = -1,
     ERROR = 1,
     INFO = 2,
     DEBUG = 3,
-    TRACE = 4
+    TRACE = 4,
+    DISABLED = 5
   }
 
+  /**
+   * A grouping of log messages.
+   *
+   * @category helpers
+   */
   export type Group = {
     name: string;
     messages: any | any[];
   };
 
   /**
-   * Acceptable log types.
-   *
-   * @remarks
-   * Typed out so that it's clearer what can be passed to the logging functions
-   * like groups of logs to combine them in the outputs.
+   * Acceptable log types typed out so that it's clearer what can be
+   * passed to the logging functions like groups of logs to combine them
+   * in the outputs.
    *
    * @category helpers
    */
   export type Log = Group | Group[] | any | any[];
 
   /**
-   * Logging utility for debugging.
-   *
-   * @usage
-   * This allows us to log when we're in debug mode otherwise
-   * this statement is removed by the compiler (known as "tree-shaking") given
-   * the following environment variable is set:
-   *
-   * First, configure your `vite.config.ts` to define the `SPA_ROUTER` environment variable:
-   * ```ts
-   * export default defineConfig({
-   *   plugins: [svelte(), tailwindcss()],
-   *   define: {
-   *     "import.meta.env.SPA_ROUTER": {
-   *       logLevel: "debug"
-   *     }
-   *   }
-   * });
-   * ```
-   *
-   * Usage in your `some-component.svelte`:
-   * ```ts
-   * if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
-   *   logger.debug(this.id, `trying to get("${normalizedPath}")`, {
-   *     status: route?.status,
-   *     trying: route.path,
-   *     upstream: this.config.basePath || "",
-   *     downstream: normalizedPath,
-   *   });
-   * }
-   * ```
+   * Convenience method for logging an info message.
    *
    * @category helpers
    */
-
-  export const info = (...msg: Log[]) => {
+  export const info = (...msg: Log[]): void => {
     log(LogLevel.INFO, ...msg);
   };
 
-  export const debug = (...msg: Log[]) => {
+  /**
+   * Convenience method for logging a debug message.
+   *
+   * @category helpers
+   */
+  export const debug = (...msg: Log[]): void => {
     log(LogLevel.DEBUG, ...msg);
   };
 
-  export const error = (...msg: any[]) => {
+  /**
+   * Convenience method for logging an error message.
+   *
+   * @category helpers
+   */
+  export const error = (...msg: any[]): void => {
     log(LogLevel.ERROR, ...msg);
   };
 
-  export const trace = (...msg: any[]) => {
+  /**
+   * Convenience method for logging a trace message.
+   *
+   * @category helpers
+   */
+  export const trace = (...msg: any[]): void => {
     log(LogLevel.TRACE, ...msg);
   };
 
-  export const log = (level: LogLevel, ...msg: Log[]) => {
-    if (level === LogLevel.NONE) {
-      return;
-    }
-    if (level <= runtime.current.logging.level) {
+  /**
+   * Convenience method for logging a fatal error and finally throwing an error.
+   *
+   * @remarks
+   * This is used to stop the application from running if an error is encountered
+   * that is not recoverable.
+   *
+   * @category helpers
+   */
+  export const fatal = (...msg: any[]): void => {
+    log(LogLevel.FATAL, ...msg);
+    throw new Error("Fatal error");
+  };
+
+  /**
+   * Raw log method.
+   *
+   * @category helpers
+   */
+  export const log = (level: LogLevel, ...msg: Log[]): void => {
+    if (level <= runtime.current.logging.level && level !== LogLevel.DISABLED) {
       if (runtime.current.logging.console) {
         if (msg.some((m) => m?.toConsole)) {
           msg.forEach((m) => m?.toConsole?.());
@@ -97,64 +106,6 @@ export namespace logging {
       if (runtime.current.logging.sink) {
         runtime.current.logging.sink(msg);
       }
-    }
-  };
-
-  export const logd = {
-    debug: (id: string, msg: string, ...data: any[]) => {
-      console.log(
-        "%c[Router ID:%c%s] %c%s",
-        "color: #4CAF50;",
-        "color: #EFC703; font-weight: bold",
-        id,
-        "color: #757575",
-        msg,
-        ...data
-      );
-    },
-    trace: (span: Span, trace: Trace, level?: LogLevel) => {
-      const out = [
-        "%c%s %cspan:%c%s:%ctrace:%c%s%c:%c%s %c%s",
-        "color: #505050",
-        span.date?.toISOString(),
-        "color: #7A7A7A",
-        "color: #915CF2; font-weight: bold",
-        span.id,
-        "color: #7A7A7A; font-weight: bold",
-        "color: #C3F53B; font-weight: bold",
-        trace.index,
-        "color: #7A7A7A; font-weight: bold",
-        "color: #3BAEF5; font-weight: bold",
-        trace.name,
-        "color: #06E96C",
-        trace.description
-      ];
-
-      if (level === LogLevel.TRACE) {
-        out[0] += "\n%c%s";
-        out.push(
-          "color: #6B757F",
-          `attached trace metadata:\n\n${JSON.stringify(
-            {
-              span: span.metadata,
-              trace: trace.metadata
-            },
-            null,
-            2
-          )}`
-        );
-      } else if (level === LogLevel.DEBUG) {
-        if (span) {
-          // @ts-ignore
-          out.push(span);
-        }
-        if (trace) {
-          // @ts-ignore
-          out.push(trace);
-        }
-      }
-
-      console.log(...out);
     }
   };
 }

@@ -29,13 +29,15 @@
             {router}
           </span>
           {#if end}
-            and routing
+            and nested routing
             <span class="px-1 py-0.5 text-red-400">ended</span>
             <StopCircle class="h-4 w-4 text-red-400" />
+            here
           {:else}
-            and routing
+            and nestedrouting
             <span class="px-1 py-0.5 text-green-400">continued</span>
             <ArrowDown class="h-4 w-4 text-green-400" />
+            downward
           {/if}
         {:else}
           <span class="px-1 py-0.5 text-yellow-500">all paths</span>

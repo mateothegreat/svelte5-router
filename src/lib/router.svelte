@@ -4,7 +4,7 @@
   import { Path } from "./path";
   import { Query } from "./query.svelte";
   import { registry } from "./registry.svelte";
-  import type { Route } from "./route.svelte";
+  import type { RouteResult } from "./route.svelte";
   import { RouterInstanceConfig } from "./router-instance-config";
   import type { RouterInstance } from "./router-instance.svelte";
 
@@ -23,9 +23,9 @@
 
   let RenderableComponent = $state<Component | null>(null);
   let router: RouterInstance;
-  let route: Route = $state();
+  let route: RouteResult = $state();
 
-  const apply = async (component: any, r: Route, span?: Span) => {
+  const apply = async (r: RouteResult, span?: Span) => {
     route = r;
     span?.trace({
       name: "apply",
@@ -36,20 +36,22 @@
           id: router.config.id,
           basePath: router.config.basePath
         },
-        route
+        result: r
       }
     });
-    if (typeof component === "function" && component.constructor.name === "AsyncFunction") {
+    if (typeof r.result.component === "function" && r.result.component.constructor.name === "AsyncFunction") {
       // Handle async component - await the import
-      const module = await component();
+      const module = await r.result.component();
       RenderableComponent = module.default || module;
     } else {
       // Handle regular component
-      RenderableComponent = component;
+      RenderableComponent = r.result.component;
     }
   };
 
   router = registry.register(new RouterInstanceConfig(rest), apply, span);
+
+  instance = router;
 
   if (span) {
     span.metadata = {
@@ -62,12 +64,6 @@
     !!window.location.search ? new Query(Object.fromEntries(new URLSearchParams(window.location.search))) : undefined,
     span
   );
-
-  instance = router;
-
-  $effect(() => {
-    $inspect(span);
-  });
 
   onDestroy(() => {
     router.unregister();

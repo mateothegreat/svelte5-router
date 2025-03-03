@@ -1,5 +1,7 @@
 import { Identities, type Identity } from "./identify";
 
+export type MarshallableType = string | number | boolean | RegExp | Function | Promise<unknown>;
+
 export type Marshalled<T> = {
   identity: Identity;
   value: T;
@@ -41,12 +43,10 @@ export const marshal = <T>(value: unknown): Marshalled<T> => {
         value: false as T
       };
     }
-    if (value.match(/^[a-zA-Z]+$/)) {
-      return {
-        identity: Identities.string,
-        value: value as T
-      };
-    }
+    return {
+      identity: Identities.string,
+      value: value as T
+    };
   } else if (typeof value === "number") {
     return {
       identity: Identities.number,
@@ -78,10 +78,16 @@ export const marshal = <T>(value: unknown): Marshalled<T> => {
       value: value as T
     };
   } else if (typeof value === "object") {
-    console.log("marshal", value, typeof value, "object");
+    const marshalled = Object.entries(value).reduce(
+      (acc, [key, val]) => {
+        acc[key] = marshal(val)?.value;
+        return acc;
+      },
+      {} as Record<string, unknown>
+    );
     return {
       identity: Identities.object,
-      value: value as T
+      value: marshalled as T
     };
   } else if (typeof value === "function") {
     return {

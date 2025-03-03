@@ -4,14 +4,12 @@
  */
 import { Query } from "./query.svelte";
 
-import type { Identity } from "./helpers/identify";
-
 /**
  * The types of values that can be used as a path.
  *
  * @category router
  */
-export type PathType = Extract<Identity, string | number | RegExp | Function | Promise<unknown>>;
+export type PathType = string | number | RegExp | Function | Promise<unknown>;
 
 export class Path {
   protocol: string;
@@ -23,15 +21,17 @@ export class Path {
     this.protocol = location.protocol;
     this.host = location.host;
     this.path = location.pathname;
-    this.query = new Query(Object.fromEntries(new URLSearchParams(location.search)));
+    if (location.search.length > 0) {
+      this.query = new Query(Object.fromEntries(new URLSearchParams(location.search)));
+    }
   }
 
   toURL(): string {
-    return `${this.protocol}://${this.host}${this.path}${this.query.toString()}`;
+    return `${this.protocol}://${this.host}${this.path}${this.query ? this.query.toString() : ""}`;
   }
 
   toURI(): string {
-    return `${this.path}${this.query.toString()}`;
+    return `${this.path}${this.query ? this.query.toString() : ""}`;
   }
 }
 

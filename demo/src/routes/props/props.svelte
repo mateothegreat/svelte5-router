@@ -12,7 +12,7 @@
 
   const routes: Route[] = [
     {
-      // This route will be used if there is no match above.
+      // This route will be used if there is no match below...
       component: snippet
     },
     {
@@ -31,8 +31,10 @@
        * /props/query-matcher?pagination=2,23&company=1
        * /props/query-matcher?pagination=2,23&company=12
        */
-      name: "props-query-matching",
-      path: "/query-matcher",
+      name: "props-query-matching-pagination",
+      // path: "/query-matcher",
+      // path: /(query-matcher)/,
+      path: /(?<child>query-matcher)/,
       query: {
         // The "pagination" query param:
         // * must be present
@@ -60,8 +62,8 @@
       //
       // The component will access the params using $props() and the
       // property "child" will contain the value extracted from the path.
-      name: "props-fancy-regex",
-      path: /\/(?<child>.*)/,
+      name: "fancy-regex-capture-group",
+      path: /^\/(?<child>(foo|bar))$/,
       component: DisplayParams,
       props: {
         randomId: Math.random().toString(36).substring(2, 15),
@@ -134,6 +136,10 @@
     {
       href: "/props/query-matcher?value=2",
       label: "/props/query-matcher?value=2"
+    },
+    {
+      href: "/props/404",
+      label: "/props/404"
     }
   ]}>
   <Router

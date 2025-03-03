@@ -1,4 +1,4 @@
-import type { ApplyFn } from "./applyfn";
+import type { ApplyFn } from "./route.svelte";
 import { RouterInstanceConfig } from "./router-instance-config";
 import { RouterInstance } from "./router-instance.svelte";
 import { ReactiveMap } from "./utilities.svelte";
@@ -65,6 +65,7 @@ export class Registry {
     }
 
     const instance = new RouterInstance(config, applyFn);
+
     this.instances.set(config.id, instance);
 
     /**

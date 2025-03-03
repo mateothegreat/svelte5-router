@@ -3,6 +3,11 @@ import { ReactiveMap } from "../utilities.svelte";
 import { logging } from "./logging";
 import { runtime } from "./runtime";
 
+/**
+ * A span is a single trace in a trace collection.
+ *
+ * @category helpers
+ */
 export class Span {
   id?: string;
   date?: Date;
@@ -34,6 +39,11 @@ export class Span {
   }
 }
 
+/**
+ * A trace is a collection of spans.
+ *
+ * @category helpers
+ */
 export class Trace {
   id?: string;
   index?: number;
@@ -52,7 +62,12 @@ export class Trace {
     this.metadata = trace.metadata;
   }
 
-  toConsole(span?: Span, level?: logging.LogLevel): void {
+  /**
+   * Wrapper method for logging a trace to the browser console.
+   *
+   * @category helpers
+   */
+  toConsole?(span?: Span, level?: logging.LogLevel): void {
     const out = [
       "%c%s %cspan:%c%s:%ctrace:%c%s%c:%c%s %c%s",
       "color: #505050",
@@ -98,8 +113,18 @@ export class Trace {
   }
 }
 
+/**
+ * A reactive map of spans.
+ *
+ * @category helpers
+ */
 export const spans = new ReactiveMap<string, Span>();
 
+/**
+ * Helper method for creating a new span.
+ *
+ * @category helpers
+ */
 export const createSpan = (name: string, metadata?: Record<string, any>) => {
   if (runtime.current.tracing) {
     const span = new Span({ name, metadata });

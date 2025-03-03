@@ -6,7 +6,7 @@
   import Props from "$routes/props/props.svelte";
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
-  import { registry, type Route, Router, type RouterInstance, StatusCode } from "@mateothegreat/svelte5-router";
+  import { goto, registry, type Route, Router, type RouterInstance, StatusCode } from "@mateothegreat/svelte5-router";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
 
   if (import.meta.hot) {
@@ -17,27 +17,31 @@
 
   // This is a state variable that will hold the router instance.
   // It can be used to access the current route, navigate, etc:
-  let instance = $state<RouterInstance>();
+  let instance: RouterInstance;
+
+  $effect(() => {
+    if (instance.current) {
+      console.log(`🚀 I'm an $effect and I'm running because the current route is now ${instance.current.route.path}!`);
+    }
+  });
 
   const routes: Route[] = [
-    // Example of a route that redirects to the home route:
     {
-      name: "custom-name-for-tracking-purposes",
-      component: Home
-      // path: "",
-      // hooks: {
-      //   pre: () => {
-      //     goto("/home");
-      //     return false;
-      //   }
-      // }
+      // You can name your routes for tracking or debugging:
+      name: "default-route",
+      component: Home,
+      hooks: {
+        pre: () => {
+          goto("/home");
+          return false;
+        }
+      }
     },
     {
       // Here we use a regex to match the home route.
       // This is useful if you want to match a route that has a dynamic path.
       // The "?:" is used to group the regex without capturing the match:
-      path: "/home",
-      // path: /^\/($|home)$/,
+      path: /^\/($|home)$/,
       component: Home,
       // Use hooks to perform actions before and after the route is resolved:
       hooks: {
@@ -135,6 +139,10 @@
         {
           href: "/transitions",
           label: "/transitions"
+        },
+        {
+          href: "/404",
+          label: "/404"
         }
       ]}>
       <Router

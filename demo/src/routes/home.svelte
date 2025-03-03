@@ -3,18 +3,20 @@
   import Container from "$lib/components/container.svelte";
   import InlineCode from "$lib/components/inline-code.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
-  import { goto, type Route, type Routed } from "@mateothegreat/svelte5-router";
+  import { goto, type Route, type RouteResult } from "@mateothegreat/svelte5-router";
   import Router from "@mateothegreat/svelte5-router/router.svelte";
   import { Github, MessageCircleQuestion, Newspaper } from "lucide-svelte";
 
-  let { route }: { route: Routed } = $props();
+  let { route }: { route: RouteResult } = $props();
 
   const routes: Route[] = [
     {
       // This route will redirect to the welcome route when
       // no path is provided (i.e.: "/home" vs "/home/welcome"):
+      component: welcome,
       hooks: {
         pre: () => {
+          console.log("redirecting to /home/welcome using a pre hook!");
           goto("/home/welcome");
         }
       }

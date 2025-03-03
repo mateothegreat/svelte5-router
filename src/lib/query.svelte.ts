@@ -1,8 +1,6 @@
-import type { Condition } from "./route.svelte";
-
-import { evaluators } from "./helpers/evaluators";
+import { evaluators, type Condition } from "./helpers/evaluators";
 import { goto } from "./helpers/goto";
-import { Identities, type Identity } from "./helpers/identify";
+import { Identities } from "./helpers/identify";
 import { marshal } from "./helpers/marshal";
 
 /**
@@ -10,7 +8,7 @@ import { marshal } from "./helpers/marshal";
  *
  * @category router
  */
-export type QueryType = Record<string, Extract<Identity, string | number | RegExp | Function | Promise<unknown>>>;
+export type QueryType<T = unknown> = Record<string, string | number | RegExp | Function | Promise<T>>;
 
 /**
  * The types of values that the {Query} test method can return.
@@ -31,8 +29,8 @@ export class Query {
   params: Record<string, string> = $state();
 
   constructor(query: Record<string, string>) {
-    console.log("query", query);
-    this.params = query;
+    const marshalled = marshal(query);
+    this.params = marshalled.value as Record<string, string>;
   }
 
   get<T>(key: string, defaultValue: T): T {
@@ -52,9 +50,11 @@ export class Query {
   }
 
   toString() {
-    return Object.entries(this.params)
-      .map(([key, value]) => `${key}=${value}`)
-      .join("&");
+    if (this.params) {
+      return Object.entries(this.params)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("&");
+    }
   }
 
   goto(path: string) {
@@ -67,54 +67,67 @@ export class Query {
 
       for (const [key, value] of Object.entries(matcher)) {
         const param = this.params[key];
-        const marshalled = marshal(value);
+        console.log("test", key, param, this.params[key]);
+        if (param) {
+          const marshalled = marshal(value);
 
-        if (marshalled.identity === Identities.regexp) {
-          const res = evaluators[Identities.regexp](marshalled.value, param);
-          console.log("test", key, res);
-          if (res) {
-            if (Array.isArray(res)) {
-              if (res.length === 1) {
-                matches[key] = res[0];
+          console.log("test", key, marshalled);
+
+          if (marshalled.identity === Identities.regexp) {
+            const res = evaluators[Identities.regexp](marshalled.value, param);
+            console.log("test", key, res);
+            if (res) {
+              if (Array.isArray(res)) {
+                if (res.length === 1) {
+                  matches[key] = res[0];
+                } else {
+                  matches[key] = res;
+                }
               } else {
                 matches[key] = res;
               }
             } else {
-              matches[key] = res;
+              return {
+                condition: "no-match"
+              };
             }
-          } else {
-            return {
-              condition: "one-or-more-no-match"
-            };
           }
-        }
 
-        if (marshalled.identity === Identities.string) {
-          matches[key] = marshalled.value === param;
-        }
+          if (marshalled.identity === Identities.string) {
+            matches[key] = marshalled.value === param;
+          }
 
-        if (marshalled.identity === Identities.number && marshalled.value === Number(param)) {
-          matches[key] = marshalled.value === Number(param);
-        }
+          if (marshalled.identity === Identities.number) {
+            console.warn(marshalled.value, param, marshalled.value === param);
+            if (marshalled.value === param) {
+              matches[key] = marshalled.value === param;
+            }
+          }
 
-        if (marshalled.identity === Identities.boolean) {
-          matches[key] = marshalled.value === Boolean(param);
-        }
+          if (marshalled.identity === Identities.boolean) {
+            matches[key] = marshalled.value === Boolean(param);
+          }
 
-        if (marshalled.identity === Identities.array) {
-          matches[key] = (marshalled.value as Array<unknown>).includes(param);
-        }
+          if (marshalled.identity === Identities.array) {
+            matches[key] = (marshalled.value as Array<unknown>).includes(param);
+          }
 
-        if (marshalled.identity === Identities.object) {
-          const objectValue = marshalled.value as Record<string, unknown>;
-          matches[key] = Object.entries(objectValue).every(([key, value]) => {
-            const param = this.params[key];
-            const marshalled = marshal<unknown>(value);
-          });
+          if (marshalled.identity === Identities.object) {
+            const objectValue = marshalled.value as Record<string, unknown>;
+            matches[key] = Object.entries(objectValue).every(([key, value]) => {
+              const param = this.params[key];
+              const marshalled = marshal<unknown>(value);
+            });
+          }
+        } else {
+          return {
+            condition: "no-match"
+          };
         }
       }
 
       if (Object.keys(matches).length > 0) {
+        console.log("matches", matches);
         return {
           condition: "exact-match",
           matches
@@ -122,7 +135,7 @@ export class Query {
       }
 
       return {
-        condition: "one-or-more-no-match"
+        condition: "no-match"
       };
     }
   }
