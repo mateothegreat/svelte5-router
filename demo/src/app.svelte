@@ -1,12 +1,12 @@
 <script lang="ts">
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
+  import { myDefaultRouterConfig } from "$lib/default-route-config";
   import Home from "$routes/home.svelte";
   import Nested from "$routes/nested/nested.svelte";
-  import NotFound from "$routes/not-found.svelte";
-  import Props from "$routes/props/props.svelte";
+  import PathsAndParams from "$routes/paths-and-params/paths-and-params.svelte";
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
-  import { goto, registry, type Route, Router, type RouterInstance, StatusCode } from "@mateothegreat/svelte5-router";
+  import { goto, registry, type Route, Router, type RouterInstance } from "@mateothegreat/svelte5-router";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
 
   if (import.meta.hot) {
@@ -21,7 +21,9 @@
 
   $effect(() => {
     if (instance.current) {
-      console.log(`🚀 I'm an $effect and I'm running because the current route is now ${instance.current.route.path}!`);
+      console.log(
+        `🚀 I'm an $effect in app.svelte and i'm running because the current route is now ${instance.current.result.path.original}!`
+      );
     }
   });
 
@@ -29,9 +31,9 @@
     {
       // You can name your routes for tracking or debugging:
       name: "default-route",
-      component: Home,
       hooks: {
         pre: () => {
+          console.log("redirecting to /home using a pre hook!");
           goto("/home");
           return false;
         }
@@ -41,7 +43,8 @@
       // Here we use a regex to match the home route.
       // This is useful if you want to match a route that has a dynamic path.
       // The "?:" is used to group the regex without capturing the match:
-      path: /^\/($|home)$/,
+      // path: /^\/($|home)$/,
+      path: "home",
       component: Home,
       // Use hooks to perform actions before and after the route is resolved:
       hooks: {
@@ -69,8 +72,8 @@
       component: Nested
     },
     {
-      path: "props",
-      component: Props
+      path: "paths-and-params",
+      component: PathsAndParams
     },
     {
       path: "protected",
@@ -121,6 +124,15 @@
       }}
       links={[
         {
+          href: "/",
+          label: "/",
+          options: {
+            active: {
+              absolute: true
+            }
+          }
+        },
+        {
           href: "/home",
           label: "/home"
         },
@@ -129,8 +141,8 @@
           label: "/protected"
         },
         {
-          href: "/props",
-          label: "/props"
+          href: "/paths-and-params",
+          label: "/paths-and-params"
         },
         {
           href: "/nested",
@@ -149,15 +161,7 @@
         id="my-main-router"
         bind:instance
         {routes}
-        statuses={{
-          [StatusCode.NotFound]: (path: string) => ({
-            component: NotFound,
-            props: {
-              path,
-              somethingExtra: new Date().toISOString()
-            }
-          })
-        }} />
+        {...myDefaultRouterConfig} />
     </RouteWrapper>
   </div>
 </div>

@@ -30,7 +30,9 @@ export class Query {
 
   constructor(query: Record<string, string>) {
     const marshalled = marshal(query);
-    this.params = marshalled.value as Record<string, string>;
+    if (marshalled) {
+      this.params = marshalled.value as Record<string, string>;
+    }
   }
 
   get<T>(key: string, defaultValue: T): T {
@@ -67,15 +69,11 @@ export class Query {
 
       for (const [key, value] of Object.entries(matcher)) {
         const param = this.params[key];
-        console.log("test", key, param, this.params[key]);
         if (param) {
           const marshalled = marshal(value);
 
-          console.log("test", key, marshalled);
-
           if (marshalled.identity === Identities.regexp) {
             const res = evaluators[Identities.regexp](marshalled.value, param);
-            console.log("test", key, res);
             if (res) {
               if (Array.isArray(res)) {
                 if (res.length === 1) {
@@ -93,15 +91,13 @@ export class Query {
             }
           }
 
+          if (marshalled.identity === Identities.number) {
+            if (marshalled.value === param) {
+              matches[key] = marshalled.value === param ? marshalled.value : null;
+            }
+          }
           if (marshalled.identity === Identities.string) {
             matches[key] = marshalled.value === param;
-          }
-
-          if (marshalled.identity === Identities.number) {
-            console.warn(marshalled.value, param, marshalled.value === param);
-            if (marshalled.value === param) {
-              matches[key] = marshalled.value === param;
-            }
           }
 
           if (marshalled.identity === Identities.boolean) {
@@ -126,8 +122,7 @@ export class Query {
         }
       }
 
-      if (Object.keys(matches).length > 0) {
-        console.log("matches", matches);
+      if (Object.keys(matches).length === Object.keys(matcher).length) {
         return {
           condition: "exact-match",
           matches

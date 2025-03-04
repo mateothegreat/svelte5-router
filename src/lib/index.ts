@@ -1,7 +1,6 @@
 export { active } from "./actions/active.svelte";
 export { RouteOptions } from "./actions/options";
 export { route } from "./actions/route.svelte";
-export type { CompilerConfig } from "./helpers/compiler";
 export { goto } from "./helpers/goto";
 export { identify, type Identities, type Identity } from "./helpers/identify";
 export { logging } from "./helpers/logging";

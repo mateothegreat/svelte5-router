@@ -9,6 +9,7 @@ import { runtime } from "./runtime";
  * @category helpers
  */
 export class Span {
+  prefix?: string;
   id?: string;
   date?: Date;
   name?: string;
@@ -16,7 +17,8 @@ export class Span {
   metadata?: Record<string, any>;
   traces?: ReactiveMap<string, Trace> = $state(new ReactiveMap());
 
-  constructor(span: Span) {
+  constructor(span: Span, prefix?: string) {
+    this.prefix = prefix;
     this.name = span.name;
     this.id = span.id || Math.random().toString(36).substring(2, 25);
     this.description = span.description;
@@ -24,12 +26,12 @@ export class Span {
     this.date = span.date || new Date();
   }
 
-  trace?(trace: Trace): Trace {
+  trace?(trace: Trace, prefix?: string): Trace {
     const id = trace.id || Math.random().toString(36).substring(2, 25);
-    trace = new Trace(trace, this.traces.size + 1);
+    trace = new Trace(trace, this.traces.size + 1, this, prefix);
     this.traces.set(id, trace);
 
-    logging.trace(trace);
+    logging.trace(prefix, trace);
 
     return trace;
   }
@@ -45,21 +47,24 @@ export class Span {
  * @category helpers
  */
 export class Trace {
+  prefix?: string;
   id?: string;
   index?: number;
   date?: Date;
   name?: string;
   description?: string;
   metadata?: Record<string, any>;
-  spans?: Map<string, Span> = $state(new Map());
+  span?: Span;
 
-  constructor(trace: Trace, index?: number) {
+  constructor(trace: Trace, index?: number, span?: Span, prefix?: string) {
     this.id = trace.id || Math.random().toString(36).substring(2, 25);
     this.index = index;
     this.date = trace.date || new Date();
     this.name = trace.name;
     this.description = trace.description;
     this.metadata = trace.metadata;
+    this.span = span;
+    this.prefix = trace.prefix;
   }
 
   /**
@@ -67,23 +72,27 @@ export class Trace {
    *
    * @category helpers
    */
-  toConsole?(span?: Span, level?: logging.LogLevel): void {
+  toConsole?(level?: logging.LogLevel): void {
     const out = [
       "%c%s %cspan:%c%s:%ctrace:%c%s%c:%c%s %c%s",
       "color: #505050",
       this.date?.toISOString(),
       "color: #7A7A7A",
       "color: #915CF2; font-weight: bold",
-      this.id,
+      this.span?.name || this.id,
       "color: #7A7A7A; font-weight: bold",
       "color: #C3F53B; font-weight: bold",
       this.index,
       "color: #7A7A7A; font-weight: bold",
       "color: #3BAEF5; font-weight: bold",
-      this.name,
+      `${this.metadata?.router ? `[${this.metadata.router.id}] ` : ""}${this.name}`,
       "color: #06E96C",
       this.description
     ];
+
+    if (this.prefix) {
+      out[0] = `${this.prefix} %c%s %cspan:%c%s:%ctrace:%c%s%c:%c%s %c%s`;
+    }
 
     if (level === logging.LogLevel.TRACE) {
       out[0] += "\n%c%s";
@@ -91,7 +100,7 @@ export class Trace {
         "color: #6B757F",
         `attached trace metadata:\n\n${JSON.stringify(
           {
-            span: Array.from(this.spans.values()).map((span) => span.metadata),
+            span: this.span.metadata,
             trace: this.metadata
           },
           null,
@@ -99,9 +108,9 @@ export class Trace {
         )}`
       );
     } else if (level === logging.LogLevel.DEBUG) {
-      if (this.spans) {
+      if (this.span) {
         // @ts-ignore
-        out.push(span);
+        out.push(this.span.metadata);
       }
       if (this.metadata) {
         // @ts-ignore

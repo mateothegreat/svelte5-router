@@ -2,6 +2,7 @@
   import Badge from "$lib/components/badge.svelte";
   import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
+  import { myDefaultRouterConfig } from "$lib/default-route-config";
   import { Router, RouterInstance, type Route } from "@mateothegreat/svelte5-router";
   import Fade from "./fade.svelte";
   import Slide from "./slide.svelte";
@@ -31,7 +32,7 @@
 
   let file = $state<string>();
   $effect(() => {
-    file = instance?.current.props?.file || "src/routes/transitions/transitions.svelte";
+    file = instance?.current?.props?.file || "src/routes/transitions/transitions.svelte";
   });
 </script>
 
@@ -79,5 +80,6 @@
     id="transitions-router"
     basePath="/transitions"
     bind:instance
-    {routes} />
+    {routes}
+    {...myDefaultRouterConfig} />
 </RouteWrapper>

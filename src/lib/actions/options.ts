@@ -9,6 +9,11 @@ export type RouteOptionState = {
   absolute?: boolean;
 
   /**
+   * When true, the effects will only be applied if the querystring is an exact match.
+   */
+  querystring?: boolean;
+
+  /**
    * The css class(es) to add when this state is currently active.
    */
   class?: string | string[];

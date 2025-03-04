@@ -85,7 +85,7 @@ export class Route {
    *
    * @optional If no value is provided, there are no query params.
    */
-  query?: QueryType;
+  querystring?: QueryType;
 
   /**
    * The component to render when the route is active.
@@ -171,7 +171,7 @@ export class Route {
   constructor(route: Route) {
     this.name = route.name;
     this.path = typeof route.path === "string" ? normalize(route.path) : route.path;
-    this.query = route.query;
+    this.querystring = route.querystring;
     this.component = route.component;
     this.props = route.props;
     this.hooks = route.hooks;

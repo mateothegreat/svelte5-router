@@ -1,5 +1,6 @@
 <script lang="ts">
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
+  import { myDefaultRouterConfig } from "$lib/default-route-config";
   import { goto, Router } from "@mateothegreat/svelte5-router";
   import { ArrowRight, Building2, Shield, Wallet } from "lucide-svelte";
   import Denied from "./denied.svelte";
@@ -46,7 +47,8 @@
   end={true}
   title={{
     file: "src/routes/protected/main.svelte",
-    content: "Demo to show how to use transitions with the router (spoiler: they're applied at the content level rather than within the router itself)."
+    content:
+      "Demo to show how to use transitions with the router (spoiler: they're applied at the content level rather than within the router itself)."
   }}
   links={[
     {
@@ -93,5 +95,6 @@
         path: "denied",
         component: Denied
       }
-    ]} />
+    ]}
+    {...myDefaultRouterConfig} />
 </RouteWrapper>

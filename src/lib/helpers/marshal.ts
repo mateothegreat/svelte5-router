@@ -17,6 +17,12 @@ export type Marshalled<T> = {
 export const marshal = <T>(value: unknown): Marshalled<T> => {
   // Most values will be strings, so we check for that first:
   if (typeof value === "string") {
+    if (!Number.isNaN(Number.parseFloat(value))) {
+      return {
+        identity: Identities.number,
+        value: Number.parseFloat(value) as T
+      };
+    }
     // If the value is capable of being parsed as a number, we do that:
     if (!Number.isNaN(Number.parseInt(value))) {
       return {
@@ -24,12 +30,7 @@ export const marshal = <T>(value: unknown): Marshalled<T> => {
         value: Number.parseInt(value) as T
       };
     }
-    if (!Number.isNaN(Number.parseFloat(value))) {
-      return {
-        identity: Identities.number,
-        value: Number.parseFloat(value) as T
-      };
-    }
+
     // If the value is a string that is not a number, we check if it's a boolean:
     if (value.match(/^true$/i)) {
       return {

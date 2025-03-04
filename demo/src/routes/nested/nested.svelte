@@ -2,6 +2,7 @@
   import Badge from "$lib/components/badge.svelte";
   import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
+  import { myDefaultRouterConfig } from "$lib/default-route-config";
   import { Router, type Route } from "@mateothegreat/svelte5-router";
   import Level_1 from "./level-1/level-1.svelte";
   const routes: Route[] = [
@@ -61,5 +62,6 @@
   <Router
     id="nested-router"
     basePath="/nested"
+    {...myDefaultRouterConfig}
     {routes} />
 </RouteWrapper>

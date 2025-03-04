@@ -2,6 +2,7 @@
   import Badge from "$lib/components/badge.svelte";
   import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
+  import { myDefaultRouterConfig } from "$lib/default-route-config";
   import { Router, type Route } from "@mateothegreat/svelte5-router";
   import Level_3 from "./level-3/level-3.svelte";
 
@@ -36,7 +37,8 @@
   {route}
   title={{
     file: "src/routes/nested/level-1/level-2/level-2.svelte",
-    content: "This demo shows how to use nested routing with the router where multiple routers can be nested within each other."
+    content:
+      "This demo shows how to use nested routing with the router where multiple routers can be nested within each other."
   }}
   links={[
     {
@@ -56,5 +58,6 @@
   <Router
     id="nested-level-2-router"
     basePath="/nested/level-1/level-2"
-    {routes} />
+    {routes}
+    {...myDefaultRouterConfig} />
 </RouteWrapper>

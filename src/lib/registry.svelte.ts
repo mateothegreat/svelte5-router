@@ -3,7 +3,6 @@ import { RouterInstanceConfig } from "./router-instance-config";
 import { RouterInstance } from "./router-instance.svelte";
 import { ReactiveMap } from "./utilities.svelte";
 
-import { logging } from "./helpers/logging";
 import type { Span } from "./helpers/tracing.svelte";
 
 /**
@@ -46,63 +45,63 @@ export class Registry {
    * @param {Instance} config The instance to register.
    * @param {ApplyFn} applyFn The function to call for applying route changes.
    *
-   * @see {@link unregister}: The opposite of this method.
+   * @see {@link deregister}: The opposite of this method.
    */
   register(config: RouterInstanceConfig, applyFn: ApplyFn, span?: Span): RouterInstance {
-    if (span) {
-      span.trace({
-        name: "register",
-        description: "registering a new router instance",
-        metadata: {
-          location: "/src/lib/registry.svelte:register()",
-          config
-        }
-      });
-    }
-
     if (this.instances.has(config.id)) {
       throw new Error(`router instance with id ${config.id} already registered`);
     }
 
     const instance = new RouterInstance(config, applyFn);
 
-    this.instances.set(config.id, instance);
-
-    /**
-     * This allows us to log when we're in debug mode otherwise
-     * this statement is removed by the compiler (tree-shaking):
-     */
-    if (import.meta.env.SPA_ROUTER?.logLevel === "debug") {
-      logging.debug(config.id, "registered router instance", {
-        router: {
-          id: config.id,
-          basePath: config.basePath
-        },
-        config
+    if (span) {
+      span.trace({
+        prefix: "🔍",
+        name: "registry.register",
+        description: "registering a new router instance",
+        metadata: {
+          router: {
+            id: config.id,
+            basePath: config.basePath
+          },
+          location: "/src/lib/registry.svelte:register()",
+          config
+        }
       });
     }
+
+    this.instances.set(config.id, instance);
 
     return instance;
   }
 
   /**
-   * Unregister a router instance.
+   * Deregister a router instance.
    *
-   * @param {string} id The id of the instance to unregister.
+   * @param {string} id The id of the instance to deregister.
    */
-  unregister(id: string): void {
+  deregister(id: string, span?: Span): void {
     const instance = this.instances.get(id);
-    if (import.meta.env.SPA_ROUTER?.logLevel === "debug") {
-      logging.debug(id, "unregistered router instance", {
-        id,
-        router: {
-          id,
-          basePath: instance.config.basePath
+    if (span) {
+      span.trace({
+        prefix: instance ? "✅" : "❌",
+        name: "registry.deregister",
+        description: "deregistering a router instance",
+        metadata: {
+          router: {
+            id,
+            basePath: instance.config.basePath
+          },
+          location: "/src/lib/registry.svelte:deregister()",
+          config: instance.config
         }
       });
     }
+
     if (instance) {
       this.instances.delete(id);
+    } else {
+      throw new Error(`router instance with id ${id} not found`);
     }
   }
 }

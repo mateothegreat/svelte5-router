@@ -18,7 +18,7 @@ import type { RouteOptions } from "./options";
  */
 export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
   const apply = () => {
-    applyActiveClass(normalize(new URL(node.href).pathname), options, node);
+    applyActiveClass(normalize(new URL(node.href).pathname), location.search, options, node);
   };
   /**
    * Handle click events on the anchor element.
@@ -27,7 +27,7 @@ export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
   const handleClick = (event: Event) => {
     event.preventDefault();
     window.history.pushState({}, "", node.href);
-    applyActiveClass(normalize(new URL(node.href).pathname), options, node);
+    applyActiveClass(normalize(new URL(node.href).pathname), location.search, options, node);
   };
 
   apply();

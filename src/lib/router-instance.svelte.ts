@@ -4,7 +4,6 @@ import { StatusCode } from "./statuses";
 import { execute } from "./utilities.svelte";
 
 import { SuccessfulConditions } from "./helpers/evaluators";
-import { logging } from "./helpers/logging";
 import { normalize } from "./helpers/normalize";
 import { createSpan } from "./helpers/tracing.svelte";
 
@@ -124,28 +123,6 @@ export class RouterInstance {
   }
 
   /**
-   * Unregister a router instance by removing it from the registry and
-   * restoring the original history methods.
-   *
-   * This is called when a router instance is removed from the DOM
-   * triggered by the `onDestroy` lifecycle method of the router instance.
-   */
-  unregister(): void {
-    window.removeEventListener("pushState", this.handlers.pushStateHandler);
-    window.removeEventListener("replaceState", this.handlers.replaceStateHandler);
-    window.removeEventListener("popstate", this.handlers.popStateHandler);
-
-    if (import.meta.env.SPA_ROUTER && import.meta.env.SPA_ROUTER.logLevel === "debug") {
-      logging.debug(this.config.id, "unregistered router instance", {
-        id: this.config.id,
-        routes: this.routes.size
-      });
-    }
-
-    registry.unregister(this.config.id);
-  }
-
-  /**
    * Process a state change event from the browser history API.
    *
    * This method is called when the browser history API is used to change the
@@ -163,16 +140,18 @@ export class RouterInstance {
   async handleStateChange(path: string, query: Query, span?: Span): Promise<void> {
     this.navigating = true;
 
-    if (this.config.renavigation) {
-    }
-
     if (!span) {
       span = createSpan("detected history change event");
     }
     span?.trace({
+      prefix: "🔍",
       name: "router-instance.handleStateChange",
-      description: `${this.config.id} with base path "${this.config.basePath || "/"}" is attempting to handle a new state change for path "${path}"`,
+      description: `attempting to handle a new state change for path "${path}"`,
       metadata: {
+        router: {
+          id: this.config.id,
+          basePath: this.config.basePath
+        },
         location: "/src/lib/router-instance.svelte:handleStateChange()",
         basePath: this.config.basePath,
         path,
@@ -181,8 +160,9 @@ export class RouterInstance {
     });
 
     const result = await this.get(path, query, span);
-    if (result) {
+    if (result && SuccessfulConditions.includes(result.result.path.condition)) {
       span?.trace({
+        prefix: "✅",
         name: "router-instance.handleStateChange",
         description: `route found for path "${path}"`,
         metadata: {
@@ -265,6 +245,7 @@ export class RouterInstance {
         (route) => !route.path || route.path === "" || route.path === "/"
       );
       span?.trace({
+        prefix: defaultRoute ? "✅" : "❌",
         name: "router-instance.getDefaultRoute",
         description: `get default route because "${reason}"`,
         metadata: {
@@ -301,6 +282,7 @@ export class RouterInstance {
     };
 
     span?.trace({
+      prefix: "🔍",
       name: "router-instance.get",
       description: `${this.config.id} with base path "${this.config.basePath || "/"}" is attempting to get a route for path "${path}"`,
       metadata: {
@@ -325,6 +307,7 @@ export class RouterInstance {
       const pathEvaluation = route.test(normalized);
       if (pathEvaluation && SuccessfulConditions.includes(pathEvaluation.condition)) {
         span?.trace({
+          prefix: "✅",
           name: "router-instance.get:routesloop",
           description: `${pathEvaluation.condition} for inbound path "${path}"${route.name ? ` (named: "${route.name}")` : ""}`,
           metadata: {
@@ -343,27 +326,28 @@ export class RouterInstance {
           }
         });
 
-        if (route.query && query) {
-          const queryEvaluation = query.test(route.query);
-          span?.trace({
-            name: "router-instance.get.evaluateQuery",
-            description: `evaluating query string "${query?.toString()}" ${SuccessfulConditions.includes(queryEvaluation?.condition) ? "passed" : "failed"} for the route "${path}"`,
-            metadata: {
-              location: "/src/lib/router-instance.svelte:get()",
-              router: {
-                id: this.config.id,
-                basePath: this.config.basePath
-              },
-              path,
-              query: query?.params || false,
-              normalized,
-              evaluation: {
-                path: pathEvaluation,
-                querystring: queryEvaluation
-              }
-            }
-          });
+        if (route.querystring && query) {
+          const queryEvaluation = query.test(route.querystring);
           if (SuccessfulConditions.includes(queryEvaluation?.condition)) {
+            span?.trace({
+              prefix: "✅",
+              name: "router-instance.get.evaluateQuery",
+              description: `${queryEvaluation?.condition} evaluating querystring "${query?.toString()}" for the route "${path}"${route.name ? ` (named: "${route.name}")` : ""}`,
+              metadata: {
+                location: "/src/lib/router-instance.svelte:get()",
+                router: {
+                  id: this.config.id,
+                  basePath: this.config.basePath
+                },
+                path,
+                query: query?.params || false,
+                normalized,
+                evaluation: {
+                  path: pathEvaluation,
+                  querystring: queryEvaluation
+                }
+              }
+            });
             candidate = {
               router: this,
               route,
@@ -419,16 +403,13 @@ export class RouterInstance {
      * a 404 route from the statuses configuration applied to this
      * router instance.
      */
-    if (this.config.statuses?.[404]) {
+    if (!candidate && this.config.statuses?.[404]) {
       const status = this.config.statuses[404];
+      const ret = (status as (path: string, query?: Query) => Route)(normalized, query);
       if (typeof status === "function") {
-        const ret = (status as (path: string, query?: Query) => Route)(normalized, query);
         candidate = {
           router: this,
-          route: {
-            ...ret,
-            path: normalized
-          },
+          route: ret,
           result: {
             path: {
               condition: "no-conditions",
@@ -446,9 +427,7 @@ export class RouterInstance {
       } else {
         candidate = {
           router: this,
-          route: {
-            path: normalized
-          },
+          route: status,
           result: {
             path: {
               condition: "no-match",
@@ -465,6 +444,24 @@ export class RouterInstance {
       }
     }
 
-    return candidate;
+    if (candidate) {
+      // this.current = candidate;
+      return candidate;
+    }
+  }
+
+  /**
+   * Deregister a router instance by removing it from the registry and
+   * restoring the original history methods.
+   *
+   * This is called when a router instance is removed from the DOM
+   * triggered by the `onDestroy` lifecycle method of the router instance.
+   */
+  deregister(span?: Span): void {
+    window.removeEventListener("pushState", this.handlers.pushStateHandler);
+    window.removeEventListener("replaceState", this.handlers.replaceStateHandler);
+    window.removeEventListener("popstate", this.handlers.popStateHandler);
+
+    registry.deregister(this.config.id, span);
   }
 }

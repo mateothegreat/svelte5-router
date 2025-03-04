@@ -3,7 +3,8 @@
   import Container from "$lib/components/container.svelte";
   import InlineCode from "$lib/components/inline-code.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
-  import { goto, type Route, type RouteResult } from "@mateothegreat/svelte5-router";
+  import { myDefaultRouterConfig } from "$lib/default-route-config";
+  import { type Route, type RouteResult } from "@mateothegreat/svelte5-router";
   import Router from "@mateothegreat/svelte5-router/router.svelte";
   import { Github, MessageCircleQuestion, Newspaper } from "lucide-svelte";
 
@@ -11,23 +12,12 @@
 
   const routes: Route[] = [
     {
-      // This route will redirect to the welcome route when
-      // no path is provided (i.e.: "/home" vs "/home/welcome"):
-      component: welcome,
-      hooks: {
-        pre: () => {
-          console.log("redirecting to /home/welcome using a pre hook!");
-          goto("/home/welcome");
-        }
-      }
-    },
-    {
       // Starting paths with "/" is not required, but it's a good idea to
       // do so for clarity in some cases.
       //
       // The router will match this route if the path is "/welcome" or "/home/welcome"
       // because the base path is passed in as "/home" below.
-      path: "/welcome",
+      path: "/",
       component: welcome
     },
     {
@@ -138,8 +128,8 @@
   }}
   links={[
     {
-      href: "/home/welcome",
-      label: "/home/welcome"
+      href: "/home",
+      label: "/home"
     },
     {
       href: "/home/with-query-params?someQueryParam=123",
@@ -149,5 +139,6 @@
   <Router
     id="home-router"
     basePath="/home"
+    {...myDefaultRouterConfig}
     {routes} />
 </RouteWrapper>
