@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
   push:
-    branches:
+    tags:
       - "*"
 name: release
 permissions:

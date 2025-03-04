@@ -2,7 +2,7 @@ name: publish api docs
 on:
   workflow_dispatch:
   push:
-    branches:
+    tags:
       - "*"
 jobs:
   publish-documentation:
