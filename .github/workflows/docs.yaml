@@ -6,7 +6,7 @@ on:
     tags:
       - "*"
 jobs:
-  publish-documentation:
+  publish:
     permissions:
       id-token: write
       pages: write
