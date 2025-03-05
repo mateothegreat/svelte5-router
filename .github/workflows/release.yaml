@@ -1,14 +1,18 @@
 on:
   workflow_dispatch:
+    inputs:
+      name:
+        required: true
+        type: string
   push:
     tags:
       - "*"
-name: release
+name: ${{ inputs.name || 'release' }}
 permissions:
   contents: write
   packages: write
 concurrency:
-  group: release
+  group: ${{ inputs.name || 'release' }}
   cancel-in-progress: false
 jobs:
   build:
