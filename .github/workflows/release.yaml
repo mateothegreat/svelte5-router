@@ -82,6 +82,7 @@ jobs:
   demo:
     needs: build
     uses: ./.github/workflows/demo.yaml
+    secrets: inherit
   notify:
     if: always()
     needs:

@@ -1,6 +1,9 @@
 on:
   workflow_dispatch:
   workflow_call:
+    secrets:
+      VERCEL_TOKEN:
+        required: true
   push:
     tags:
       - "*"
