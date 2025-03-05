@@ -17,7 +17,6 @@ jobs:
       - name: cicd app auth
         id: app
         uses: actions/create-github-app-token@v1
-
         with:
           app-id: ${{ secrets.CICD_APP_ID }}
           private-key: ${{ secrets.CICD_APP_PRIVATE_KEY }}
@@ -75,6 +74,9 @@ jobs:
           body: ${{ steps.git-cliff.outputs.content }}
           tag_name: ${{ steps.tag.outputs.new_tag }}
   run-docs:
+    permissions:
+      id-token: write
+      pages: write
     uses: ./.github/workflows/docs.yaml
   notify:
     if: always()
