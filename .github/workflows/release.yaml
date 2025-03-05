@@ -13,7 +13,7 @@ permissions:
   packages: write
 concurrency:
   group: release
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
