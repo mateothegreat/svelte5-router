@@ -66,7 +66,6 @@ export class Query {
   test(matcher: QueryType): QueryEvaluationResult {
     if (typeof matcher === "object") {
       const matches: Record<string, string | Record<string, string> | boolean | string[] | object> = {};
-
       for (const [key, value] of Object.entries(matcher)) {
         const param = this.params[key];
         if (param) {
@@ -124,7 +123,6 @@ export class Query {
           >
         };
       }
-      console.log(matches, evaluators.valid[Identities.object](matches));
 
       return {
         condition:

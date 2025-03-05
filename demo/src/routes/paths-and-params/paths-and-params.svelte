@@ -11,6 +11,18 @@
   let router: RouterInstance = $state();
   let { route } = $props();
 
+  let randoms = $state({
+    float: Math.random().toFixed(4),
+    int: (Math.random() * 1000).toFixed(0),
+    string: (Math.random() * 1000).toFixed(2).toString()
+  });
+
+  setInterval(() => {
+    randoms.float = Math.random().toFixed(4);
+    randoms.int = (Math.random() * 1000).toFixed(0);
+    randoms.string = (Math.random() * 1000).toFixed(2).toString();
+  }, 1000);
+
   const routes: Route[] = [
     /**
      * This route will be used if there is no matching routes we
@@ -37,14 +49,14 @@
          *   - ✅ must be present
          *   - ✅ must be a number or a string that can be converted to a number
          */
-        number: 2.0123,
+        float: /^([\d.]+)$/,
         /**
          * The "number-as-string" querystring parameter:
          *
          *   - ✅ must be present
          *   - ✅ must be a number or a string that can be converted to a number
          */
-        "number-as-string": "1"
+        string: "123"
       }
     },
     /**
@@ -150,8 +162,8 @@
       label: "query-matcher?pagination=2,23&company=123"
     },
     {
-      href: "/paths-and-params/query-matcher?number=2.0123&number-as-string=1",
-      label: "query-matcher?number=2.0123&number-as-string=1"
+      href: `/paths-and-params/query-matcher?float=${randoms.float}&string=123`,
+      label: `query-matcher?float=${randoms.float}&string=123`
     }
   ]}>
   <Router
