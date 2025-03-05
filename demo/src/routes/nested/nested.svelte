@@ -3,8 +3,9 @@
   import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
   import { myDefaultRouterConfig } from "$lib/default-route-config";
-  import { Router, type Route } from "@mateothegreat/svelte5-router";
+  import { Router, RouterInstance, type Route } from "@mateothegreat/svelte5-router";
   import Level_1 from "./level-1/level-1.svelte";
+
   const routes: Route[] = [
     {
       component: snippet
@@ -15,11 +16,18 @@
     }
   ];
 
+  let router: RouterInstance = $state();
   let { route } = $props();
 
+  /**
+   * This is a helper state variable that can be used to determine if the
+   * current route is the same as the route that is being rendered so
+   * that we can show a badge to indicate this is the last router in the
+   * nested routing hierarchy.
+   */
   let end = $state(false);
   $effect(() => {
-    end = route.router.current.path === location.pathname;
+    end = router.current?.result.path.condition === "default-match";
   });
 </script>
 
@@ -35,7 +43,7 @@
 {/snippet}
 
 <RouteWrapper
-  router="nested-router"
+  {router}
   name="/nested"
   {route}
   {end}
@@ -62,6 +70,7 @@
   <Router
     id="nested-router"
     basePath="/nested"
+    bind:instance={router}
     {...myDefaultRouterConfig}
     {routes} />
 </RouteWrapper>

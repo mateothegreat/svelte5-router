@@ -20,7 +20,7 @@ import type { Span, Trace } from "./helpers/tracing.svelte";
  * the evaluation results are included in the route result and to avoid requiring
  * it to be merged in the original route instance.
  */
-export type RouteResult = {
+export class RouteResult {
   router: RouterInstance;
   route: Route;
   result: {
@@ -37,7 +37,36 @@ export type RouteResult = {
     component: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
     status: number;
   };
-};
+
+  constructor(result: RouteResult) {
+    this.router = result.router;
+    this.route = new Route(result.route);
+    this.result = result.result;
+  }
+
+  /**
+   * The absolute path of the route by combining the router's base path and
+   * the route's path.
+   */
+  absolute(basePath = this.router.config.basePath): string {
+    /**
+     * If the router has a base path, we need to combine it with the route's path
+     * otherwise it will have "undefined" as the base path and the path will be
+     * incorrect:
+     */
+    if (basePath) {
+      return `${basePath}${this.result.path.original}`;
+    }
+    return this.result.path.original;
+  }
+
+  /**
+   * The string representation of the route including the querystring.
+   */
+  toString?(): string {
+    return `${this.absolute()}${this.result.querystring.original ? `?${this.result.querystring.original}` : ""}`;
+  }
+}
 
 /**
  * The function that is used to apply a route to the DOM.
@@ -71,6 +100,14 @@ export class Route {
    * @optional If no value is provided, the route will not have a name.
    */
   name?: string | number;
+
+  /**
+   * The base path of the route.
+   *
+   * This is useful if you want to be declarative about the base path of the route
+   * and not depend on the router to determine the base path.
+   */
+  basePath?: string;
 
   /**
    * The path of the route to match against the current path.
@@ -145,13 +182,6 @@ export class Route {
    */
   children?: Route[];
 
-  // /**
-  //  * The params of the route.
-  //  *
-  //  * @optional If no value is provided, there are no params that could be extracted from the path.
-  //  */
-  // params?: string[] | Record<string, string> | QueryEvaluationResult;
-
   /**
    * The status of the route once it has been matched or otherwise processed.
    */
@@ -170,6 +200,7 @@ export class Route {
    */
   constructor(route: Route) {
     this.name = route.name;
+    this.basePath = route.basePath;
     this.path = typeof route.path === "string" ? normalize(route.path) : route.path;
     this.querystring = route.querystring;
     this.component = route.component;
@@ -230,5 +261,21 @@ export class Route {
       condition: "no-match",
       params: {}
     };
+  }
+
+  /**
+   * The absolute path of the route by combining the router's base path and
+   * the route's path.
+   */
+  absolute?(): string {
+    /**
+     * If the router has a base path, we need to combine it with the route's path
+     * otherwise it will have "undefined" as the base path and the path will be
+     * incorrect:
+     */
+    if (this.basePath) {
+      return `${this.basePath}${this.path}`;
+    }
+    return this.path.toString();
   }
 }

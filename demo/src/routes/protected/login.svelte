@@ -2,7 +2,7 @@
   import { goto } from "@mateothegreat/svelte5-router";
   import { Shield } from "lucide-svelte";
   import { fade } from "svelte/transition";
-  import { setLoggedIn } from "./account-state.svelte";
+  import { client } from "./account-state.svelte";
 </script>
 
 <div
@@ -20,7 +20,7 @@
     <button
       class="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white transition-colors hover:bg-blue-700"
       on:click={() => {
-        setLoggedIn(true);
+        client.loggedIn = true;
         goto("/protected/manage-account");
       }}>
       Login to Your Account

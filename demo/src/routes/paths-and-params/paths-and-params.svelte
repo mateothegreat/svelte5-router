@@ -2,11 +2,14 @@
   import Badge from "$lib/components/badge.svelte";
   import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
-  import { getStatusByValue, StatusCode, type Route } from "@mateothegreat/svelte5-router";
+  import { getStatusByValue, RouterInstance, StatusCode, type Route } from "@mateothegreat/svelte5-router";
   import Router from "@mateothegreat/svelte5-router/router.svelte";
   import CustomNotFound from "./custom-not-found.svelte";
   import DisplayParams from "./display-params.svelte";
   import QuerystringMatching from "./querystring-matching.svelte";
+
+  let router: RouterInstance = $state();
+  let { route } = $props();
 
   const routes: Route[] = [
     /**
@@ -106,8 +109,6 @@
       }
     }
   ];
-
-  let { route } = $props();
 </script>
 
 {#snippet snippet()}
@@ -122,7 +123,7 @@
 {/snippet}
 
 <RouteWrapper
-  router="paths-and-params-router"
+  {router}
   name="/paths-and-params"
   {route}
   end={true}
@@ -156,6 +157,7 @@
   <Router
     id="props-router"
     basePath="/paths-and-params"
+    bind:instance={router}
     {routes}
     hooks={{
       /**

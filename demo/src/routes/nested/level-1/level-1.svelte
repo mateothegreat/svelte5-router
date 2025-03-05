@@ -3,9 +3,10 @@
   import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
   import { myDefaultRouterConfig } from "$lib/default-route-config";
-  import { Router } from "@mateothegreat/svelte5-router";
+  import { Router, RouterInstance } from "@mateothegreat/svelte5-router";
   import Level_2 from "./level-2/level-2.svelte";
 
+  let router: RouterInstance = $state();
   let { route } = $props();
 
   /**
@@ -16,7 +17,7 @@
    */
   let end = $state(false);
   $effect(() => {
-    end = `${route.router.config.basePath}${route.router.current.path}` === location.pathname;
+    end = router.current?.result.path.condition === "default-match";
   });
 </script>
 
@@ -32,7 +33,7 @@
 {/snippet}
 
 <RouteWrapper
-  router="nested-level-1-router"
+  {router}
   name="/nested/level-1"
   {end}
   {route}
@@ -59,6 +60,7 @@
   <Router
     id="nested-level-1-router"
     basePath="/nested/level-1"
+    bind:instance={router}
     routes={[
       {
         path: "level-2",

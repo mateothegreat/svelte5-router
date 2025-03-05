@@ -32,7 +32,7 @@ export namespace runtime {
       tracing: config?.tracing || import.meta.env.SPA_ROUTER?.tracing || false,
       logging: {
         level: config?.logging?.level || import.meta.env.SPA_ROUTER?.logging?.level || 4,
-        console: config?.logging?.console || import.meta.env.SPA_ROUTER?.logging?.console || true,
+        console: config?.logging?.console || import.meta.env.SPA_ROUTER?.logging?.console,
         sink: config?.logging?.sink || import.meta.env.SPA_ROUTER?.logging?.sink
       }
     };

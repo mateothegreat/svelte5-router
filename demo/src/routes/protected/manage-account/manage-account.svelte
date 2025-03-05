@@ -1,10 +1,15 @@
 <script lang="ts">
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
-  import { goto, Router } from "@mateothegreat/svelte5-router";
+  import { myDefaultRouterConfig } from "$lib/default-route-config";
+  import { goto, Router, RouterInstance } from "@mateothegreat/svelte5-router";
   import { ArrowRight, Building2, Shield, Wallet } from "lucide-svelte";
-  import { setLoggedIn } from "../account-state.svelte";
-  import { authGuard } from "./auth-guard";
+  import { client } from "../account-state.svelte";
+  import { authGuardSlow } from "./auth-guard-slow";
   import Balance from "./balance.svelte";
+  import Home from "./home.svelte";
+
+  let router: RouterInstance = $state();
+  let { route } = $props();
 </script>
 
 {#snippet snippet()}
@@ -41,14 +46,24 @@
 {/snippet}
 
 <RouteWrapper
-  router="protected-router"
+  {router}
   name="/protected/manage-account"
+  {route}
   end={true}
   title={{
     file: "src/routes/protected/manage-account/manage-account.svelte",
-    content: "Demo to show how to use transitions with the router (spoiler: they're applied at the content level rather than within the router itself)."
+    content: "This router demonstrates how you can restrict access to routes based on the user's authentication state."
   }}
   links={[
+    {
+      href: "/protected/manage-account",
+      label: "default path",
+      options: {
+        active: {
+          absolute: true
+        }
+      }
+    },
     {
       href: "/protected/manage-account/balance",
       label: "/protected/manage-account/balance"
@@ -59,36 +74,41 @@
     }
   ]}>
   <Router
-    id="protected-manage-account-router"
+    id="manage-account-router"
     basePath="/protected/manage-account"
+    bind:instance={router}
     routes={[
       // This route is optional, it's for demonstration purposes.
       // It's used to redirect to the balance page when the user
       // navigates to the manage-account route (the default path):
       {
-        hooks: {
-          pre: () => {
-            goto("/protected/manage-account/balance");
-          }
-        }
+        component: Home
       },
+      // {
+      //   hooks: {
+      //     pre: () => {
+      //       goto("/protected/manage-account/balance");
+      //     }
+      //   }
+      // },
       {
         path: "/balance",
         component: Balance,
         hooks: {
-          pre: authGuard
+          pre: authGuardSlow
         }
       },
       {
         path: "/logout",
         hooks: {
           pre: () => {
-            setLoggedIn(false);
+            client.loggedIn = false;
             setTimeout(() => {
               goto("/protected/login");
-            }, 10);
+            }, 1000);
           }
         }
       }
-    ]} />
+    ]}
+    {...myDefaultRouterConfig} />
 </RouteWrapper>

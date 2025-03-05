@@ -99,7 +99,7 @@ export namespace logging {
       if (runtime.current.logging.console) {
         if (msg.some((m) => m?.toConsole)) {
           msg.forEach((m) => m?.toConsole?.());
-        } else {
+        } else if (runtime.current.logging.console) {
           console.log(...msg);
         }
       }

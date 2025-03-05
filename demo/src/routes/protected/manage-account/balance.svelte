@@ -3,7 +3,7 @@
   import { fade } from "svelte/transition";
 
   // Fake account data
-  const accountBalance = 12543.67;
+  const accountBalance = (Math.random() * 100000).toFixed(2);
   const transactions = [
     { id: 1, type: "credit", amount: 2500.0, description: "Salary Deposit", date: "2024-03-15" },
     { id: 2, type: "debit", amount: 85.5, description: "Grocery Store", date: "2024-03-14" },
@@ -20,7 +20,7 @@
     <h2 class="mb-2 text-xl">Current Balance</h2>
     <div class="flex items-center gap-2">
       <DollarSign size={32} />
-      <span class="text-4xl font-bold">{accountBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
+      <span class="text-4xl font-bold">{accountBalance}</span>
     </div>
   </div>
 
@@ -28,7 +28,8 @@
     <h3 class="mb-4 text-xl font-semibold text-gray-800">Recent Transactions</h3>
     <div class="space-y-4">
       {#each transactions as transaction}
-        <div class="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50">
+        <div
+          class="flex items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50">
           <div class="flex items-center gap-3">
             {#if transaction.type === "credit"}
               <div class="rounded-full bg-green-100 p-2">
@@ -45,7 +46,9 @@
             </div>
           </div>
           <span class={transaction.type === "credit" ? "text-green-600" : "text-red-600"}>
-            {transaction.type === "credit" ? "+" : "-"}${transaction.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            {transaction.type === "credit" ? "+" : "-"}${transaction.amount.toLocaleString("en-US", {
+              minimumFractionDigits: 2
+            })}
           </span>
         </div>
       {/each}

@@ -1,4 +1,4 @@
-import type { Route } from "./route.svelte";
+import type { RouteResult } from "./route.svelte";
 
 /**
  * Hooks are functions that can be used to modify the behavior of routing
@@ -10,5 +10,5 @@ import type { Route } from "./route.svelte";
  * @category hooks
  */
 export type HookReturn = void | boolean | Promise<boolean>;
-export type Hook = (route: Route) => HookReturn;
+export type Hook = (route: RouteResult) => HookReturn;
 export type Hooks = Hook | Hook[];

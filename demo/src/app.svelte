@@ -6,7 +6,7 @@
   import PathsAndParams from "$routes/paths-and-params/paths-and-params.svelte";
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
-  import { goto, registry, type Route, Router, type RouterInstance } from "@mateothegreat/svelte5-router";
+  import { goto, logging, registry, type Route, Router, type RouterInstance } from "@mateothegreat/svelte5-router";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
 
   if (import.meta.hot) {
@@ -17,12 +17,13 @@
 
   // This is a state variable that will hold the router instance.
   // It can be used to access the current route, navigate, etc:
-  let instance: RouterInstance;
+  let router: RouterInstance = $state();
+  const route = $derived(router.current);
 
   $effect(() => {
-    if (instance.current) {
-      console.log(
-        `🚀 I'm an $effect in app.svelte and i'm running because the current route is now ${instance.current.result.path.original}!`
+    if (router.current) {
+      logging.info(
+        `🚀 I'm an $effect in app.svelte and i'm running because the current route is now ${router.current.result.path.original}!`
       );
     }
   });
@@ -120,8 +121,11 @@
       name="main app router"
       title={{
         file: "src/app.svelte",
-        content: "This is the main app component that contains the router and the routes."
+        content:
+          "This is the main app component, it contains the top level router and then uses nested routers to divide and conquer your complex routing requirements! 🚀"
       }}
+      {router}
+      {route}
       links={[
         {
           href: "/",
@@ -159,7 +163,7 @@
       ]}>
       <Router
         id="my-main-router"
-        bind:instance
+        bind:instance={router}
         {routes}
         {...myDefaultRouterConfig} />
     </RouteWrapper>

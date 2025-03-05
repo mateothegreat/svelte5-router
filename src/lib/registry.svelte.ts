@@ -104,6 +104,12 @@ export class Registry {
       throw new Error(`router instance with id ${id} not found`);
     }
   }
+
+  get(id: string): RouterInstance {
+    const instance = this.instances.get(id);
+
+    return instance;
+  }
 }
 
 /**

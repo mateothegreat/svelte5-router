@@ -1,5 +1,5 @@
 import { Query, registry, RouterInstanceConfig, Span, type ApplyFn, type Hooks } from ".";
-import type { Route, RouteResult } from "./route.svelte";
+import { Route, RouteResult } from "./route.svelte";
 import { StatusCode } from "./statuses";
 import { execute } from "./utilities.svelte";
 
@@ -118,7 +118,16 @@ export class RouterInstance {
     window.addEventListener("popstate", this.handlers.popStateHandler);
 
     for (let route of config.routes) {
-      this.routes.add(route);
+      this.routes.add(
+        new Route({
+          ...route,
+          /**
+           * If the route has no base path (because it's optional), use
+           * the router instance's base path.
+           */
+          basePath: route.basePath || this.config.basePath
+        })
+      );
     }
   }
 
@@ -159,8 +168,15 @@ export class RouterInstance {
       }
     });
 
+    const current = this.current;
     const result = await this.get(path, query, span);
+
     if (result && SuccessfulConditions.includes(result.result.path.condition)) {
+      // if (result.result.path.condition !== "base-match") {
+      // this.current = result;
+      //   console.warn(current?.result.path, result.result.path);
+      // }
+
       span?.trace({
         prefix: "✅",
         name: "router-instance.handleStateChange",
@@ -179,7 +195,7 @@ export class RouterInstance {
 
       // Run the global pre hooks:
       if (this.config.hooks?.pre) {
-        if (!(await this.evaluateHooks(result.route, this.config.hooks.pre))) {
+        if (!(await this.evaluateHooks(result, this.config.hooks.pre))) {
           this.navigating = false;
           return;
         }
@@ -187,7 +203,7 @@ export class RouterInstance {
 
       // Run the route specific pre hooks:
       if (result.route.hooks?.pre) {
-        if (!(await this.evaluateHooks(result.route, result.route.hooks.pre))) {
+        if (!(await this.evaluateHooks(result, result.route.hooks.pre))) {
           this.navigating = false;
           return;
         }
@@ -198,7 +214,7 @@ export class RouterInstance {
 
       // Run the route specific post hooks:
       if (result && result.route.hooks?.post) {
-        if (!(await this.evaluateHooks(result.route, result.route.hooks.post))) {
+        if (!(await this.evaluateHooks(result, result.route.hooks.post))) {
           this.navigating = false;
           return;
         }
@@ -206,7 +222,7 @@ export class RouterInstance {
 
       // Finally, run the global post hooks:
       if (this.config.hooks?.post) {
-        await this.evaluateHooks(result.route, this.config.hooks.post);
+        await this.evaluateHooks(result, this.config.hooks.post);
       }
 
       this.current = result;
@@ -215,7 +231,7 @@ export class RouterInstance {
     this.navigating = false;
   }
 
-  async evaluateHooks(route: Route, hooks: Hooks): Promise<boolean> {
+  async evaluateHooks(route: RouteResult, hooks: Hooks): Promise<boolean> {
     if (Array.isArray(hooks)) {
       for (const hook of hooks) {
         if (!(await execute(() => hook(route)))) {
@@ -261,7 +277,7 @@ export class RouterInstance {
         }
       });
       if (defaultRoute) {
-        return {
+        return new RouteResult({
           router: this,
           route: defaultRoute,
           result: {
@@ -277,7 +293,7 @@ export class RouterInstance {
             component: defaultRoute.component,
             status: StatusCode.OK
           }
-        };
+        });
       }
     };
 
@@ -303,6 +319,9 @@ export class RouterInstance {
 
     let candidate: RouteResult;
 
+    /**
+     * Now we check for router nesting:
+     */
     for (const route of this.routes) {
       const pathEvaluation = route.test(normalized);
       if (pathEvaluation && SuccessfulConditions.includes(pathEvaluation.condition)) {
@@ -348,27 +367,29 @@ export class RouterInstance {
                 }
               }
             });
-            candidate = {
+            candidate = new RouteResult({
               router: this,
               route,
               result: {
                 path: {
-                  condition: "exact-match",
                   ...pathEvaluation,
                   original: normalized
                 },
                 querystring: {
-                  condition: "exact-match",
                   ...queryEvaluation,
                   original: query?.toString()
                 },
                 component: route.component,
                 status: StatusCode.OK
               }
-            };
+            });
           }
         } else {
-          candidate = {
+          /**
+           * No querystring is configured for this route, so we will
+           * use the querystring from the inbound path.
+           */
+          candidate = new RouteResult({
             router: this,
             route,
             result: {
@@ -384,7 +405,7 @@ export class RouterInstance {
               component: route.component,
               status: StatusCode.OK
             }
-          };
+          });
         }
       }
     }
@@ -444,10 +465,7 @@ export class RouterInstance {
       }
     }
 
-    if (candidate) {
-      // this.current = candidate;
-      return candidate;
-    }
+    return candidate;
   }
 
   /**

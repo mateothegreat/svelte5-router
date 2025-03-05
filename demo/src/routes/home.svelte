@@ -1,14 +1,15 @@
 <script lang="ts">
+  import Badge from "$lib/components/badge.svelte";
   import Code from "$lib/components/code.svelte";
-  import Container from "$lib/components/container.svelte";
   import InlineCode from "$lib/components/inline-code.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
   import { myDefaultRouterConfig } from "$lib/default-route-config";
-  import { type Route, type RouteResult } from "@mateothegreat/svelte5-router";
+  import { RouterInstance, type Route, type RouteResult } from "@mateothegreat/svelte5-router";
   import Router from "@mateothegreat/svelte5-router/router.svelte";
   import { Github, MessageCircleQuestion, Newspaper } from "lucide-svelte";
 
   let { route }: { route: RouteResult } = $props();
+  let router: RouterInstance = $state();
 
   const routes: Route[] = [
     {
@@ -27,7 +28,7 @@
       // The router will match this route if the path is "/with-query-params" or "/home/with-query-params"
       // because the base path is passed in as "/home" below.
       path: "with-query-params",
-      component: displayParams
+      component: displayRouteProps
     }
   ];
 </script>
@@ -97,27 +98,41 @@
   </div>
 {/snippet}
 
-{#snippet displayParams()}
-  <Container
-    title={"{#snippet snippet()}"}
-    file="src/routes/home.svelte">
-    <div class="m-4 flex flex-col gap-4">
-      <div>
-        The route is mapped to <InlineCode text="/home/with-query-params" />
-        and it's <InlineCode text="component" /> property is using a snippet that renders <InlineCode
-          text={"{JSON.stringify(props.route.query, null, 2)}"} />
+{#snippet displayRouteProps()}
+  <div class="flex flex-col gap-4 border-t-2 border-slate-800 pt-4">
+    <div class="flex flex-col gap-5">
+      <div class="w-fit px-2 flex items-center gap-1 font-bold text-indigo-300 bg-gray-800 rounded-sm p-2">
+        match path
+        <InlineCode text={route.route.path.toString()} />
+        to
+        <InlineCode text={`${route.route.path}?someQueryParam=123`} />
       </div>
-      <Code
-        title="props.route.query"
-        class="bg-black/50">
-        <div>{JSON.stringify(route, null, 2)}</div>
-      </Code>
+      <div class="flex flex-col gap-4 text-sm text-gray-400">
+        <div class=" gap-1">
+          This demo shows how to use the route's
+          <InlineCode text="querystring" />
+          configuration option to match against the current
+          <InlineCode text="location.search" />
+          value passed in by the browser.
+        </div>
+        <Badge
+          variant="success"
+          class="w-fit">
+          Because we did not specify any <InlineCode text="querystring" /> parameters, the route render regardless of the
+          <InlineCode text="querystring" /> and will be passed to the component as shown below.
+        </Badge>
+      </div>
     </div>
-  </Container>
+    <Code
+      title={"{#snippet displayRouteProps()}"}
+      file="src/routes/home.svelte">
+      {JSON.stringify(route.result, null, 2)}
+    </Code>
+  </div>
 {/snippet}
 
 <RouteWrapper
-  router="home-router"
+  {router}
   name="home-router"
   {route}
   end={true}
@@ -144,6 +159,7 @@
   <Router
     id="home-router"
     basePath="/home"
+    bind:instance={router}
     {...myDefaultRouterConfig}
     {routes} />
 </RouteWrapper>

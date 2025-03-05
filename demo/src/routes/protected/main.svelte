@@ -1,11 +1,29 @@
 <script lang="ts">
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
   import { myDefaultRouterConfig } from "$lib/default-route-config";
-  import { goto, Router } from "@mateothegreat/svelte5-router";
-  import { ArrowRight, Building2, Shield, Wallet } from "lucide-svelte";
+  import { goto, registry, Router, RouterInstance } from "@mateothegreat/svelte5-router";
+  import { ArrowRight, Building2, Loader2, Shield, Wallet } from "lucide-svelte";
   import Denied from "./denied.svelte";
   import Login from "./login.svelte";
-  import { authGuard } from "./manage-account/auth-guard";
+  import { authGuardFast } from "./manage-account/auth-guard-fast";
+
+  let router: RouterInstance = $state();
+  let { route } = $props();
+
+  /**
+   * This is a helper state variable that can be used to determine if the
+   * current route is the same as the route that is being rendered so
+   * that we can show a badge to indicate this is the last router in the
+   * nested routing hierarchy.
+   */
+  let end = $state(true);
+
+  $effect(() => {
+    end =
+      router.current?.result.path.condition === "default-match" ||
+      location.pathname === "/protected/login" ||
+      location.pathname === "/protected/denied";
+  });
 </script>
 
 {#snippet snippet()}
@@ -42,13 +60,13 @@
 {/snippet}
 
 <RouteWrapper
-  router="protected-router"
+  {router}
   name="/protected"
-  end={true}
+  {route}
+  {end}
   title={{
     file: "src/routes/protected/main.svelte",
-    content:
-      "Demo to show how to use transitions with the router (spoiler: they're applied at the content level rather than within the router itself)."
+    content: "Demo to show how you can use hooks to control the navigation of your app to control authentication, etc."
   }}
   links={[
     {
@@ -76,6 +94,7 @@
   <Router
     id="protected-router"
     basePath="/protected"
+    bind:instance={router}
     routes={[
       {
         component: snippet
@@ -88,7 +107,7 @@
         path: "manage-account",
         component: async () => import("./manage-account/manage-account.svelte"),
         hooks: {
-          pre: authGuard
+          pre: authGuardFast
         }
       },
       {
@@ -98,3 +117,15 @@
     ]}
     {...myDefaultRouterConfig} />
 </RouteWrapper>
+
+{#if registry.get("manage-account-router")?.navigating}
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div class="flex flex-col items-center gap-4 rounded-md border-2 border-green-400 bg-black/70 px-20 py-6">
+      <Loader2 class="h-12 w-12 text-green-500  animate-spin" />
+      <div class="text-slate-300 font-bold">Doing some work...</div>
+      <div class="text-slate-400 w-96 text-center">
+        We've added some pre and post hooks to the manage-account router to simulate doing some work.
+      </div>
+    </div>
+  </div>
+{/if}

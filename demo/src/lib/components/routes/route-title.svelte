@@ -1,51 +1,50 @@
 <script lang="ts">
-  import type { Routed } from "@mateothegreat/svelte5-router";
+  import type { RouteResult, RouterInstance } from "@mateothegreat/svelte5-router";
   import { ArrowDown, ArrowRight, ArrowRightFromLine, StopCircle } from "lucide-svelte";
   import FileLink from "../file-link.svelte";
 
   export type RouteTitleProps = {
-    router?: string;
-    route?: Routed;
-    file: string;
+    router?: RouterInstance;
+    route?: RouteResult;
+    file?: string;
     content?: any;
     end?: boolean;
   };
 
-  let { router, route, file, content, end }: RouteTitleProps = $props();
+  let { router = $bindable(), route, file, content, end }: RouteTitleProps = $props();
 </script>
 
 <div class="flex flex-col gap-4">
   <div class="flex items-center gap-3 rounded-md bg-slate-900/70 p-1.5 px-2">
     {#if router}
-      <div class="flex items-center gap-1 rounded-sm bg-gray-800 px-1.5 py-0.5 text-sm text-slate-500">
+      <div class="flex flex-wrap items-center rounded-sm bg-gray-800 px-1.5 py-0.5 text-sm text-slate-500">
         <ArrowRightFromLine class="h-4 w-4 text-green-400" />
-        {#if route}
-          the path
-          <span class="px-1 py-0.5 text-green-400">
-            {route?.path || "(all paths)"}
-          </span>
-          routed through
-          <span class="px-1 py-0.5 text-fuchsia-400">
-            {router}
-          </span>
-          {#if end}
-            and nested routing
-            <span class="px-1 py-0.5 text-red-400">ended</span>
-            <StopCircle class="h-4 w-4 text-red-400" />
-            here
-          {:else}
-            and nestedrouting
-            <span class="px-1 py-0.5 text-green-400">continued</span>
-            <ArrowDown class="h-4 w-4 text-green-400" />
-            downward
-          {/if}
+        {router.config.id}
+        {#if router.navigating}
+          <span class="px-1 py-0.5 text-red-400">(hooks firing)</span>
         {:else}
-          <span class="px-1 py-0.5 text-yellow-500">all paths</span>
-          route through
-          <span class="px-1 py-0.5 text-fuchsia-400">
-            {router}
+          <span class="px-1 py-0.5 text-slate-600">(idle)</span>
+        {/if}
+        routed the path
+        <span class="px-1 py-0.5 text-green-400">
+          {route?.absolute()}
+        </span>
+        and nesting&nbsp;
+        {#if end}
+          <span class="flex items-center gap-1 whitespace-nowrap">
+            <span class="text-red-400">stopped</span>
+            <StopCircle class="h-4 w-4 text-red-400" />
+          </span>
+        {:else}
+          <span class="flex items-center gap-1 whitespace-nowrap">
+            <span class="text-green-400">continued</span>
+            <ArrowDown class="h-4 w-4 text-green-400" />
           </span>
         {/if}
+      </div>
+    {:else}
+      <div class="flex flex-wrap items-center gap-1 rounded-sm bg-gray-800 px-1.5 py-0.5 text-sm text-slate-500">
+        <span class="text-yellow-500">no router</span>
       </div>
     {/if}
     <ArrowRight class="h-4 w-4 text-slate-500" />
@@ -55,7 +54,9 @@
     {#if content}
       {#if typeof content === "string"}
         <div class="flex flex-col items-center gap-2 text-center text-slate-400">
-          {content}
+          <div class="max-w-3xl text-sm text-slate-500">
+            {content}
+          </div>
         </div>
       {:else}
         <div class="flex items-center">

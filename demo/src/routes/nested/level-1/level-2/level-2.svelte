@@ -3,7 +3,7 @@
   import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
   import { myDefaultRouterConfig } from "$lib/default-route-config";
-  import { Router, type Route } from "@mateothegreat/svelte5-router";
+  import { Router, RouterInstance, type Route } from "@mateothegreat/svelte5-router";
   import Level_3 from "./level-3/level-3.svelte";
 
   const routes: Route[] = [
@@ -16,6 +16,7 @@
     }
   ];
 
+  let router: RouterInstance = $state();
   let { route } = $props();
 </script>
 
@@ -31,7 +32,7 @@
 {/snippet}
 
 <RouteWrapper
-  router="nested-level-2-router"
+  {router}
   name="/nested/level-2"
   end={true}
   {route}
@@ -58,6 +59,7 @@
   <Router
     id="nested-level-2-router"
     basePath="/nested/level-1/level-2"
+    bind:instance={router}
     {routes}
     {...myDefaultRouterConfig} />
 </RouteWrapper>

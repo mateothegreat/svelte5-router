@@ -8,7 +8,7 @@
   import Slide from "./slide.svelte";
 
   let { route } = $props();
-  let instance: RouterInstance = $state();
+  let router: RouterInstance = $state();
 
   const routes: Route[] = [
     {
@@ -29,11 +29,6 @@
       }
     }
   ];
-
-  let file = $state<string>();
-  $effect(() => {
-    file = instance?.current?.props?.file || "src/routes/transitions/transitions.svelte";
-  });
 </script>
 
 {#snippet snippet()}
@@ -48,12 +43,11 @@
 {/snippet}
 
 <RouteWrapper
-  router="transitions-router"
+  {router}
   name="/transitions"
   {route}
   end={true}
   title={{
-    file,
     content:
       "Demo to show how to use transitions with the router (spoiler: they're applied at the content level rather than within the router itself)."
   }}
@@ -79,7 +73,7 @@
   <Router
     id="transitions-router"
     basePath="/transitions"
-    bind:instance
+    bind:instance={router}
     {routes}
     {...myDefaultRouterConfig} />
 </RouteWrapper>
