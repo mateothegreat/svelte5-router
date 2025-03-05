@@ -48,7 +48,7 @@ export class RouteResult {
    * The absolute path of the route by combining the router's base path and
    * the route's path.
    */
-  absolute(basePath = this.router.config.basePath): string {
+  absolute?(basePath = this.router.config.basePath): string {
     /**
      * If the router has a base path, we need to combine it with the route's path
      * otherwise it will have "undefined" as the base path and the path will be
