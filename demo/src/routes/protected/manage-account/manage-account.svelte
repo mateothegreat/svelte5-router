@@ -19,7 +19,7 @@
         <h1 class="mb-6 text-4xl font-bold text-blue-500 md:text-6xl">Welcome to SPA Router Bank!</h1>
         <p class="mb-8 text-xl text-black">Your trusted partner in routing.</p>
         <button
-          on:click={() => goto("/protected/login")}
+          onclick={() => goto("/protected/login")}
           class="mx-auto flex items-center gap-2 rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white transition-colors hover:bg-blue-700">
           Login <ArrowRight size={20} />
         </button>

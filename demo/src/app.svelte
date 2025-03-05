@@ -101,7 +101,15 @@
     <div class="mt-3 flex flex-1 flex-col items-center justify-center">
       <div class="logo h-[130px] w-[360px]"></div>
     </div>
-    <div class="flex flex-col justify-center gap-4">
+    <div class="flex flex-col items-end gap-4">
+      <div class="text-slate-500 text-sm mb-3.5">
+        demo version: <a
+          href="https://github.com/mateothegreat/svelte5-router/tree/{window.__SVELTE5_ROUTER_VERSION__}"
+          class="text-emerald-500 hover:text-blue-400 cursor-pointer"
+          target="_blank">
+          {window.__SVELTE5_ROUTER_VERSION__}
+        </a>
+      </div>
       <a
         href="https://github.com/mateothegreat/svelte5-router"
         class="text-slate-400 hover:text-green-500"

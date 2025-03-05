@@ -6,10 +6,27 @@ import path from "path";
 
 import { defineConfig } from "vite";
 
+import { vitePluginVersionMark } from "vite-plugin-version-mark";
+
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
-  plugins: [tsconfigPaths(), svelte(), tailwindcss()],
+  plugins: [
+    tsconfigPaths(),
+    svelte(),
+    tailwindcss(),
+    vitePluginVersionMark({
+      // name: 'test-app',
+      // version: '0.0.1',
+      // command: 'git describe --tags',
+      name: "svelte5-router",
+      ifGitSHA: true,
+      ifShortSHA: true,
+      ifMeta: true,
+      ifLog: true,
+      ifGlobal: true
+    })
+  ],
   build: {
     sourcemap: true
   },
