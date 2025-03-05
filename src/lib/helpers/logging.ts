@@ -30,8 +30,6 @@ export namespace logging {
    * Acceptable log types typed out so that it's clearer what can be
    * passed to the logging functions like groups of logs to combine them
    * in the outputs.
-   *
-   * @category helpers
    */
   export type Log = Group | Group[] | any | any[];
 
