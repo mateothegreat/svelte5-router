@@ -8,8 +8,6 @@ import { runtime } from "./runtime";
 export namespace logging {
   /**
    * Acceptable log levels (applies to all logging methods).
-   *
-   * @category helpers
    */
   export enum LogLevel {
     FATAL = -1,
@@ -22,8 +20,6 @@ export namespace logging {
 
   /**
    * A grouping of log messages.
-   *
-   * @category helpers
    */
   export type Group = {
     name: string;
@@ -41,8 +37,6 @@ export namespace logging {
 
   /**
    * Convenience method for logging an info message.
-   *
-   * @category helpers
    */
   export const info = (...msg: Log[]): void => {
     log(LogLevel.INFO, ...msg);
@@ -50,8 +44,6 @@ export namespace logging {
 
   /**
    * Convenience method for logging a debug message.
-   *
-   * @category helpers
    */
   export const debug = (...msg: Log[]): void => {
     log(LogLevel.DEBUG, ...msg);
@@ -59,8 +51,6 @@ export namespace logging {
 
   /**
    * Convenience method for logging an error message.
-   *
-   * @category helpers
    */
   export const error = (...msg: any[]): void => {
     log(LogLevel.ERROR, ...msg);
@@ -68,8 +58,6 @@ export namespace logging {
 
   /**
    * Convenience method for logging a trace message.
-   *
-   * @category helpers
    */
   export const trace = (...msg: any[]): void => {
     log(LogLevel.TRACE, ...msg);
@@ -81,8 +69,6 @@ export namespace logging {
    * @remarks
    * This is used to stop the application from running if an error is encountered
    * that is not recoverable.
-   *
-   * @category helpers
    */
   export const fatal = (...msg: any[]): void => {
     log(LogLevel.FATAL, ...msg);
@@ -91,8 +77,6 @@ export namespace logging {
 
   /**
    * Raw log method.
-   *
-   * @category helpers
    */
   export const log = (level: LogLevel, ...msg: Log[]): void => {
     if (level <= runtime.current.logging.level && level !== LogLevel.DISABLED) {

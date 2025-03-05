@@ -8,8 +8,6 @@ import { logging } from "./logging";
 export namespace runtime {
   /**
    * Runtime configuration.
-   *
-   * @category helpers
    */
   export type Config = {
     tracing: boolean;
@@ -24,8 +22,6 @@ export namespace runtime {
    * Retrieve the runtime configuration.
    *
    * This can be sourced from environment variables or passed in as an argument.
-   *
-   * @category helpers
    */
   export const config = (config?: Config): Config => {
     return {
@@ -43,8 +39,6 @@ export namespace runtime {
    *
    * When first called, it will retrieve the runtime configuration from the environment variables.
    * After that, it can be mutated and will not be retrieved from the environment variables again.
-   *
-   * @category helpers
    */
   export let current: Config = config();
 }
