@@ -12,8 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: install vercel cli
+      - name: install vercel
         run: npm install --global vercel@latest
+      - name: vercel pull
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: vercel build
         run: vercel build --local-config demo/vercel.json --prod --token=${{ secrets.VERCEL_TOKEN }}
       - name: vercel deploy
