@@ -7,6 +7,8 @@ name: release
 permissions:
   contents: write
   packages: write
+  id-token: write
+  pages: write
 concurrency:
   group: release
   cancel-in-progress: true

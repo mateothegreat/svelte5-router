@@ -5,11 +5,13 @@ on:
   push:
     tags:
       - "*"
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+  pages: write
 jobs:
-  publish:
-    permissions:
-      id-token: write
-      pages: write
+  typedoc-github-pages:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
