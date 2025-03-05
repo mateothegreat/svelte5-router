@@ -4,17 +4,15 @@ on:
     tags:
       - "*"
 name: release
-permissions:
-  contents: write
-  packages: write
-  id-token: write
-  pages: write
 concurrency:
   group: release
   cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - name: cicd app auth
         id: app
