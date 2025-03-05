@@ -7,12 +7,12 @@ on:
   push:
     tags:
       - "*"
-name: ${{ inputs.name || 'release' }}
+name: ${{ github.event.inputs.name || 'release' }}
 permissions:
   contents: write
   packages: write
 concurrency:
-  group: ${{ inputs.name || 'release' }}
+  group: ${{ github.event.inputs.name || 'release' }}
   cancel-in-progress: false
 jobs:
   build:
