@@ -71,7 +71,7 @@
          *     - ✅ it must have a comma delimiter
          *     - ✅ it must be a string of alphanumeric characters only
          */
-        pagination: /^(?<page>\d+)(,(?<cursor>[a-z0-9]+))?$/,
+        pagination: /^(?<page>\d+)(?:,(?<cursor>\d+))?$/,
         /**
          * The "company" querystring parameter is optional, but if present:
          *
@@ -82,8 +82,7 @@
       },
       props: {
         metadata: {
-          src: "props.svelte",
-          routeName: "props-query-matching"
+          src: "paths-and-params.svelte"
         }
       }
     },

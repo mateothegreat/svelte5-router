@@ -16,15 +16,10 @@ export namespace regexp {
    */
   export const from = (v: string | RegExp): RegExp => {
     if (typeof v === "string") {
-      if (v.startsWith("/") && v.endsWith("/")) {
-        console.log("from", v, v.slice(1, -1));
-        return new RegExp(v.slice(1, -1));
-      }
       return new RegExp(v);
     } else if (v instanceof RegExp) {
-      return v;
+      return new RegExp(v.source);
     }
-    console.log("from", v);
     throw new Error("invalid regexp expression");
   };
 
@@ -35,6 +30,12 @@ export namespace regexp {
    * @returns True if the string contains regex syntax, false otherwise.
    */
   export const can = (v: string): boolean => {
-    return /[[\]{}()*+?.,\\^$|#\s]/.test(v);
+    // Check for:
+    // - Special characters: [] {} () * + ? . \ ^ $ |
+    // - Character classes: \w \d \s and their negations
+    // - Anchors: ^ $
+    // - Quantifiers: + * ? {}
+    // - Groups: (? (?: (?= (?! (?<= (?<!
+    return /[[\]{}()*+?.,\\^$|#\s]|\\[wWdDsS]|\(\?[:!=<]?/.test(v);
   };
 }

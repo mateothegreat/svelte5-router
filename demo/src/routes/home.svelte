@@ -129,7 +129,12 @@
   links={[
     {
       href: "/home",
-      label: "/home"
+      label: "/home",
+      options: {
+        active: {
+          absolute: true
+        }
+      }
     },
     {
       href: "/home/with-query-params?someQueryParam=123",

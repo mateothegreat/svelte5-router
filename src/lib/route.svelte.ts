@@ -205,7 +205,7 @@ export class Route {
           };
         } else if (paths.base(this.path, path.toString())) {
           return {
-            condition: "left-partial-match",
+            condition: "base-match",
             params: {}
           };
         }
@@ -213,7 +213,7 @@ export class Route {
     }
     // Handle RegExp instances being passed in at the route.path level:
     else if (this.path instanceof RegExp) {
-      const res = evaluators[Identities.regexp](this.path, path);
+      const res = evaluators.any[Identities.regexp](this.path, path);
       if (res) {
         return {
           condition: "exact-match",

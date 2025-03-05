@@ -270,7 +270,7 @@ export class RouterInstance {
               original: path
             },
             querystring: {
-              condition: "no-conditions",
+              condition: "permitted-no-conditions",
               original: query?.toString(),
               params: query?.params
             },
@@ -377,7 +377,7 @@ export class RouterInstance {
                 original: normalized
               },
               querystring: {
-                condition: "no-conditions",
+                condition: "permitted-no-conditions",
                 original: query?.toString() || "",
                 params: query?.params || {}
               },
@@ -412,11 +412,11 @@ export class RouterInstance {
           route: ret,
           result: {
             path: {
-              condition: "no-conditions",
+              condition: "permitted-no-conditions",
               original: path
             },
             querystring: {
-              condition: "no-conditions",
+              condition: "permitted-no-conditions",
               original: query?.toString() || "",
               params: query?.params || {}
             },

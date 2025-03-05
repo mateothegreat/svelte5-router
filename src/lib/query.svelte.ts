@@ -71,9 +71,8 @@ export class Query {
         const param = this.params[key];
         if (param) {
           const marshalled = marshal(value);
-
           if (marshalled.identity === Identities.regexp) {
-            const res = evaluators[Identities.regexp](marshalled.value, param);
+            const res = evaluators.any[Identities.regexp](marshalled.value, param);
             if (res) {
               if (Array.isArray(res)) {
                 if (res.length === 1) {
@@ -81,6 +80,8 @@ export class Query {
                 } else {
                   matches[key] = res;
                 }
+              } else if (typeof res === "object") {
+                matches[key] = res;
               } else {
                 matches[key] = res;
               }
@@ -107,14 +108,6 @@ export class Query {
           if (marshalled.identity === Identities.array) {
             matches[key] = (marshalled.value as Array<unknown>).includes(param);
           }
-
-          if (marshalled.identity === Identities.object) {
-            const objectValue = marshalled.value as Record<string, unknown>;
-            matches[key] = Object.entries(objectValue).every(([key, value]) => {
-              const param = this.params[key];
-              const marshalled = marshal<unknown>(value);
-            });
-          }
         } else {
           return {
             condition: "no-match"
@@ -122,15 +115,22 @@ export class Query {
         }
       }
 
-      if (Object.keys(matches).length === Object.keys(matcher).length) {
+      if (Object.keys(matches).length === Object.keys(matcher).length && evaluators.valid[Identities.object](matches)) {
         return {
           condition: "exact-match",
-          matches
+          matches: marshal(matches).value as Record<
+            string,
+            string | boolean | object | Record<string, string> | string[]
+          >
         };
       }
+      console.log(matches, evaluators.valid[Identities.object](matches));
 
       return {
-        condition: "no-match"
+        condition:
+          Object.keys(matches).length > 1 && Object.keys(matcher).length !== Object.keys(matches).length
+            ? "exact-match"
+            : "no-match"
       };
     }
   }
