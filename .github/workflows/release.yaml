@@ -79,11 +79,13 @@ jobs:
       id-token: write
       pages: write
     uses: ./.github/workflows/docs.yaml
+  demo:
+    needs: build
+    uses: ./.github/workflows/demo.yaml
   notify:
     if: always()
     needs:
       - build
-      - docs
     runs-on: ubuntu-latest
     steps:
       - uses: sarisia/actions-status-discord@v1
