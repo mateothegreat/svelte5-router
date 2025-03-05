@@ -22,7 +22,7 @@ export default defineConfig({
       /**
        * If enabled, tracing will be enabled providing rich tracing capabilities.
        */
-      tracing: false,
+      tracing: true,
       /**
        * The logging configuration for the router.
        */
@@ -34,7 +34,7 @@ export default defineConfig({
         /**
          * Whether to log the trace to the browser console (optional).
          */
-        console: false,
+        console: true,
         /**
          * This method is called when a new trace is created (optional).
          *

@@ -16,7 +16,9 @@
     <div class="w-fit px-2 flex items-center gap-1 font-bold text-indigo-300 bg-gray-800 rounded-sm p-2">
       <InlineCode text="querystring" />
       match multiple values
-      <InlineCode text="number" /> && <InlineCode text="string" />
+      <InlineCode text="RegExp" />
+      <InlineCode text="number" />
+      <InlineCode text="string" />
     </div>
     <div class="flex flex-col gap-4 text-sm text-gray-400">
       <Badge
