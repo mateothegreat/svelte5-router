@@ -49,10 +49,13 @@
       // You can name your routes anything you want for tracking or debugging:
       name: "default-route",
       hooks: {
-        pre: (route: RouteResult) => {
+        pre: async (route: RouteResult) => {
           console.log(`redirecting to ${session.mode === "hash" ? "/#" : ""}/home using a pre hook!`);
-          goto(`${session.mode === "hash" ? "#" : ""}/home`);
-          return true;
+          console.log(route);
+          setTimeout(() => {
+            goto(`${session.mode === "hash" ? "/#" : ""}/home`);
+          }, 3000);
+          return false;
         }
       }
     },
