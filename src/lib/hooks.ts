@@ -9,6 +9,5 @@ import type { RouteResult } from "./route.svelte";
  *
  * @category hooks
  */
-export type HookReturn = void | boolean | Promise<boolean>;
+export type HookReturn = void | boolean | Promise<boolean> | Promise<void>;
 export type Hook = (route: RouteResult) => HookReturn;
-export type Hooks = Hook | Hook[];

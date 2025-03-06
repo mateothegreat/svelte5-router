@@ -1,6 +1,6 @@
 import type { Component, Snippet } from "svelte";
 
-import type { Hooks } from "./hooks";
+import type { Hook, Hooks } from "./hooks";
 import { paths, type PathType } from "./path";
 import { Query } from "./query.svelte";
 import type { RouterInstance } from "./router-instance.svelte";
@@ -163,8 +163,8 @@ export class Route {
    * @optional If no value is provided, no hooks will be run.
    */
   hooks?: {
-    pre?: Hooks;
-    post?: Hooks;
+    pre?: Hook | Hook[];
+    post?: Hook | Hook[];
   };
 
   /**

@@ -50,12 +50,8 @@
       name: "default-route",
       hooks: {
         pre: async (route: RouteResult) => {
-          console.log(`redirecting to ${session.mode === "hash" ? "/#" : ""}/home using a pre hook!`);
-          console.log(route);
-          setTimeout(() => {
-            goto(`${session.mode === "hash" ? "/#" : ""}/home`);
-          }, 3000);
-          return false;
+          console.log(`redirecting to ${session.mode === "hash" ? "/#" : ""}/home using a pre hook!`, route);
+          goto(`${session.mode === "hash" ? "/#" : ""}/home`);
         }
       }
     },
