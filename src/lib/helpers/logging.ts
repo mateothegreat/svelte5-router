@@ -80,7 +80,7 @@ export namespace logging {
     if (level <= runtime.current.logging.level && level !== LogLevel.DISABLED) {
       if (runtime.current.logging.console) {
         if (msg.some((m) => m?.toConsole)) {
-          msg.forEach((m) => m?.toConsole?.());
+          msg.forEach((m) => m?.toConsole?.(runtime.current.logging.level));
         } else if (runtime.current.logging.console) {
           console.log(...msg);
         }
