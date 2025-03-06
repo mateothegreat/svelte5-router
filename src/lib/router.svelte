@@ -37,6 +37,7 @@
       // Handle regular component by directly assigning the component:
       RenderableComponent = r.result.component;
     }
+    console.log(r, RenderableComponent);
   };
 
   router = registry.register(new RouterInstanceConfig(rest), apply, span);

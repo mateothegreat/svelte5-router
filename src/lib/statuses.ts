@@ -1,7 +1,8 @@
 import type { Component } from "svelte";
 
-import type { Query } from "./query.svelte";
-import type { Route } from "./route.svelte";
+import type { Route, RouteResult } from "./route.svelte";
+
+import type { Span } from "./helpers/tracing.svelte";
 
 /**
  * The available status codes that a route can have called out from the statuses
@@ -54,12 +55,10 @@ export enum StatusCode {
  * @category router
  */
 export type Statuses = Partial<{
-  [K in StatusCode]:
-    | ((
-        path: string,
-        query?: Query
-      ) => Route | Promise<Route> | { component: Component<any>; props?: Record<string, any> })
-    | Component<any>;
+  [K in StatusCode]: (
+    result: RouteResult,
+    span?: Span
+  ) => Route | Promise<Route> | Component<any> | { component: Component<any>; props?: Record<string, any> };
 }>;
 
 /**

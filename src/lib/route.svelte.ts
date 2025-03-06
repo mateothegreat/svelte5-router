@@ -23,7 +23,7 @@ import { urls, type ReturnParam } from "./helpers/urls";
  */
 export class RouteResult {
   router: RouterInstance;
-  route: Route;
+  route?: Route;
   result: {
     path: {
       condition: Condition;
@@ -35,7 +35,7 @@ export class RouteResult {
       original: ReturnParam;
       params?: ReturnParam;
     };
-    component: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
+    component?: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
     status: number;
   };
 

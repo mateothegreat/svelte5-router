@@ -187,18 +187,18 @@ export class RouterInstance {
       }
 
       // Run the route specific pre hooks:
-      if (result.route.hooks?.pre) {
+      if (result.route?.hooks?.pre) {
         if (!(await this.evaluateHooks(result, result.route.hooks.pre))) {
           this.navigating = false;
           return;
         }
       }
-
+      console.log(result);
       // Contact the downstream router component to apply the route:
       this.applyFn(result, span);
 
       // Run the route specific post hooks:
-      if (result && result.route.hooks?.post) {
+      if (result && result.route?.hooks?.post) {
         if (!(await this.evaluateHooks(result, result.route.hooks.post))) {
           this.navigating = false;
           return;
@@ -411,12 +411,28 @@ export class RouterInstance {
      */
     if (!candidate && this.config.statuses?.[404]) {
       const status = this.config.statuses[404];
-      const ret = (status as (path: string, query?: Query) => Route)(normalized, query);
+      console.log(status, typeof status);
       if (typeof status === "function") {
-        candidate = {
-          router: this,
-          route: ret,
+        return {
           result: {
+            ...status(
+              {
+                router: this,
+                result: {
+                  path: {
+                    condition: "permitted-no-conditions",
+                    original: path
+                  },
+                  querystring: {
+                    condition: "permitted-no-conditions",
+                    original: query?.toJSON(),
+                    params: query?.toJSON()
+                  },
+                  status: StatusCode.NotFound
+                }
+              },
+              span
+            ),
             path: {
               condition: "permitted-no-conditions",
               original: path
@@ -426,26 +442,27 @@ export class RouterInstance {
               original: query?.toJSON(),
               params: query?.toJSON()
             },
-            component: ret.component,
             status: StatusCode.NotFound
-          }
+          },
+          router: this
         };
       } else {
-        candidate = {
-          router: this,
-          route: status,
+        console.warn("no status handler found for 404");
+        return {
           result: {
+            ...(status as object),
             path: {
-              condition: "no-match",
+              condition: "permitted-no-conditions",
               original: path
             },
             querystring: {
-              condition: "no-match",
-              original: query?.toJSON()
+              condition: "permitted-no-conditions",
+              original: query?.toJSON(),
+              params: query?.toJSON()
             },
-            component: status,
             status: StatusCode.NotFound
-          }
+          },
+          router: this
         };
       }
     }
