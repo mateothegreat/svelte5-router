@@ -47,7 +47,7 @@ export default defineConfig({
         /**
          * The logging level that is applied.
          */
-        level: 4,
+        level: 3,
         /**
          * Whether to log the trace to the browser console (optional).
          */

@@ -64,30 +64,55 @@ export namespace urls {
     if (url === undefined || url.length === 0) {
       throw new Error(`invalid URL: ${url}`);
     }
-    const [protocol, _] = url.split("://");
-    const [host, port, path] = url.match(/^https?:\/\/([^:]+)(?::(\d+))?\/?(.*)$/)?.slice(1) ?? [];
+    const isAbsoluteUrl = url.includes("://");
+    if (isAbsoluteUrl) {
+      const [protocol, remaining] = url.split("://");
+      const hostPortMatch = remaining.match(/^([^/:]+)(?::(\d+))?(.*)$/);
+      const [host, port, path] = hostPortMatch?.slice(1) ?? [];
 
-    const [before, queryString = ""] = path.split("?");
-    const hashed = hash.parse(url);
+      const [before, queryString = ""] = (path || "").split("?");
+      const hashed = hash.parse(url);
 
-    console.log("parsed url", url, {
-      protocol,
-      host,
-      port,
-      path,
-      query0: queryString,
-      query1: new Query(queryString),
-      hash0: hashed,
-      hash1: hash.parse(url)
-    });
-    return {
-      protocol,
-      host,
-      port,
-      path: normalize(path) || "/",
-      query: new Query(queryString),
-      hash: hashed
-    };
+      console.log("absolute url", url, {
+        protocol,
+        host,
+        port,
+        path,
+        query0: queryString,
+        query1: new Query(queryString),
+        hash0: hashed,
+        hash1: hash.parse(url)
+      });
+      return {
+        protocol,
+        host,
+        port,
+        path: normalize(before) || "/",
+        query: new Query(queryString),
+        hash: hashed
+      };
+    } else {
+      // Handle relative URLs
+      const [pathPart, queryString = ""] = url.split("?");
+      const hashed = hash.parse(url);
+
+      console.log("relative url", url, {
+        path0: pathPart,
+        path1: normalize(pathPart) || "/",
+        query0: queryString,
+        query1: new Query(queryString),
+        hash0: hashed,
+        hash1: hash.parse(url)
+      });
+      return {
+        protocol: window.location.protocol.replace(":", ""),
+        host: window.location.hostname,
+        port: window.location.port,
+        path: normalize(pathPart) || "/",
+        query: new Query(queryString),
+        hash: hashed
+      };
+    }
   };
 
   export const path = (path: string): string => {
