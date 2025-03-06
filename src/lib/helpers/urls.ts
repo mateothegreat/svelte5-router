@@ -74,6 +74,7 @@ export namespace urls {
       const hashed = hash.parse(url);
 
       console.log("absolute url", url, {
+        url,
         protocol,
         host,
         port,
@@ -97,6 +98,7 @@ export namespace urls {
       const hashed = hash.parse(url);
 
       console.log("relative url", url, {
+        url,
         path0: pathPart,
         path1: normalize(pathPart) || "/",
         query0: queryString,
