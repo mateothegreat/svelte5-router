@@ -1,6 +1,6 @@
 import type { Component, Snippet } from "svelte";
 
-import type { Hook, Hooks } from "./hooks";
+import type { Hook } from "./hooks";
 import { paths, type PathType } from "./path";
 import { Query } from "./query.svelte";
 import type { RouterInstance } from "./router-instance.svelte";
@@ -84,8 +84,8 @@ export type RouteConfig = {
   component?: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
   props?: Record<string, any>;
   hooks?: {
-    pre?: Hooks;
-    post?: Hooks;
+    pre?: Hook | Hook[];
+    post?: Hook | Hook[];
   };
   children?: RouteConfig[];
   status?: number;

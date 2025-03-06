@@ -10,7 +10,12 @@ export namespace runtime {
    * Runtime configuration.
    */
   export type Config = {
-    tracing: boolean;
+    tracing: {
+      enabled: boolean;
+      level?: logging.LogLevel;
+      console?: boolean;
+      sink?: (...msg: logging.Log[]) => void | Promise<void>;
+    };
     logging: {
       level?: logging.LogLevel;
       console?: boolean;

@@ -1,7 +1,7 @@
 import { Query, registry, RouterInstanceConfig, Span, type ApplyFn, type Hooks } from ".";
 import { Route, RouteResult } from "./route.svelte";
 import { StatusCode } from "./statuses";
-import { execute, isPromise } from "./utilities.svelte";
+import { execute } from "./utilities.svelte";
 
 import { SuccessfulConditions } from "./helpers/evaluators";
 import { normalize } from "./helpers/normalize";
@@ -222,18 +222,18 @@ export class RouterInstance {
     console.log("evaluating hooks", hooks, Array.isArray(hooks));
     if (Array.isArray(hooks)) {
       for (const hook of hooks) {
-        console.log("evaluating hook", hook, isPromise(hook));
-        // if (!(await execute(() => hook(route)))) {
-        //   return false;
-        // }
+        if (!(await execute(() => hook(route)))) {
+          return false;
+        }
 
-        // Add small delay between hooks to prevent rapid History API calls
+        /**
+         * Add small delay between hooks to prevent rapid History API
+         * calls causing the browser to halt (firefox specifically).
+         */
         await new Promise((resolve) => setTimeout(resolve, 50));
       }
     } else {
-      console.log("evaluating single hook", hooks, isPromise(hooks));
       if (!(await execute(() => hooks(route)))) {
-        console.log("hook returned false");
         return true;
       }
     }

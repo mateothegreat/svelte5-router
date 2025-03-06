@@ -8,7 +8,7 @@
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
   import type { RouteConfig, RouteResult } from "@mateothegreat/svelte5-router";
-  import { logging, registry, type Route, Router, type RouterInstance } from "@mateothegreat/svelte5-router";
+  import { goto, logging, registry, type Route, Router, type RouterInstance } from "@mateothegreat/svelte5-router";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
 
   /**
@@ -51,7 +51,7 @@
       hooks: {
         pre: async (route: RouteResult) => {
           console.log(`redirecting to ${session.mode === "hash" ? "/#" : ""}/home using a pre hook!`, route);
-          // goto(`${session.mode === "hash" ? "/#" : ""}/home`);
+          goto(`${session.mode === "hash" ? "/#" : ""}/home`);
         }
       }
     },
@@ -112,10 +112,10 @@
 </script>
 
 <div
-  class="absolute top-0 left-0 m-4 flex items-center text-indigo-400 gap-2 rounded-md border border-slate-700/75 bg-slate-500/15 p-2 text-xs">
+  class="absolute top-0 left-0 m-4 flex items-center text-indigo-400 gap-2 rounded-md border-2 border-slate-700/75 bg-slate-500/15 px-2 py-1.5 text-xs">
   url mode:
   <button
-    class="rounded-md border-2 border-slate-800 bg-slate-900/50 px-2 py-1 cursor-pointer hover:bg-slate-800 hover:border-green-600"
+    class="rounded-md border-2 border-purple-600 bg-slate-900/50 font-semibold px-2.5 py-1 cursor-pointer hover:bg-slate-800 hover:border-green-600"
     class:text-orange-400={session.mode === "hash"}
     class:text-green-400={session.mode === "path"}
     onclick={() => {

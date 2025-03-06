@@ -39,7 +39,11 @@ export default defineConfig({
       /**
        * If enabled, tracing will be enabled providing rich tracing capabilities.
        */
-      tracing: true,
+      tracing: {
+        enabled: true,
+        level: 3,
+        console: true
+      },
       /**
        * The logging configuration for the router.
        */
@@ -47,7 +51,7 @@ export default defineConfig({
         /**
          * The logging level that is applied.
          */
-        level: 3,
+        level: 4,
         /**
          * Whether to log the trace to the browser console (optional).
          */

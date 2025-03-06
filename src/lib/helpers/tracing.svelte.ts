@@ -94,7 +94,7 @@ export class Trace {
       out[0] = `${this.prefix} %c%s %cspan:%c%s:%ctrace:%c%s%c:%c%s %c%s`;
     }
 
-    if (level === logging.LogLevel.TRACE) {
+    if (runtime.current.tracing.level === logging.LogLevel.TRACE) {
       out[0] += "\n%c%s";
       out.push(
         "color: #6B757F",
@@ -107,7 +107,7 @@ export class Trace {
           2
         )}`
       );
-    } else if (level === logging.LogLevel.DEBUG) {
+    } else if (runtime.current.tracing.level === logging.LogLevel.DEBUG) {
       if (this.span) {
         // @ts-ignore
         out.push(this.span.metadata);
