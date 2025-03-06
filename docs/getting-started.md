@@ -12,9 +12,9 @@ In your `app.svelte` file, you can use the `Router` component to render your rou
 
 ```svelte
 <script lang="ts">
-  import { Router, type Route } from "@mateothegreat/svelte5-router";
+  import { Router, type RouteConfig } from "@mateothegreat/svelte5-router";
 
-  const routes: Route[] = [
+  const routes: RouteConfig[] = [
     {
       component: Home
     }

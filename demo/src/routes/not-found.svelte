@@ -1,5 +1,4 @@
 <script lang="ts">
-  console.log(Date.now);
   let { route } = $props();
   $inspect(route);
 </script>

@@ -26,7 +26,7 @@ Using the `StatusesMapping` enum, the following status codes are to be supported
 
 ## `BadRouted` Object
 
-When passing a function to the `statuses` value, the [`BadRouted`](../src/lib/routed.ts) object is passed to that function.
+When passing a function to the `statuses` value, the [`RouteResult`](../src/lib/route.ts) object is passed to that function.
 
 It contains the following properties:
 
@@ -66,7 +66,7 @@ to the `statuses` prop:
   import { Router, Route, StatusCode } from "@mateothegreat/svelte5-router";
   import NotFound from "./lib/not-found.svelte";
 
-  const routes: Route[] = [
+  const routes: RouteConfig[] = [
     // add routes here
   ];
 </script>
@@ -87,10 +87,10 @@ You can also pass a function to the `statuses` prop to have more control over th
 
 ```svelte
 <script lang="ts">
-  import { Router, Route, StatusCode } from "@mateothegreat/svelte5-router";
+  import { Router, type RouteConfig, StatusCode, getStatusByValue } from "@mateothegreat/svelte5-router";
   import NotFound from "./lib/not-found.svelte";
 
-  const routes: Route[] = [
+  const routes: RouteConfig[] = [
     // add routes here
   ];
 </script>
@@ -100,14 +100,14 @@ You can also pass a function to the `statuses` prop to have more control over th
   bind:instance
   {routes}
   statuses={{
-     [StatusCode.NotFound]: (routed: BadRouted) => {
+     [StatusCode.NotFound]: (route: RouteResult) => {
       console.warn(
-        `Route "${routed.path.before}" could not be found :(`,
+        `Route "${route.result.path.original}" could not be found :(`,
         {
-          statusName: getStatusByValue(routed.status),
-          statusValue: routed.status
+          statusName: getStatusByValue(route.result.status),
+          statusValue: route.result.status
         },
-        routed
+        route
       );
       return {
         component: NotFound,

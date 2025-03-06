@@ -8,9 +8,9 @@
  | 4.    | `post` | `<Router/>` | Always runs *after* a route is rendered.   |
 
 ```ts
-import { goto, type Route } from "@mateothegreat/svelte5-router";
+import { goto, type RouteResult } from "@mateothegreat/svelte5-router";
 
-export const authGuard = async (route: Route): Promise<boolean> => {
+export const authGuard = async (route: RouteResult): Promise<boolean> => {
   console.log("simulating some login/auth check...");
   // Crude example of checking if the user is logged in. A more
   // sophisticated example would use a real authentication system
@@ -23,13 +23,13 @@ export const authGuard = async (route: Route): Promise<boolean> => {
   return true;
 }
 
-const globalPostHook1 = (route: Route): boolean => {
+const globalPostHook1 = (route: RouteResult): boolean => {
   console.warn("globalPostHook1", route);
   // Return true so that the route can continue down its evaluation path.
   return true;
 };
 
-const globalPostHook2 = async (route: Route): Promise<boolean> => {
+const globalPostHook2 = async (route: RouteResult): Promise<boolean> => {
   console.warn("globalPostHook2", route);
   // Return true so that the route can continue down its evaluation path.
   return true;

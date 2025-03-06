@@ -5,7 +5,7 @@ You can pass props to a route by using the `props` property on any route.
 These props will be passed to the component via `$props()`:
 
 ```ts
-const routes: Route[] = [
+const routes: RouteConfig[] = [
   {
     path: /\/(?<child>.*)/,
     component: DisplayParams,

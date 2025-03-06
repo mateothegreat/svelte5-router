@@ -1,8 +1,8 @@
 # Routing Usage
 
-We provide an array of `Route` objects to the `Router` component.
+We provide an array of `RouteConfig` objects to the `Router` component.
 
-Each `Route` object describes a route and its associated component.
+Each `RouteConfig` object describes a route and its associated component.
 
 ## Patterns
 
@@ -30,7 +30,7 @@ Example patterns:
 The following example demonstrates a basic route configuration with two routes:
 
 ```ts
-const routes: Route[] = [
+const routes: RouteConfig[] = [
   {
     // Notice that we don't need to specify the path.
     // The router will use this route as the default route when "/" is visited.
@@ -54,7 +54,7 @@ Passing the routes to the `<Router />` component:
 The following example demonstrates a more complex route configuration with multiple routes and hooks:
 
 ```ts
-const routes: Route[] = [
+const routes: RouteConfig[] = [
   // Example of a route that redirects to the home route:
   {
     path: "",
@@ -72,19 +72,19 @@ const routes: Route[] = [
     component: Home,
     // Use hooks to perform actions before and after the route is resolved:
     hooks: {
-      pre: async (route: Route): Promise<boolean> => {
+      pre: async (route: RouteResult): Promise<boolean> => {
         console.log("pre hook #1 fired for route");
         return true; // Return true to continue down the route evaluation path.
       },
       // Hooks can also be an array of functions (async too):
       post: [
         // This is a post hook that will be executed after the route is resolved:
-        (route: Route): boolean => {
+        (route: RouteResult): boolean => {
           console.log("post hook #1 fired for route");
           return true; // Return true to continue down the route evaluation path.
         },
         // This is an async post hook that will be executed after the route is resolved:
-        async (route: Route): Promise<boolean> => {
+        async (route: RouteResult): Promise<boolean> => {
           console.log("post hook #2 (async) fired for route");
           return true; // Return true to continue down the route evaluation path.
         }
@@ -105,7 +105,7 @@ const routes: Route[] = [
     path: "delayed",
     component: Delayed,
     hooks: {
-      pre: async (route: Route): Promise<boolean> => {
+      pre: async (route: RouteResult): Promise<boolean> => {
         // Simulate a network delay by returning a promise that resolves after a second:
         return new Promise((resolve) =>
           setTimeout(() => {
@@ -136,7 +136,7 @@ const routes: Route[] = [
 // This is a global pre hook that can be applied to all routes.
 // Here you could check if the user is logged in or perform some other
 // authentication checks:
-const globalAuthGuardHook = async (route: Route): Promise<boolean> => {
+const globalAuthGuardHook = async (route: RouteResult): Promise<boolean> => {
   console.warn("globalAuthGuardHook", route);
   // Return true so that the route can continue down its evaluation path.
   return true;

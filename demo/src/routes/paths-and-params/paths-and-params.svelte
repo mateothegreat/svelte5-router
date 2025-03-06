@@ -3,7 +3,7 @@
   import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
   import { getStatusByValue, RouterInstance, StatusCode } from "@mateothegreat/svelte5-router";
-  import type { RouteConfig } from "@mateothegreat/svelte5-router/route.svelte";
+  import type { RouteConfig, RouteResult } from "@mateothegreat/svelte5-router/route.svelte";
   import Router from "@mateothegreat/svelte5-router/router.svelte";
   import { onDestroy } from "svelte";
   import CustomNotFound from "./custom-not-found.svelte";
@@ -207,8 +207,8 @@
        */
     }}
     statuses={{
-      [StatusCode.NotFound]: (path: string) => {
-        console.warn(`the path "${path}" could not be found :(`, {
+      [StatusCode.NotFound]: (result: RouteResult) => {
+        console.warn(`the path "${result.result.path.original}" could not be found :(`, {
           /**
            * You could use the status name to make something pretty:
            */

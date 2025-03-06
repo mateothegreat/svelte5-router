@@ -193,7 +193,7 @@ export class RouterInstance {
           return;
         }
       }
-      console.log(result);
+
       // Contact the downstream router component to apply the route:
       this.applyFn(result, span);
 
