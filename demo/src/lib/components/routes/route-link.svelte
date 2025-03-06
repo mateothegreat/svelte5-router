@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { session } from "$lib/session.svelte";
   import { route, RouteOptions } from "@mateothegreat/svelte5-router";
 
   export type RouteLinkProps = {
@@ -19,7 +20,7 @@
   }
   if (!options.default) {
     options.default = {
-      class: ["inactive", "text-slate-300", "border-slate-600"]
+      class: ["inactive", "text-slate-300", "border-slate-500/50"]
     };
   }
   if (!options.loading) {
@@ -38,7 +39,7 @@
   }
 
   if (!options.default.class) {
-    options.default.class = ["inactive", "text-slate-300", "border-slate-600"];
+    options.default.class = ["inactive", "text-slate-300", "border-slate-500/50"];
   }
   if (!options.loading.class) {
     options.loading.class = ["loading", "bg-orange-500"];
@@ -50,7 +51,14 @@
 
 <a
   use:route={options}
-  {href}
-  class="duration-400 rounded-sm border-2 px-2.5 py-0.5 text-sm transition-all hover:border-green-300 hover:bg-green-600 hover:text-white">
-  {label}
+  href={session.mode === "hash" ? `/#${href}` : href}
+  class="duration-400 flex items-center rounded-sm border-2 px-2.5 py-0.5 text-sm transition-all hover:border-green-300 hover:bg-green-600 hover:text-white">
+  {#if session.mode === "hash"}
+    <span>/#</span>
+    <span>/{label.startsWith("/") ? label.slice(1) : label}</span>
+  {:else}
+    <span>
+      {label}
+    </span>
+  {/if}
 </a>

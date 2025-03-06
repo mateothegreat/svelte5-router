@@ -1,10 +1,8 @@
 import { type Component } from "svelte";
 
 import type { Hooks } from "./hooks";
-import { Route } from "./route.svelte";
+import { Route, type RouteConfig } from "./route.svelte";
 import type { Statuses } from "./statuses";
-
-import { normalize } from "./helpers/normalize";
 
 /**
  * The configuration for a new router instance.
@@ -33,7 +31,7 @@ export class RouterInstanceConfig {
   /**
    * The routes for the router instance.
    */
-  routes: Route[];
+  routes: RouteConfig[];
 
   /**
    * Hooks to be run before and after the routes are rendered
@@ -94,23 +92,23 @@ export class RouterInstanceConfig {
     this.initialPath = config.initialPath;
     this.notFoundComponent = config.notFoundComponent;
     this.statuses = config.statuses;
-
+    this.routes = config.routes;
     /**
      * For safety, determine if the routes are already instances of the Route class
      * and if not, create a new instance of the Route class:
      */
-    if (config.routes) {
-      this.routes = [];
-      for (let route of config.routes) {
-        if (route instanceof Route) {
-          if (typeof route.path === "string") {
-            route.path = normalize(route.path);
-          }
-          this.routes.push(route);
-        } else {
-          this.routes.push(new Route(route));
-        }
-      }
-    }
+    // if (config.routes) {
+    //   this.routes = [];
+    //   for (let route of config.routes) {
+    //     if (route instanceof Route) {
+    //       if (typeof route.path === "string") {
+    //         route.path = normalize(route.path);
+    //       }
+    //       this.routes.push(route);
+    //     } else {
+    //       this.routes.push(new Route(route));
+    //     }
+    //   }
+    // }
   }
 }

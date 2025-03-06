@@ -39,7 +39,7 @@
 </script>
 
 <span
-  class="inline-flex items-center gap-1.5 rounded-sm p-2 text-sm font-semibold {variants[variant].classes} {className}">
+  class="inline-flex items-center gap-1.5 rounded-sm p-2 text-sm font-medium {variants[variant].classes} {className}">
   {#if Icon}
     <Icon class="inline-block h-5 w-5" />
   {/if}

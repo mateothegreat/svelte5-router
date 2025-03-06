@@ -17,7 +17,8 @@ export type Marshalled<T> = {
 export const marshal = <T>(value: unknown): Marshalled<T> => {
   // Most values will be strings, so we check for that first:
   if (typeof value === "string") {
-    if (value.match(/^[\d.]+$/)) {
+    // Check for floats:
+    if (value.match(/^[\d.-]+$/)) {
       if (!Number.isNaN(Number.parseFloat(value))) {
         return {
           identity: Identities.number,
@@ -30,7 +31,87 @@ export const marshal = <T>(value: unknown): Marshalled<T> => {
           identity: Identities.number,
           value: Number.parseInt(value) as T
         };
+      } else {
+        return {
+          identity: Identities.string,
+          value: value as T
+        };
       }
+    } else if (!value.includes(",") && (value.includes("&") || value.includes("="))) {
+      // Handle both array notation (x[0]=1) and simple key-value pairs (a=1&b=2)
+      const pairs = value.split(/[&,]/);
+      const result: Record<string, unknown> = {};
+
+      for (const pair of pairs) {
+        if (!pair.includes("=")) continue;
+        const [key, val] = pair.split("=");
+        // Remove array notation if present, otherwise use the key as is
+        const cleanKey = key.replace(/\[\d*\]$/, "");
+        const marshalled = marshal(val);
+
+        if (key.includes("[")) {
+          // Handle array case
+          if (!Array.isArray(result[cleanKey])) {
+            result[cleanKey] = [];
+          }
+          const index = key.match(/\[(\d+)\]/)?.[1];
+          if (index) {
+            // Store index and value as tuple to sort later
+            if (!Array.isArray(result[cleanKey])) {
+              result[cleanKey] = [];
+            }
+            (result[cleanKey] as [number, unknown][]).push([parseInt(index), marshalled.value]);
+          } else {
+            (result[cleanKey] as unknown[]).push(marshalled.value);
+          }
+        } else {
+          // Handle simple key-value case
+          result[cleanKey] = marshalled.value;
+        }
+      }
+
+      // Transform arrays while preserving non-array values
+      for (const [key, value] of Object.entries(result)) {
+        if (Array.isArray(value) && value.length > 0 && Array.isArray(value[0])) {
+          // Sort by index and extract values only for array entries
+          result[key] = (value as [number, unknown][]).sort((a, b) => a[0] - b[0]).map(([, val]) => val);
+        }
+      }
+
+      return {
+        identity: Identities.object,
+        value: result as T
+      };
+    } else if (value.includes("&") && value.includes("=")) {
+      const result: Record<string, unknown> = {};
+
+      for (const pair of value.split("&")) {
+        if (!pair.includes("=")) continue;
+        const [key, val] = pair.split("=");
+        result[key] = val;
+      }
+
+      return {
+        identity: Identities.object,
+        value: result as T
+      };
+    } else if (value.match(/^[0-9a-z]+\[\d+\]=.+$/)) {
+      // Handle single array element case (e.g., "x[0]=1")
+      const [, index, val] = value.match(/^[0-9a-z]+\[(\d+)\]=(.+)$/) || [];
+      if (index !== undefined && val !== undefined) {
+        const result = [];
+        const marshalled = marshal(val);
+        result[parseInt(index, 10)] = marshalled.value;
+        return {
+          identity: Identities.array,
+          value: result as T
+        };
+      }
+    } else if (value.match(/^[0-9a-z]+\[\]$/)) {
+      return {
+        identity: Identities.array,
+        value: value as T
+      };
     }
 
     // If the value is a string that is not a number, we check if it's a boolean:
@@ -46,6 +127,7 @@ export const marshal = <T>(value: unknown): Marshalled<T> => {
         value: false as T
       };
     }
+
     return {
       identity: Identities.string,
       value: value as T

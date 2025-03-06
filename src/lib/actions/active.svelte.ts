@@ -1,4 +1,4 @@
-import { normalize } from "../helpers/normalize";
+import { urls } from "../helpers/urls";
 
 import { applyActiveClass } from "./apply-classes";
 import type { RouteOptions } from "./options";
@@ -15,8 +15,10 @@ import type { RouteOptions } from "./options";
  * @source
  */
 export const active = (node: HTMLAnchorElement, options: Pick<RouteOptions, "active"> = {}) => {
+  let url = urls.parse(node.href);
+
   const apply = () => {
-    applyActiveClass(normalize(new URL(node.href).pathname), location.search, options, node);
+    applyActiveClass(url, options, node);
   };
 
   apply();

@@ -19,13 +19,15 @@
       <InlineCode text="RegExp" />
       <InlineCode text="number" />
       <InlineCode text="string" />
+      <InlineCode text="boolean" />
+      <InlineCode text="array" />
     </div>
     <div class="flex flex-col gap-4 text-sm text-gray-400">
       <Badge
         variant="warning"
         class="w-fit">
-        Matching will occur if all querystring keys and values match what was provided in the `querystring`
-        configuration option.
+        Matching will occur if <em><strong>all</strong></em>
+        querystring keys and values match what was provided in the `querystring` configuration option.
       </Badge>
       <div class=" gap-1">
         This demo shows how to use the route's
@@ -37,21 +39,21 @@
       <Badge
         variant="success"
         class="w-fit">
-        There are 2 potential matches for the path /props/query-match-2. Notice how the active route is highlighted in
-        green for this route only + the querystring matching.
+        There are 2 potential matches for the path "/paths-and-params/query-matcher". Notice how the active route is
+        highlighted in green for this route only + the querystring matching.
       </Badge>
     </div>
   </div>
   <div class="flex flex-col gap-6 border-2 bg-gray-900/60 rounded-lg p-4 border-slate-700">
     <Code
-      title="$props().route.route value:"
-      file="src/routes/paths-and-params/querystring-matching.svelte">
-      <div>{JSON.stringify(route.route, null, 2)}</div>
-    </Code>
-    <Code
       title="$props().route.result value:"
       file="src/routes/paths-and-params/querystring-matching.svelte">
       <div>{JSON.stringify(route.result, null, 2)}</div>
+    </Code>
+    <Code
+      title="$props().route.route value:"
+      file="src/routes/paths-and-params/querystring-matching.svelte">
+      <div class="text-indigo-400">{JSON.stringify(route.route, null, 2)}</div>
     </Code>
   </div>
 </div>

@@ -1,25 +1,38 @@
 <script lang="ts">
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
   import { myDefaultRouterConfig } from "$lib/default-route-config";
+  import { session } from "$lib/session.svelte";
   import Home from "$routes/home.svelte";
   import Nested from "$routes/nested/nested.svelte";
   import PathsAndParams from "$routes/paths-and-params/paths-and-params.svelte";
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
   import { goto, logging, registry, type Route, Router, type RouterInstance } from "@mateothegreat/svelte5-router";
+  import type { RouteConfig } from "@mateothegreat/svelte5-router/route.svelte";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
 
+  /**
+   * Only needed for the demo environment development.
+   *
+   * It is not needed for including the router package in your project.
+   */
   if (import.meta.hot) {
     import.meta.hot.accept(() => {
       import.meta.hot!.invalidate();
     });
   }
 
-  // This is a state variable that will hold the router instance.
-  // It can be used to access the current route, navigate, etc:
+  /**
+   * This is a state variable that will hold the router instance.
+   *
+   * It can be used to access the current route, navigate, etc:
+   */
   let router: RouterInstance = $state();
-  const route = $derived(router.current);
 
+  /**
+   * Get notified when the current route changes:
+   */
+  const route = $derived(router.current);
   $effect(() => {
     if (router.current) {
       logging.info(
@@ -28,14 +41,17 @@
     }
   });
 
-  const routes: Route[] = [
+  /**
+   * Let's declare our routes for the main app router:
+   */
+  const routes: RouteConfig[] = [
     {
-      // You can name your routes for tracking or debugging:
+      // You can name your routes anything you want for tracking or debugging:
       name: "default-route",
       hooks: {
         pre: () => {
           console.log("redirecting to /home using a pre hook!");
-          goto("/home");
+          goto(`${session.mode === "hash" ? "#" : ""}/home`);
           return false;
         }
       }
@@ -96,6 +112,19 @@
   };
 </script>
 
+<div
+  class="absolute top-0 left-0 m-4 flex items-center text-indigo-400 gap-2 rounded-md border border-slate-700/75 bg-slate-500/15 p-2 text-xs">
+  url mode:
+  <button
+    class="rounded-md border-2 border-slate-800 bg-slate-900/50 px-2 py-1 cursor-pointer hover:bg-slate-800 hover:border-green-600"
+    class:text-orange-400={session.mode === "hash"}
+    class:text-green-400={session.mode === "path"}
+    onclick={() => {
+      session.mode = session.mode === "hash" ? "path" : "hash";
+    }}>
+    {session.mode}
+  </button>
+</div>
 <div class="flex h-screen flex-col gap-4 bg-zinc-950 p-4">
   <div class="flex">
     <div class="mt-3 flex flex-1 flex-col items-center justify-center">

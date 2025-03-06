@@ -1,11 +1,17 @@
-import type { Params } from "../params";
-
 import { identify, Identities } from "./identify";
+import { marshal } from "./marshal";
+import type { ReturnParam } from "./urls";
 
 /**
  * Path or querystring evaluation result.
  */
-export type Condition = "exact-match" | "base-match" | "default-match" | "no-match" | "permitted-no-conditions";
+export type Condition =
+  | "exact-match"
+  | "base-match"
+  | "default-match"
+  | "no-match"
+  | "permitted-no-conditions"
+  | "one-or-more-missing";
 
 /**
  * The conditions that are considered successful.
@@ -20,19 +26,20 @@ export const SuccessfulConditions: Condition[] = [
 /**
  * The conditions that are considered failed.
  */
-export const FailedConditions: Condition[] = ["no-match"];
+export const FailedConditions: Condition[] = ["no-match", "one-or-more-missing"];
 
 /**
  * The evaluation results of the route.
  */
 export type Evaluation = {
   condition: Condition;
-  params?: Params;
+  params?: ReturnParam;
 };
 
 export type EvaluationResult = {
   path: Evaluation;
   querystring: Evaluation;
+  original: ReturnParam;
 };
 
 export namespace evaluators {
@@ -43,7 +50,20 @@ export namespace evaluators {
    * @param b - The second value to evaluate {a} against.
    * @returns A boolean, string[], or object.
    */
-  export const any: Record<string, (a: any, b: any) => boolean | string[] | { [key: string]: string }> = {
+  export const any: Record<
+    string,
+    (
+      a: any,
+      b: any
+    ) =>
+      | boolean
+      | boolean[]
+      | number
+      | number[]
+      | string
+      | string[]
+      | { [key: string]: boolean | boolean[] | number | number[] | string | string[] }
+  > = {
     [Identities.string]: (a, b) => a === b,
     [Identities.number]: (a, b) => a === b,
     [Identities.boolean]: (a, b) => a === b,
@@ -72,14 +92,15 @@ export namespace evaluators {
       const result = (a as RegExp).exec(b);
       if (result) {
         if (result.groups) {
-          return result.groups;
+          return marshal(result.groups).value as { [key: string]: string };
         } else {
           if (result.length === 1 && result[0] === result.input) {
             return true;
           }
-          return result.slice(1);
+          return marshal(result.slice(1)[0]).value as string[];
         }
       }
+      return false;
     }
   };
 

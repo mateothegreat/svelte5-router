@@ -18,7 +18,7 @@
   <div class="flex items-center gap-3 rounded-md bg-slate-900/70 p-1.5 px-2">
     {#if router}
       <div class="flex flex-wrap items-center rounded-sm bg-gray-800 px-1.5 py-0.5 text-sm text-slate-500">
-        <ArrowRightFromLine class="h-4 w-4 text-green-400" />
+        <ArrowRightFromLine class="h-4 w-4 text-green-400 mr-1" />
         {router.config.id}
         {#if router.navigating}
           <span class="px-1 py-0.5 text-red-400">(hooks firing)</span>
@@ -27,7 +27,7 @@
         {/if}
         routed the path
         <span class="px-1 py-0.5 text-green-400">
-          {route?.absolute()}
+          {route?.absolute?.()}
         </span>
         and nesting&nbsp;
         {#if end}
@@ -41,10 +41,6 @@
             <ArrowDown class="h-4 w-4 text-green-400" />
           </span>
         {/if}
-      </div>
-    {:else}
-      <div class="flex flex-wrap items-center gap-1 rounded-sm bg-gray-800 px-1.5 py-0.5 text-sm text-slate-500">
-        <span class="text-yellow-500">no router</span>
       </div>
     {/if}
     <ArrowRight class="h-4 w-4 text-slate-500" />

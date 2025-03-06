@@ -2,8 +2,10 @@
   import Badge from "$lib/components/badge.svelte";
   import Container from "$lib/components/container.svelte";
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
-  import { getStatusByValue, RouterInstance, StatusCode, type Route } from "@mateothegreat/svelte5-router";
+  import { getStatusByValue, RouterInstance, StatusCode } from "@mateothegreat/svelte5-router";
+  import type { RouteConfig } from "@mateothegreat/svelte5-router/route.svelte";
   import Router from "@mateothegreat/svelte5-router/router.svelte";
+  import { onDestroy } from "svelte";
   import CustomNotFound from "./custom-not-found.svelte";
   import DisplayParams from "./display-params.svelte";
   import QuerystringMatching from "./querystring-matching.svelte";
@@ -12,18 +14,22 @@
   let { route } = $props();
 
   let randoms = $state({
-    float: Math.random().toFixed(4),
+    float: (Math.random() * 1000).toFixed(2),
     int: (Math.random() * 1000).toFixed(0),
     string: (Math.random() * 1000).toFixed(2).toString()
   });
 
-  setInterval(() => {
-    randoms.float = Math.random().toFixed(4);
+  const interval = setInterval(() => {
+    randoms.float = (Math.random() * 1000).toFixed(2);
     randoms.int = (Math.random() * 1000).toFixed(0);
     randoms.string = (Math.random() * 1000).toFixed(2).toString();
-  }, 1000);
+  }, 750);
 
-  const routes: Route[] = [
+  onDestroy(() => {
+    clearInterval(interval);
+  });
+
+  const routes: RouteConfig[] = [
     /**
      * This route will be used if there is no matching routes we
      * define below:
@@ -162,8 +168,8 @@
       label: "query-matcher?pagination=2,23&company=123"
     },
     {
-      href: `/paths-and-params/query-matcher?float=${randoms.float}&string=123`,
-      label: `query-matcher?float=${randoms.float}&string=123`
+      href: `/paths-and-params/query-matcher?string=123&float=${randoms.float}`,
+      label: `query-matcher?string=123&float=${randoms.float}`
     }
   ]}>
   <Router

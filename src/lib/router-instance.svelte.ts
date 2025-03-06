@@ -6,6 +6,7 @@ import { execute } from "./utilities.svelte";
 import { SuccessfulConditions } from "./helpers/evaluators";
 import { normalize } from "./helpers/normalize";
 import { createSpan } from "./helpers/tracing.svelte";
+import { urls } from "./helpers/urls";
 
 /**
  * The handlers type that is used when registering a router instance.
@@ -30,6 +31,11 @@ export type RouterHandlers = {
    * The handler for the popState event.
    */
   popStateHandler: () => void;
+
+  /**
+   * The handler for the hashchange event.
+   */
+  hashChangeHandler: () => void;
 };
 
 /**
@@ -50,7 +56,7 @@ export class RouterInstance {
   /**
    * The routes for the router instance.
    */
-  routes: Set<Route>;
+  routes = new Set<Route>();
 
   /**
    * The handlers for the router instance.
@@ -86,41 +92,25 @@ export class RouterInstance {
   constructor(config: RouterInstanceConfig, applyFn: ApplyFn) {
     this.id = config.id || Math.random().toString(36).substring(2, 15);
     this.config = config;
-    this.routes = new Set();
     this.applyFn = applyFn;
 
     this.handlers = {
-      pushStateHandler: () =>
-        this.handleStateChange(
-          location.pathname,
-          !!window.location.search
-            ? new Query(Object.fromEntries(new URLSearchParams(window.location.search)))
-            : undefined
-        ),
-      replaceStateHandler: () =>
-        this.handleStateChange(
-          location.pathname,
-          !!window.location.search
-            ? new Query(Object.fromEntries(new URLSearchParams(window.location.search)))
-            : undefined
-        ),
-      popStateHandler: () =>
-        this.handleStateChange(
-          location.pathname,
-          !!window.location.search
-            ? new Query(Object.fromEntries(new URLSearchParams(window.location.search)))
-            : undefined
-        )
+      pushStateHandler: () => this.handleStateChange(location.toString()),
+      replaceStateHandler: () => this.handleStateChange(location.toString()),
+      popStateHandler: () => this.handleStateChange(location.toString()),
+      hashChangeHandler: () => this.handleStateChange(location.toString())
     };
 
     window.addEventListener("pushState", this.handlers.pushStateHandler);
     window.addEventListener("replaceState", this.handlers.replaceStateHandler);
     window.addEventListener("popstate", this.handlers.popStateHandler);
+    window.addEventListener("hashchange", this.handlers.hashChangeHandler);
 
     for (let route of config.routes) {
       this.routes.add(
         new Route({
           ...route,
+          // path: route.basePath ? `${route.basePath}${route.path}` : route.path,
           /**
            * If the route has no base path (because it's optional), use
            * the router instance's base path.
@@ -146,7 +136,8 @@ export class RouterInstance {
    * @param {Span} span @optional The span to attach traces to. If not provided,
    * a new span will be created.
    */
-  async handleStateChange(path: string, query: Query, span?: Span): Promise<void> {
+  async handleStateChange(url: string, span?: Span): Promise<void> {
+    const { path, query } = urls.parse(url);
     this.navigating = true;
 
     if (!span) {
@@ -168,15 +159,9 @@ export class RouterInstance {
       }
     });
 
-    const current = this.current;
     const result = await this.get(path, query, span);
 
     if (result && SuccessfulConditions.includes(result.result.path.condition)) {
-      // if (result.result.path.condition !== "base-match") {
-      // this.current = result;
-      //   console.warn(current?.result.path, result.result.path);
-      // }
-
       span?.trace({
         prefix: "✅",
         name: "router-instance.handleStateChange",
@@ -254,8 +239,8 @@ export class RouterInstance {
    * @returns {RegistryMatch} The matched route for the given path.
    */
   async get(path: string, query?: Query, span?: Span): Promise<RouteResult> {
+    path = path.replace("/#", "");
     const normalized = normalize(path.replace(this.config.basePath || "/", ""));
-
     const renderDefaultRoute = (reason: string): RouteResult => {
       const defaultRoute = Array.from(this.routes).find(
         (route) => !route.path || route.path === "" || route.path === "/"
@@ -271,7 +256,7 @@ export class RouterInstance {
             basePath: this.config.basePath
           },
           path,
-          query: query?.params || false,
+          query,
           normalized,
           route: defaultRoute
         }
@@ -287,8 +272,8 @@ export class RouterInstance {
             },
             querystring: {
               condition: "permitted-no-conditions",
-              original: query?.toString(),
-              params: query?.params
+              original: query?.toJSON(),
+              params: query?.toJSON()
             },
             component: defaultRoute.component,
             status: StatusCode.OK
@@ -308,7 +293,7 @@ export class RouterInstance {
           basePath: this.config.basePath
         },
         path,
-        query: query?.params || false,
+        query,
         normalized
       }
     });
@@ -336,7 +321,7 @@ export class RouterInstance {
               basePath: this.config.basePath
             },
             path,
-            query: query?.params || false,
+            query,
             normalized,
             route,
             evaluation: {
@@ -359,7 +344,7 @@ export class RouterInstance {
                   basePath: this.config.basePath
                 },
                 path,
-                query: query?.params || false,
+                query,
                 normalized,
                 evaluation: {
                   path: pathEvaluation,
@@ -377,7 +362,7 @@ export class RouterInstance {
                 },
                 querystring: {
                   ...queryEvaluation,
-                  original: query?.toString()
+                  original: query.toJSON()
                 },
                 component: route.component,
                 status: StatusCode.OK
@@ -399,8 +384,8 @@ export class RouterInstance {
               },
               querystring: {
                 condition: "permitted-no-conditions",
-                original: query?.toString() || "",
-                params: query?.params || {}
+                original: query?.toJSON(),
+                params: query?.toJSON()
               },
               component: route.component,
               status: StatusCode.OK
@@ -438,8 +423,8 @@ export class RouterInstance {
             },
             querystring: {
               condition: "permitted-no-conditions",
-              original: query?.toString() || "",
-              params: query?.params || {}
+              original: query?.toJSON(),
+              params: query?.toJSON()
             },
             component: ret.component,
             status: StatusCode.NotFound
@@ -456,7 +441,7 @@ export class RouterInstance {
             },
             querystring: {
               condition: "no-match",
-              original: query?.toString() || ""
+              original: query?.toJSON()
             },
             component: status,
             status: StatusCode.NotFound
@@ -479,6 +464,7 @@ export class RouterInstance {
     window.removeEventListener("pushState", this.handlers.pushStateHandler);
     window.removeEventListener("replaceState", this.handlers.replaceStateHandler);
     window.removeEventListener("popstate", this.handlers.popStateHandler);
+    window.removeEventListener("hashchange", this.handlers.hashChangeHandler);
 
     registry.deregister(this.config.id, span);
   }

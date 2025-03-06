@@ -1,6 +1,7 @@
 <script lang="ts">
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
   import { myDefaultRouterConfig } from "$lib/default-route-config";
+  import { session } from "$lib/session.svelte";
   import { goto, Router, RouterInstance } from "@mateothegreat/svelte5-router";
   import { ArrowRight, Building2, Shield, Wallet } from "lucide-svelte";
   import { client } from "../account-state.svelte";
@@ -78,19 +79,14 @@
     basePath="/protected/manage-account"
     bind:instance={router}
     routes={[
-      // This route is optional, it's for demonstration purposes.
-      // It's used to redirect to the balance page when the user
-      // navigates to the manage-account route (the default path):
+      /**
+       * This route is optional, it's for demonstration purposes.
+       * It's used to redirect to the balance page when the user
+       * navigates to the manage-account route (the default path):
+       */
       {
         component: Home
       },
-      // {
-      //   hooks: {
-      //     pre: () => {
-      //       goto("/protected/manage-account/balance");
-      //     }
-      //   }
-      // },
       {
         path: "/balance",
         component: Balance,
@@ -104,8 +100,8 @@
           pre: () => {
             client.loggedIn = false;
             setTimeout(() => {
-              goto("/protected/login");
-            }, 1000);
+              goto(`${session.mode === "hash" ? "#" : ""}/protected/login`);
+            }, 100);
           }
         }
       }

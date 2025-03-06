@@ -1,9 +1,8 @@
 <script lang="ts">
   import { onDestroy, type Component } from "svelte";
   import { createSpan, Span } from "./helpers/tracing.svelte";
-  import { Query } from "./query.svelte";
   import { registry } from "./registry.svelte";
-  import type { RouteResult } from "./route.svelte";
+  import { type RouteResult } from "./route.svelte";
   import { RouterInstanceConfig } from "./router-instance-config";
   import type { RouterInstance } from "./router-instance.svelte";
 
@@ -63,11 +62,7 @@
     };
   }
 
-  router.handleStateChange(
-    location.pathname,
-    !!window.location.search ? new Query(Object.fromEntries(new URLSearchParams(window.location.search))) : undefined,
-    span
-  );
+  router.handleStateChange(location.toString(), span);
 
   onDestroy(() => {
     router.deregister(span);

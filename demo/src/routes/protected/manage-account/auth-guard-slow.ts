@@ -1,5 +1,7 @@
 import { goto, type RouteResult } from "@mateothegreat/svelte5-router";
 
+import { session } from "$lib/session.svelte";
+
 export const authGuardSlow = async (route?: RouteResult): Promise<boolean> => {
   console.log(
     `🔍 route.hooks["pre"] has been triggered for %c${route?.route.absolute()}`,
@@ -15,7 +17,7 @@ export const authGuardSlow = async (route?: RouteResult): Promise<boolean> => {
 
   if (!localStorage.getItem("token")) {
     console.log("%c❌ redirecting to denied", "color: #f44336; font-weight: bold; font-size: 1.1em;");
-    goto("/protected/denied");
+    goto(`${session.mode === "hash" ? "#" : ""}/protected/login`);
     return false;
   }
 

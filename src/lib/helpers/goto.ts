@@ -6,11 +6,11 @@
  *
  * @category helpers
  */
-export const goto = (path: string, queryParams?: Record<string, string>): void => {
+export const goto = (path: string, queryParams?: Record<string, unknown>): void => {
   const url = new URL(path, window.location.origin);
   if (queryParams) {
     Object.entries(queryParams).forEach(([key, value]) => {
-      url.searchParams.set(key, value);
+      url.searchParams.set(key, value as string);
     });
   }
   window.history.pushState({}, "", url.toString());

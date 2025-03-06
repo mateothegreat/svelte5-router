@@ -1,16 +1,17 @@
 import type { Component, Snippet } from "svelte";
 
 import type { Hooks } from "./hooks";
-import type { Params } from "./params";
 import { paths, type PathType } from "./path";
-import type { QueryType } from "./query.svelte";
+import { Query } from "./query.svelte";
 import type { RouterInstance } from "./router-instance.svelte";
 
 import { evaluators, type Condition, type Evaluation } from "./helpers/evaluators";
 import { Identities } from "./helpers/identify";
+import { marshal } from "./helpers/marshal";
 import { normalize } from "./helpers/normalize";
 import { regexp } from "./helpers/regexp";
 import type { Span, Trace } from "./helpers/tracing.svelte";
+import { urls, type ReturnParam } from "./helpers/urls";
 
 /**
  * A route result that includes the evaluation results of the route.
@@ -27,12 +28,12 @@ export class RouteResult {
     path: {
       condition: Condition;
       original: string;
-      params?: Params;
+      params?: ReturnParam;
     };
     querystring: {
       condition: Condition;
-      original: string;
-      params?: Params;
+      original: ReturnParam;
+      params?: ReturnParam;
     };
     component: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
     status: number;
@@ -40,7 +41,7 @@ export class RouteResult {
 
   constructor(result: RouteResult) {
     this.router = result.router;
-    this.route = new Route(result.route);
+    this.route = result.route;
     this.result = result.result;
   }
 
@@ -74,6 +75,21 @@ export class RouteResult {
  * @category router
  */
 export type ApplyFn = (result: RouteResult, span?: Span) => void;
+
+export type RouteConfig = {
+  name?: string | number;
+  basePath?: string;
+  path?: PathType;
+  querystring?: Record<string, ReturnParam>;
+  component?: Component<any> | Snippet | (() => Promise<Component<any> | Snippet>) | Function | any;
+  props?: Record<string, any>;
+  hooks?: {
+    pre?: Hooks;
+    post?: Hooks;
+  };
+  children?: RouteConfig[];
+  status?: number;
+};
 
 /**
  * A route that can be navigated to.
@@ -122,7 +138,7 @@ export class Route {
    *
    * @optional If no value is provided, there are no query params.
    */
-  querystring?: QueryType;
+  querystring?: Query;
 
   /**
    * The component to render when the route is active.
@@ -196,18 +212,22 @@ export class Route {
   /**
    * The constructor for the `Route` class.
    *
-   * @param {Route} route An instance of the `Route` class.
+   * @param {Route} config An instance of the `Route` class.
    */
-  constructor(route: Route) {
-    this.name = route.name;
-    this.basePath = route.basePath;
-    this.path = typeof route.path === "string" ? normalize(route.path) : route.path;
-    this.querystring = route.querystring;
-    this.component = route.component;
-    this.props = route.props;
-    this.hooks = route.hooks;
-    this.status = route.status;
-    this.children = route.children?.map((child) => new Route(child));
+  constructor(config: RouteConfig) {
+    this.name = config.name;
+    this.basePath = config.basePath;
+    this.path = typeof config.path === "string" ? normalize(config.path) : config.path;
+
+    if (config.querystring) {
+      this.querystring = new Query(config.querystring);
+    }
+
+    this.component = config.component;
+    this.props = config.props;
+    this.hooks = config.hooks;
+    this.status = config.status;
+    this.children = config.children?.map((child) => new Route(child));
   }
 
   /**
@@ -215,12 +235,13 @@ export class Route {
    * @param path The path to parse against the route.
    */
   test?(path: PathType): Evaluation {
+    const matcher = urls.path(path.toString());
     // Handle string paths being passed in at the route.path level:
     if (typeof this.path === "string") {
       // Detect if this path contains regex syntax:
       if (regexp.can(this.path)) {
         // Path is a regex, so we need to test it against the path passed in:
-        const match = regexp.from(this.path).exec(path.toString());
+        const match = regexp.from(this.path).exec(matcher);
         if (match) {
           return {
             condition: "exact-match",
@@ -229,12 +250,12 @@ export class Route {
         }
       } else {
         // Path is not a regex, so we then check if the path passed in is a direct match:
-        if (normalize(this.path) === path) {
+        if (this.path === matcher) {
           return {
             condition: "exact-match",
             params: this.path
           };
-        } else if (paths.base(this.path, path.toString())) {
+        } else if (paths.base(this.path, matcher)) {
           return {
             condition: "base-match",
             params: {}
@@ -244,7 +265,7 @@ export class Route {
     }
     // Handle RegExp instances being passed in at the route.path level:
     else if (this.path instanceof RegExp) {
-      const res = evaluators.any[Identities.regexp](this.path, path);
+      const res = evaluators.any[Identities.regexp](this.path, matcher);
       if (res) {
         return {
           condition: "exact-match",
@@ -253,7 +274,7 @@ export class Route {
       }
     }
     // Handle numeric paths being passed in at the route.path level:
-    else if (typeof this.path === "number" && this.path === path) {
+    else if (typeof this.path === "number" && this.path === marshal(matcher).value) {
       throw new Error("numbered route match not supported at the route.path level");
     }
 

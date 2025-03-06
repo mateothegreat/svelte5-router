@@ -1,4 +1,4 @@
-import { normalize } from "../helpers/normalize";
+import { urls } from "../helpers/urls";
 
 import { applyActiveClass } from "./apply-classes";
 import type { RouteOptions } from "./options";
@@ -17,9 +17,12 @@ import type { RouteOptions } from "./options";
  * @source
  */
 export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
+  let url = urls.parse(node.href);
+
   const apply = () => {
-    applyActiveClass(normalize(new URL(node.href).pathname), location.search, options, node);
+    applyActiveClass(url, options, node);
   };
+
   /**
    * Handle click events on the anchor element.
    * @param event - The click event.
@@ -27,7 +30,7 @@ export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
   const handleClick = (event: Event) => {
     event.preventDefault();
     window.history.pushState({}, "", node.href);
-    applyActiveClass(normalize(new URL(node.href).pathname), location.search, options, node);
+    applyActiveClass(url, options, node);
   };
 
   apply();
