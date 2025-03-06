@@ -222,6 +222,9 @@ export class RouterInstance {
         if (!(await execute(() => hook(route)))) {
           return false;
         }
+
+        // Add small delay between hooks to prevent rapid History API calls
+        await new Promise((resolve) => setTimeout(resolve, 50));
       }
     } else {
       if (!(await execute(() => hooks(route)))) {
