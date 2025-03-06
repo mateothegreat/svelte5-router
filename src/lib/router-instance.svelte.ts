@@ -229,8 +229,10 @@ export class RouterInstance {
         await new Promise((resolve) => setTimeout(resolve, 50));
       }
     } else {
+      console.log("evaluating single hook", hooks, isPromise(hooks));
       if (!(await execute(() => hooks(route)))) {
-        return false;
+        console.log("hook returned false");
+        return true;
       }
     }
     return true;
