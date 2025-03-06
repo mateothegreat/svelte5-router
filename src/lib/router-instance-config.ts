@@ -1,6 +1,6 @@
 import { type Component } from "svelte";
 
-import type { Hooks } from "./hooks";
+import type { Hook } from "./hooks";
 import { Route, type RouteConfig } from "./route.svelte";
 import type { Statuses } from "./statuses";
 
@@ -40,8 +40,8 @@ export class RouterInstanceConfig {
    * @optional If no value is provided, no hooks will be run.
    */
   hooks?: {
-    pre?: Hooks;
-    post?: Hooks;
+    pre?: Hook | Hook[];
+    post?: Hook | Hook[];
   };
 
   /**

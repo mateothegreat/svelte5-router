@@ -1,4 +1,4 @@
-import { Query, registry, RouterInstanceConfig, Span, type ApplyFn, type Hooks } from ".";
+import { Query, registry, RouterInstanceConfig, Span, type ApplyFn, type Hook } from ".";
 import { Route, RouteResult } from "./route.svelte";
 import { StatusCode } from "./statuses";
 import { execute } from "./utilities.svelte";
@@ -217,8 +217,7 @@ export class RouterInstance {
     this.navigating = false;
   }
 
-  async evaluateHooks(route: RouteResult, hooks: Hooks): Promise<boolean> {
-    console.log("evaluating hooks", hooks, Array.isArray(hooks));
+  async evaluateHooks(route: RouteResult, hooks: Hook | Hook[]): Promise<boolean> {
     if (Array.isArray(hooks)) {
       for (const hook of hooks) {
         if (!(await execute(() => hook(route)))) {
