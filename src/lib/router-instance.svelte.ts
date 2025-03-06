@@ -446,7 +446,6 @@ export class RouterInstance {
           router: this
         };
       } else {
-        console.warn("no status handler found for 404");
         return {
           result: {
             ...(status as object),
