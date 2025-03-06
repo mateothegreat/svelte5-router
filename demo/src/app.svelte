@@ -7,8 +7,8 @@
   import PathsAndParams from "$routes/paths-and-params/paths-and-params.svelte";
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
-  import type { RouteConfig } from "@mateothegreat/svelte5-router";
-  import { logging, registry, type Route, Router, type RouterInstance } from "@mateothegreat/svelte5-router";
+  import type { RouteConfig, RouteResult } from "@mateothegreat/svelte5-router";
+  import { goto, logging, registry, type Route, Router, type RouterInstance } from "@mateothegreat/svelte5-router";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
 
   /**
@@ -46,31 +46,43 @@
    */
   const routes: RouteConfig[] = [
     {
+      // You can name your routes anything you want for tracking or debugging:
+      name: "default-route",
+      hooks: {
+        pre: (route: RouteResult) => {
+          console.log(`redirecting to ${session.mode === "hash" ? "/#" : ""}/home using a pre hook!`);
+          goto(`${session.mode === "hash" ? "#" : ""}/home`);
+          return true;
+        }
+      }
+    },
+    {
       // Here we use a regex to match the home route.
       // This is useful if you want to match a route that has a dynamic path.
       // The "?:" is used to group the regex without capturing the match:
-      path: /^\/($|home)$/,
-      component: Home
+      // path: /^\/($|home)$/,
+      path: "home",
+      component: Home,
       // Use hooks to perform actions before and after the route is resolved:
-      // hooks: {
-      //   pre: async (route: RouteResult): Promise<boolean> => {
-      //     // console.log("pre hook #1 fired for route");
-      //     return true; // Return true to continue down the route evaluation path.
-      //   },
-      //   // Hooks can also be an array of functions (async too):
-      //   post: [
-      //     // This is a post hook that will be executed after the route is resolved:
-      //     (route: Route): boolean => {
-      //       // console.log("post hook #1 fired for route");
-      //       return true; // Return true to continue down the route evaluation path.
-      //     },
-      //     // This is an async post hook that will be executed after the route is resolved:
-      //     async (route: Route): Promise<boolean> => {
-      //       // console.log("post hook #2 (async) fired for route");
-      //       return true; // Return true to continue down the route evaluation path.
-      //     }
-      //   ]
-      // }
+      hooks: {
+        pre: async (route: Route): Promise<boolean> => {
+          // console.log("pre hook #1 fired for route");
+          return true; // Return true to continue down the route evaluation path.
+        },
+        // Hooks can also be an array of functions (async too):
+        post: [
+          // This is a post hook that will be executed after the route is resolved:
+          (route: Route): boolean => {
+            // console.log("post hook #1 fired for route");
+            return true; // Return true to continue down the route evaluation path.
+          },
+          // This is an async post hook that will be executed after the route is resolved:
+          async (route: Route): Promise<boolean> => {
+            // console.log("post hook #2 (async) fired for route");
+            return true; // Return true to continue down the route evaluation path.
+          }
+        ]
+      }
     },
     {
       path: "nested",
