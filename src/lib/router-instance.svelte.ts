@@ -411,7 +411,6 @@ export class RouterInstance {
      */
     if (!candidate && this.config.statuses?.[404]) {
       const status = this.config.statuses[404];
-      console.log(status, typeof status);
       if (typeof status === "function") {
         return {
           result: {
