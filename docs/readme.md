@@ -32,7 +32,7 @@ npm install @mateothegreat/svelte5-router
 - [Getting Started](https://github.com/mateothegreat/svelte5-router/blob/main/docs/getting-started.md)
 - [Routing](https://github.com/mateothegreat/svelte5-router/blob/main/docs/routing.md)
 - [Hooks](https://github.com/mateothegreat/svelte5-router/blob/main/docs/hooks.md)
-- [Helper Methods](https://github.com/mateothegreat/svelte5-router/blob/main/docs/helper-methods.md)
+- [Helper Methods](https://github.com/mateothegreat/svelte5-router/blob/main/docs/helpers.md)
 - [Default Status Mapping](https://github.com/mateothegreat/svelte5-router/blob/main/docs/statuses.md)
 - [The Router Registry](https://github.com/mateothegreat/svelte5-router/blob/main/docs/registry.md)
 - [Route Styling](https://github.com/mateothegreat/svelte5-router/blob/main/docs/styling.md)
