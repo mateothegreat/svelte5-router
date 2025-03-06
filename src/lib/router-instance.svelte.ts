@@ -175,7 +175,8 @@ export class RouterInstance {
           },
           path,
           query: query?.params || false,
-          route: result
+          route: result,
+          url
         }
       });
 

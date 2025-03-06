@@ -70,6 +70,16 @@ export namespace urls {
     const [before, queryString = ""] = path.split("?");
     const hashed = hash.parse(url);
 
+    console.log("parsed url", url, {
+      protocol,
+      host,
+      port,
+      path,
+      query0: queryString,
+      query1: new Query(queryString),
+      hash0: hashed,
+      hash1: hash.parse(url)
+    });
     return {
       protocol,
       host,
