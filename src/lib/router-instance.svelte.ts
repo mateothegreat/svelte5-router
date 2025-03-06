@@ -110,7 +110,6 @@ export class RouterInstance {
       this.routes.add(
         new Route({
           ...route,
-          // path: route.basePath ? `${route.basePath}${route.path}` : route.path,
           /**
            * If the route has no base path (because it's optional), use
            * the router instance's base path.

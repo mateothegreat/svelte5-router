@@ -26,17 +26,17 @@ export class Registry {
     }
     (window as any).__SVELTE_SPA_ROUTER_REGISTERED__ = this;
 
-    // const { pushState, replaceState } = window.history;
+    const { pushState, replaceState } = window.history;
 
-    // window.history.pushState = function (...args) {
-    //   pushState.apply(window.history, args);
-    //   window.dispatchEvent(new Event("pushState"));
-    // };
+    window.history.pushState = function (...args) {
+      pushState.apply(window.history, args);
+      window.dispatchEvent(new Event("pushState"));
+    };
 
-    // window.history.replaceState = function (...args) {
-    //   replaceState.apply(window.history, args);
-    //   window.dispatchEvent(new Event("replaceState"));
-    // };
+    window.history.replaceState = function (...args) {
+      replaceState.apply(window.history, args);
+      window.dispatchEvent(new Event("replaceState"));
+    };
   }
 
   /**
