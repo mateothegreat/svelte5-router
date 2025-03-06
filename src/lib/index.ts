@@ -10,7 +10,7 @@ export { query } from "./helpers/query";
 export { runtime } from "./helpers/runtime";
 export { Span, Trace } from "./helpers/tracing.svelte";
 export type { ReturnParam as Param } from "./helpers/urls";
-export type { Hooks } from "./hooks";
+export { Hook } from "./hooks";
 export { Query } from "./query.svelte";
 export type { QueryEvaluationResult, QueryType } from "./query.svelte";
 export { registry, type Registry } from "./registry.svelte";
