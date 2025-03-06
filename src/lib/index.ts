@@ -14,7 +14,7 @@ export type { Hooks } from "./hooks";
 export { Query } from "./query.svelte";
 export type { QueryEvaluationResult, QueryType } from "./query.svelte";
 export { registry, type Registry } from "./registry.svelte";
-export type { ApplyFn, Route, RouteResult } from "./route.svelte";
+export type { ApplyFn, Route, RouteConfig, RouteResult } from "./route.svelte";
 export { RouterInstanceConfig } from "./router-instance-config";
 export { RouterInstance } from "./router-instance.svelte";
 export { default as Router } from "./router.svelte";

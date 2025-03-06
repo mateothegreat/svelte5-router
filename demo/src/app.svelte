@@ -7,8 +7,8 @@
   import PathsAndParams from "$routes/paths-and-params/paths-and-params.svelte";
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
+  import type { RouteConfig } from "@mateothegreat/svelte5-router";
   import { goto, logging, registry, type Route, Router, type RouterInstance } from "@mateothegreat/svelte5-router";
-  import type { RouteConfig } from "@mateothegreat/svelte5-router/route.svelte";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
 
   /**
