@@ -8,7 +8,7 @@
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
   import type { RouteConfig, RouteResult } from "@mateothegreat/svelte5-router";
-  import { goto, logging, registry, type Route, Router, type RouterInstance } from "@mateothegreat/svelte5-router";
+  import { logging, registry, type Route, Router, type RouterInstance } from "@mateothegreat/svelte5-router";
   import { BookHeart, Github, HelpCircle } from "lucide-svelte";
 
   /**
@@ -51,7 +51,7 @@
       hooks: {
         pre: async (route: RouteResult) => {
           console.log(`redirecting to ${session.mode === "hash" ? "/#" : ""}/home using a pre hook!`, route);
-          goto(`${session.mode === "hash" ? "/#" : ""}/home`);
+          // goto(`${session.mode === "hash" ? "/#" : ""}/home`);
         }
       }
     },

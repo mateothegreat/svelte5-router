@@ -155,7 +155,8 @@ export class RouterInstance {
         location: "/src/lib/router-instance.svelte:handleStateChange()",
         basePath: this.config.basePath,
         path,
-        query: query?.params || false
+        query,
+        url
       }
     });
 
