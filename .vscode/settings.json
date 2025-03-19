@@ -1,32 +1,3 @@
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "workbench.colorCustomizations": {
-    "activityBar.activeBackground": "#9ae649",
-    "activityBar.background": "#9ae649",
-    "activityBar.foreground": "#15202b",
-    "activityBar.inactiveForeground": "#15202b99",
-    "activityBarBadge.background": "#3b92e4",
-    "activityBarBadge.foreground": "#15202b",
-    "commandCenter.border": "#15202b99",
-    "editorGroup.border": "#9ae649",
-    "panel.border": "#9ae649",
-    "sash.hoverBorder": "#9ae649",
-    "sideBar.border": "#9ae649",
-    "statusBar.background": "#81de1e",
-    "statusBar.border": "#81de1e",
-    "statusBar.debuggingBackground": "#7b1ede",
-    "statusBar.debuggingBorder": "#7b1ede",
-    "statusBar.debuggingForeground": "#e7e7e7",
-    "statusBar.foreground": "#15202b",
-    "statusBarItem.hoverBackground": "#67b118",
-    "statusBarItem.remoteBackground": "#81de1e",
-    "statusBarItem.remoteForeground": "#15202b",
-    "tab.activeBorder": "#9ae649",
-    "titleBar.activeBackground": "#81de1e",
-    "titleBar.activeForeground": "#15202b",
-    "titleBar.border": "#81de1e",
-    "titleBar.inactiveBackground": "#81de1e99",
-    "titleBar.inactiveForeground": "#15202b99"
-  },
-  "peacock.color": "#81de1e"
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

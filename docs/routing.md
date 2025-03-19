@@ -23,6 +23,37 @@ Example patterns:
 >
 > For example, if the route is `/users/123/settings`, then `$props()` will be `{ id: "123", tab: "settings" }`.
 
+## Parameters
+
+Parameters that are capable of being parsed from the path are passed to the component through the `route` prop:
+
+```svelte
+<script>
+  let { route } = $props();
+</script>
+```
+
+When using named parameters such as `(?<id>[a-z0-9]{25})`, the parameter value will be passed through the `route` prop as an object:
+
+```ts
+const routes: RouteConfig[] = [
+  {
+    path: "/users/(?<id>[a-z0-9]{25})",
+    component: User
+  }
+];
+```
+
+and can be accessed like this:
+
+```svelte
+<script>
+  const userId = route.result.path.params.id;
+</script>
+```
+
+For the full shape of `RouteResult` see the [API Reference](https://github.com/mateothegreat/svelte5-router/blob/main/src/lib/route.svelte.ts#L24).
+
 ## Examples
 
 ### Basic
