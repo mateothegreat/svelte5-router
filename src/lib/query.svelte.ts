@@ -81,11 +81,12 @@ export class Query {
     if (typeof inbound === "object") {
       const matches: Record<string, ReturnParam> = {};
       for (const [key, test] of Object.entries(inbound.params)) {
-        if (this.params[key] || this.params[key] === 0) {
+        const value = this.params[key];
+        if (typeof value !== 'undefined' && value !== null) {
           const marshalled = marshal(this.params[key]);
           if (test instanceof RegExp) {
             const res = evaluators.any[Identities.regexp](test, this.params[key]);
-            if (res || res === 0) {
+            if (typeof res !== 'undefined' && res !== null) {
               matches[key] = res;
             } else {
               return {

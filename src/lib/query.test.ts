@@ -60,4 +60,17 @@ describe("query test against inbound", () => {
         }
       })
   })
+
+  test("'false' parses as a parameter", () => {
+    expect(new Query("first=false")
+      .test(new Query({
+        first: /^(.*)$/,
+      })))
+      .toEqual({
+        condition: 'exact-match',
+        matches: {
+          first: false,
+        }
+      })
+  })
 })
