@@ -232,7 +232,7 @@ export class RouterInstance {
       }
     } else {
       if (!(await execute(() => hooks(route)))) {
-        return true;
+        return false;
       }
     }
     return true;
