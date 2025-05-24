@@ -69,4 +69,6 @@
   });
 </script>
 
-<RenderableComponent {route} />
+<RenderableComponent
+  {route}
+  {...rest} />

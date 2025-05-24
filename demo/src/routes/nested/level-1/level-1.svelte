@@ -7,7 +7,12 @@
   import Level_2 from "./level-2/level-2.svelte";
 
   let router: RouterInstance = $state();
-  let { route } = $props();
+  let { route, foo } = $props();
+
+  /**
+   * Demonstrate how support for additional props is working.
+   */
+  console.log("additionalProps.foo in ../nested.svelte is passed to this component as:", foo);
 
   /**
    * This is a helper state variable that can be used to determine if the

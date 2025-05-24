@@ -51,7 +51,7 @@ export default defineConfig({
         /**
          * The logging level that is applied.
          */
-        level: 4,
+        level: process.env.NODE_ENV === "development" ? 1 : 4,
         /**
          * Whether to log the trace to the browser console (optional).
          */

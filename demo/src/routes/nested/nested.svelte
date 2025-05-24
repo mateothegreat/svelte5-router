@@ -29,6 +29,12 @@
   $effect(() => {
     end = router.current?.result.path.condition === "default-match";
   });
+
+  const additionalProps = {
+    foo: {
+      bar: "baz"
+    }
+  };
 </script>
 
 {#snippet snippet()}
@@ -72,5 +78,6 @@
     basePath="/nested"
     bind:instance={router}
     {...myDefaultRouterConfig}
-    {routes} />
+    {routes}
+    {...additionalProps} />
 </RouteWrapper>
