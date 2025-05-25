@@ -65,7 +65,20 @@ export class RouteResult {
    * The string representation of the route including the querystring.
    */
   toString?(): string {
-    return `${this.absolute()}${this.result.querystring.original ? `?${this.result.querystring.original}` : ""}`;
+    let querystring = "";
+    if (this.result.querystring.original && typeof this.result.querystring.original === "object") {
+      const params = new URLSearchParams();
+      for (const [key, value] of Object.entries(this.result.querystring.original)) {
+        if (value !== undefined && value !== null) {
+          params.append(key, String(value));
+        }
+      }
+      querystring = params.toString();
+    } else if (this.result.querystring.original) {
+      querystring = String(this.result.querystring.original);
+    }
+
+    return `${this.absolute()}${querystring ? `?${querystring}` : ""}`;
   }
 }
 

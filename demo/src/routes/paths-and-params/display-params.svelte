@@ -6,7 +6,8 @@
 </script>
 
 {#snippet content()}
-  The route uses the pattern <InlineCode text="/\/?<child>.*)/" /> which captures everything after the base path and passes it to the component as the `params` prop.
+  The route uses the pattern <InlineCode text="/\/?<child>.*)/" /> which captures everything after the base path and passes
+  it to the component as the `params` prop.
 {/snippet}
 
 <Code
