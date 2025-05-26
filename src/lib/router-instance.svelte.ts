@@ -9,6 +9,13 @@ import { createSpan } from "./helpers/tracing.svelte";
 import { urls } from "./helpers/urls";
 
 /**
+ * The default routes that are used when no routes match.
+ *
+ * @category router
+ */
+export const defaultRoutes = ["", "/", "/*", "/^.*$/", "/.*/"];
+
+/**
  * The handlers type that is used when registering a router instance.
  *
  * This is used to restore the original history methods when the last instance is destroyed
@@ -249,9 +256,15 @@ export class RouterInstance {
     path = path.replace("/#", "");
     const normalized = normalize(path.replace(this.config.basePath || "/", ""));
     const renderDefaultRoute = (reason: string): RouteResult => {
-      const defaultRoute = Array.from(this.routes).find(
-        (route) => !route.path || route.path === "" || route.path === "/"
-      );
+      let defaultRoute: Route;
+
+      for (const route of this.routes) {
+        if (!route.path || defaultRoutes.includes(route.path.toString())) {
+          defaultRoute = route;
+          break;
+        }
+      }
+
       span?.trace({
         prefix: defaultRoute ? "✅" : "❌",
         name: "router-instance.getDefaultRoute",
@@ -268,6 +281,7 @@ export class RouterInstance {
           route: defaultRoute
         }
       });
+
       if (defaultRoute) {
         return new RouteResult({
           router: this,
