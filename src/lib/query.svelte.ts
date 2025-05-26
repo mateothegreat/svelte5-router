@@ -86,7 +86,8 @@ export class Query {
           const marshalled = marshal(this.params[key]);
           if (test instanceof RegExp) {
             const res = evaluators.any[Identities.regexp](test, this.params[key]);
-            if (typeof res !== 'undefined' && res !== null) {
+            // allow res if the marshalled type matches and is falsy
+            if (res || (typeof res === marshalled.identity && !res)) {
               matches[key] = res;
             } else {
               return {

@@ -62,15 +62,29 @@ describe("query test against inbound", () => {
   })
 
   test("'false' parses as a parameter", () => {
-    expect(new Query("first=false")
+    expect(new Query("first=false&second=what")
       .test(new Query({
         first: /^(.*)$/,
+        second: /^(.*)$/,
       })))
       .toEqual({
         condition: 'exact-match',
         matches: {
           first: false,
+          second: "what",
         }
       })
   })
+
+  test("requires number, passing string", () => {
+    expect(new Query("first=bad")
+      .test(new Query({
+        first: /^(\d)$/,
+      })))
+      .toEqual({
+        condition: 'no-match'
+      })
+  })
+
 })
+
