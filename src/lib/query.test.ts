@@ -14,3 +14,77 @@ describe("query", () => {
     });
   });
 });
+
+describe("query test against inbound", () => {
+  test("single parameter matches exactly", () => {
+    expect(new Query("first=a")
+      .test(new Query({
+        first: /^(\w)$/
+      })))
+      .toEqual({
+        condition: 'exact-match',
+        matches: {
+          first: 'a'
+        }
+      })
+  })
+
+  test("three parameters matches exactly", () => {
+    expect(new Query("first=a&second=b&third=c")
+      .test(new Query({
+        first: /^(\w)$/,
+        second: /^(\w)$/,
+        third: /^(\w)$/,
+      })))
+      .toEqual({
+        condition: 'exact-match',
+        matches: {
+          first: 'a',
+          second: 'b',
+          third: 'c'
+        }
+      })
+  })
+
+  test("0 parses as number", () => {
+    expect(new Query("first=1&second=0")
+      .test(new Query({
+        first: /^(\d)$/,
+        second: /^(\d)$/,
+      })))
+      .toEqual({
+        condition: 'exact-match',
+        matches: {
+          first: 1,
+          second: 0,
+        }
+      })
+  })
+
+  test("'false' parses as a parameter", () => {
+    expect(new Query("first=false&second=what")
+      .test(new Query({
+        first: /^(.*)$/,
+        second: /^(.*)$/,
+      })))
+      .toEqual({
+        condition: 'exact-match',
+        matches: {
+          first: false,
+          second: "what",
+        }
+      })
+  })
+
+  test("requires number, passing string", () => {
+    expect(new Query("first=bad")
+      .test(new Query({
+        first: /^(\d)$/,
+      })))
+      .toEqual({
+        condition: 'no-match'
+      })
+  })
+
+})
+

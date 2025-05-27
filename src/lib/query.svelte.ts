@@ -81,11 +81,13 @@ export class Query {
     if (typeof inbound === "object") {
       const matches: Record<string, ReturnParam> = {};
       for (const [key, test] of Object.entries(inbound.params)) {
-        if (this.params[key]) {
+        const value = this.params[key];
+        if (typeof value !== 'undefined' && value !== null) {
           const marshalled = marshal(this.params[key]);
           if (test instanceof RegExp) {
             const res = evaluators.any[Identities.regexp](test, this.params[key]);
-            if (res) {
+            // allow res if the marshalled type matches and is falsy
+            if (res || (typeof res === marshalled.identity && !res)) {
               matches[key] = res;
             } else {
               return {
@@ -110,7 +112,7 @@ export class Query {
         }
       }
 
-      if (Object.keys(matches).length === Object.keys(inbound).length && evaluators.valid[Identities.object](matches)) {
+      if (Object.keys(matches).length === Object.keys(inbound.params).length && evaluators.valid[Identities.object](matches)) {
         return {
           condition: "exact-match",
           matches: marshal(matches).value as Record<string, ReturnParam>
@@ -119,7 +121,7 @@ export class Query {
 
       return {
         condition:
-          Object.keys(matches).length > 1 && Object.keys(inbound).length !== Object.keys(matches).length
+          Object.keys(matches).length > 1 && Object.keys(inbound.params).length !== Object.keys(matches).length
             ? "exact-match"
             : "no-match",
         matches: matches as Record<string, ReturnParam>
