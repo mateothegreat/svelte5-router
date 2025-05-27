@@ -2,6 +2,7 @@
   import RouteWrapper from "$lib/components/routes/route-wrapper.svelte";
   import { myDefaultRouterConfig } from "$lib/default-route-config";
   import { session } from "$lib/session.svelte";
+  import Extras from "$routes/extras/extras.svelte";
   import Home from "$routes/home.svelte";
   import Nested from "$routes/nested/nested.svelte";
   import PathsAndParams from "$routes/paths-and-params/paths-and-params.svelte";
@@ -98,6 +99,10 @@
     {
       path: "transitions",
       component: Transitions
+    },
+    {
+      path: "extras",
+      component: Extras
     }
   ];
 
@@ -195,6 +200,10 @@
         {
           href: "/404",
           label: "/404"
+        },
+        {
+          href: "/extras",
+          label: "/extras"
         }
       ]}>
       <Router

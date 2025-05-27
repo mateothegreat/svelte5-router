@@ -10,9 +10,9 @@
   }: { title?: string; file?: string; class?: string; children: any } = $props();
 </script>
 
-<div class="flex flex-col overflow-hidden rounded-md border-2 border-slate-700 bg-black/60">
+<div class="flex flex-col overflow-hidden rounded-md border-2 border-slate-700 bg-black/60 {className}">
   <div class="flex items-center justify-between bg-slate-800 p-2 text-sm text-slate-500">
-    <p class="flex items-center gap-1 font-mono text-slate-400">
+    <p class="flex items-center gap-1 font-mono text-xs text-slate-400">
       <Code2 class="h-4 w-4  text-orange-500" />
       {title}
     </p>

@@ -46,8 +46,8 @@
     <ArrowRight class="h-4 w-4 text-slate-500" />
     <FileLink {file} />
   </div>
-  <div class="p-2">
-    {#if content}
+  {#if content}
+    <div class="p-2">
       {#if typeof content === "string"}
         <div class="flex flex-col items-center gap-2 text-center text-slate-400">
           <div class="max-w-3xl text-sm text-slate-500">
@@ -59,6 +59,6 @@
           {@render content()}
         </div>
       {/if}
-    {/if}
-  </div>
+    </div>
+  {/if}
 </div>
