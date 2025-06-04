@@ -1,6 +1,6 @@
 # Svelte 5 SPA Router 🚀 🔥
 
-![logo](/docs/logo.png)
+![logo](/docs/logo-1000px.png)
 
 An SPA router for Svelte that allows you to divide & conquer your app with nested routers, snippets, and more.
 
