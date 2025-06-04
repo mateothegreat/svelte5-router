@@ -1,7 +1,7 @@
 import { type Component } from "svelte";
 
 import type { Hook } from "./hooks";
-import { Route, type RouteConfig } from "./route.svelte";
+import { Route, RouteConfig } from "./route.svelte";
 import type { Statuses } from "./statuses";
 
 /**
@@ -92,23 +92,24 @@ export class RouterInstanceConfig {
     this.initialPath = config.initialPath;
     this.notFoundComponent = config.notFoundComponent;
     this.statuses = config.statuses;
-    this.routes = config.routes;
-    /**
-     * For safety, determine if the routes are already instances of the Route class
-     * and if not, create a new instance of the Route class:
-     */
-    // if (config.routes) {
-    //   this.routes = [];
-    //   for (let route of config.routes) {
-    //     if (route instanceof Route) {
-    //       if (typeof route.path === "string") {
-    //         route.path = normalize(route.path);
-    //       }
-    //       this.routes.push(route);
-    //     } else {
-    //       this.routes.push(new Route(route));
-    //     }
-    //   }
-    // }
+    console.log("config", config);
+    this.routes = config.routes.map(
+      (route) =>
+        new RouteConfig({
+          ...route,
+          ...config
+        })
+    );
+
+    console.log("routes 22", this.routes);
+  }
+
+  toJSON(): any {
+    return {
+      id: this.id,
+      basePath: this.basePath,
+      routes: this.routes,
+      hooks: this.hooks
+    };
   }
 }

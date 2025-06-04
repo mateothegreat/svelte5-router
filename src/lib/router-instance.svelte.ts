@@ -504,4 +504,25 @@ export class RouterInstance {
 
     registry.deregister(this.config.id, span);
   }
+
+  /**
+   * Get routes as an array for serialization purposes.
+   *
+   * @returns {Route[]} The routes as an array.
+   */
+  get routesArray(): Route[] {
+    return Array.from(this.routes);
+  }
+
+  /**
+   * Custom JSON serialization to handle Set objects properly.
+   *
+   * @returns {object} The serializable representation of the router instance.
+   */
+  toJSON(): any {
+    return {
+      id: this.id,
+      config: this.config
+    };
+  }
 }

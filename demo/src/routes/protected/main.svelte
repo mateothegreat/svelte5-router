@@ -108,7 +108,7 @@
         component: async () => import("./manage-account/manage-account.svelte"),
         hooks: {
           pre: authGuardFast
-        }
+        },
       },
       {
         path: "denied",

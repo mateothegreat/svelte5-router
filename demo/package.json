@@ -16,6 +16,7 @@
     "test:cy:e2e": "start-server-and-test test:start http-get://localhost:8173 test:cy:open-e2e"
   },
   "devDependencies": {
+    "@mateothegreat/svelte5-table": "^1.0.29",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tailwindcss/oxide": "^4.0.9",
     "@tailwindcss/postcss": "^4.0.9",

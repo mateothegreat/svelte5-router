@@ -4,7 +4,7 @@ We provide an array of `RouteConfig` objects to the `Router` component.
 
 Each `RouteConfig` object describes a route and its associated component.
 
-## Patterns
+## Pattern Matching
 
 You can simply use static paths like `/foo` or dynamic paths like `/foo/(.*?)` with regex.
 
@@ -23,7 +23,7 @@ Example patterns:
 >
 > For example, if the route is `/users/123/settings`, then `$props()` will be `{ id: "123", tab: "settings" }`.
 
-## Parameters
+## Parameter Extraction
 
 Parameters that are capable of being parsed from the path are passed to the component through the `route` prop:
 

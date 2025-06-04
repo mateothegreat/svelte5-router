@@ -40,6 +40,7 @@ export class RouteResult {
   };
 
   constructor(result: RouteResult) {
+    console.log("result", result);
     this.router = result.router;
     this.route = result.route;
     this.result = result.result;
@@ -89,7 +90,7 @@ export class RouteResult {
  */
 export type ApplyFn = (result: RouteResult, span?: Span) => void;
 
-export type RouteConfig = {
+export class RouteConfig {
   name?: string | number;
   basePath?: string;
   path?: PathType;
@@ -102,7 +103,29 @@ export type RouteConfig = {
   };
   children?: RouteConfig[];
   status?: number;
-};
+
+  constructor(config: RouteConfig) {
+    this.name = config.name;
+    this.basePath = config.basePath;
+    this.path = config.path;
+    this.querystring = config.querystring;
+    this.component = config.component;
+  }
+
+  toJSON(): any {
+    return {
+      name: this.name,
+      basePath: this.basePath,
+      path: this.path,
+      props: this.props,
+      component: this.component,
+      querystring: this.querystring,
+      hooks: this.hooks,
+      children: this.children,
+      status: this.status
+    };
+  }
+}
 
 /**
  * A route that can be navigated to.

@@ -31,7 +31,16 @@
     },
     {
       path: "passing-down-props",
-      component: PassingDownProps
+      component: PassingDownProps,
+      props: {
+        route: "passing-down-props"
+      },
+      hooks: {
+        pre: () => {
+          console.log("pre");
+          return true;
+        }
+      }
     }
   ];
 </script>

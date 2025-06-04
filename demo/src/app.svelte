@@ -6,6 +6,7 @@
   import Home from "$routes/home.svelte";
   import Nested from "$routes/nested/nested.svelte";
   import PathsAndParams from "$routes/paths-and-params/paths-and-params.svelte";
+  import Patterns from "$routes/patterns/patterns.svelte";
   import Protected from "$routes/protected/main.svelte";
   import Transitions from "$routes/transitions/transitions.svelte";
   import type { RouteConfig, RouteResult } from "@mateothegreat/svelte5-router";
@@ -55,6 +56,10 @@
           goto(`${session.mode === "hash" ? "/#" : ""}/home`);
         }
       }
+    },
+    {
+      path: "/patterns",
+      component: Patterns
     },
     {
       // Here we use a regex to match the home route.
@@ -180,6 +185,10 @@
         {
           href: "/home",
           label: "/home"
+        },
+        {
+          href: "/patterns",
+          label: "/patterns"
         },
         {
           href: "/protected",
