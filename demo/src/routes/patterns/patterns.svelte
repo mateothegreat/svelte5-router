@@ -3,9 +3,10 @@
   import Router from "@mateothegreat/svelte5-router/router.svelte";
   import type { TableColumn } from "@mateothegreat/svelte5-table";
   import { DropinTable } from "@mateothegreat/svelte5-table";
-  import { CirclePlay, MousePointerClick } from "lucide-svelte";
+  import { CirclePlay, Lightbulb, MousePointerClick } from "lucide-svelte";
   import { writable, type Writable } from "svelte/store";
   import Dump from "./dump.svelte";
+  import Dump2 from "./dump2.svelte";
 
   type Component = {
     name: string;
@@ -64,6 +65,10 @@
     {
       path: "default-route",
       component: Dump
+    },
+    {
+      path: "single-path",
+      component: Dump2
     }
   ];
 </script>
@@ -76,7 +81,7 @@
 {/snippet}
 
 {#snippet action(row: any)}
-  <div class="flex flex-1">
+  <div class="flex flex-1 ml-2">
     <a
       use:route
       href={`/patterns${row.path}`}
@@ -93,23 +98,32 @@
   </div>
 {/snippet}
 
-<div class="flex flex-col gap-1">
-  <h1 class="text-lg font-semibold text-slate-300">Routing Patterns</h1>
-  <p class="text-slate-500 text-sm">This page contains an assortment of routing patterns to help you get started.</p>
+<div class="flex flex-col gap-4">
+  <div class="flex flex-col gap-1">
+    <h1 class="text-lg font-semibold text-slate-300 flex items-center gap-1">
+      <Lightbulb class="h-5 w-5 text-cyan-400" />
+      Routing Patterns
+    </h1>
+    <p class="text-slate-500 text-sm">This page contains an assortment of routing patterns to help you get started.</p>
+  </div>
+  <div class="bg-slate-700/20 text-slate-600 py-2 border-2 border-slate-700 rounded-lg">
+    <DropinTable
+      {columns}
+      data={$components}
+      bind:selections />
+  </div>
+  <div class="flex flex-1 flex-col gap-2">
+    <Router
+      basePath="/patterns"
+      myExtraRouterProp={{
+        calledFrom: "patterns <Router />"
+      }}
+      {routes} />
+  </div>
 </div>
 
-<div class="bg-slate-700/20 text-slate-600 mt-10 py-2 border border-slate-800 rounded-lg">
-  <DropinTable
-    {columns}
-    data={$components}
-    bind:selections />
-</div>
-
-<div class="flex flex-col gap-2">
-  <Router
-    basePath="/patterns"
-    myExtraRouterProp={{
-      calledFrom: "patterns <Router />"
-    }}
-    {routes} />
-</div>
+<style>
+  :global(td) {
+    padding: 8px !important;
+  }
+</style>

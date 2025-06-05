@@ -110,9 +110,12 @@ export class RouteConfig {
     this.path = config.path;
     this.querystring = config.querystring;
     this.component = config.component;
+    this.props = config.props;
+    this.hooks = config.hooks;
+    this.status = config.status;
   }
 
-  toJSON(): any {
+  toJSON?(): any {
     return {
       name: this.name,
       basePath: this.basePath,

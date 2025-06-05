@@ -17,12 +17,14 @@
   <div class="flex gap-3">
     <Code
       title="$props().route"
+      language="json"
       class="flex-1">
       <div>{JSON.stringify(route, null, 2)}</div>
     </Code>
 
     <Code
       title="$props().rest"
+      language="json"
       class="flex-1">
       <div>{JSON.stringify(rest, null, 2)}</div>
     </Code>

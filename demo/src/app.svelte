@@ -11,7 +11,7 @@
   import Transitions from "$routes/transitions/transitions.svelte";
   import type { RouteConfig, RouteResult } from "@mateothegreat/svelte5-router";
   import { goto, logging, registry, type Route, Router, type RouterInstance } from "@mateothegreat/svelte5-router";
-  import { BookHeart, Github, HelpCircle } from "lucide-svelte";
+  import { BookHeart, Github, HelpCircle, MousePointerClick } from "lucide-svelte";
 
   /**
    * Only needed for the demo environment development.
@@ -52,8 +52,11 @@
       name: "default-route",
       hooks: {
         pre: async (route: RouteResult) => {
-          console.log(`redirecting to ${session.mode === "hash" ? "/#" : ""}/home using a pre hook!`, route);
+          console.error(`redirecting to ${session.mode === "hash" ? "/#" : ""}/home using a pre hook!`, route);
           goto(`${session.mode === "hash" ? "/#" : ""}/home`);
+        },
+        post: async (route: RouteResult) => {
+          console.error(`post hook fired for route`, route);
         }
       }
     },
@@ -121,33 +124,9 @@
   };
 </script>
 
-<div
-  class="absolute top-0 left-0 m-4 flex items-center text-indigo-400 gap-2 rounded-md border-2 border-slate-700/75 bg-slate-500/15 px-2 py-1.5 text-xs">
-  url mode:
-  <button
-    class="rounded-md border-2 border-purple-600 bg-slate-900/50 font-semibold px-2.5 py-1 cursor-pointer hover:bg-slate-800 hover:border-green-600"
-    class:text-orange-400={session.mode === "hash"}
-    class:text-green-400={session.mode === "path"}
-    onclick={() => {
-      session.mode = session.mode === "hash" ? "path" : "hash";
-    }}>
-    {session.mode}
-  </button>
-</div>
-<div class="flex h-screen flex-col gap-4 bg-zinc-950 p-4">
-  <div class="flex">
-    <div class="mt-3 flex flex-1 flex-col items-center justify-center">
-      <div class="logo h-[130px] w-[360px]"></div>
-    </div>
-    <div class="flex flex-col items-end gap-4">
-      <div class="text-slate-500 text-sm mb-3.5">
-        demo version: <a
-          href="https://github.com/mateothegreat/svelte5-router/tree/{window.__SVELTE5_ROUTER_VERSION__}"
-          class="text-emerald-500 hover:text-blue-400 cursor-pointer"
-          target="_blank">
-          {window.__SVELTE5_ROUTER_VERSION__}
-        </a>
-      </div>
+<div class="flex h-screen flex-col gap-4 bg-zinc-700/25 p-4">
+  <div class="flex items-start">
+    <div class="flex flex-col gap-4">
       <a
         href="https://github.com/mateothegreat/svelte5-router"
         class="text-slate-400 hover:text-green-500"
@@ -161,8 +140,37 @@
         <BookHeart class="h-6 w-6 text-fuchsia-500" />
       </a>
     </div>
+    <div class="logo h-51 w-60">
+      <img
+        src="https://github.com/mateothegreat/svelte5-router/raw/dev/docs/assets/logo.png"
+        alt="logo" />
+    </div>
+    <div class="m-4 flex-1 flex justify-end text-indigo-400 gap-2 text-xs">
+      <div class="text-slate-500 text-sm mb-3.5 rounded-md border-2 bg-black px-2 py-1.5">
+        demo version: <a
+          href="https://github.com/mateothegreat/svelte5-router/tree/{window.__SVELTE5_ROUTER_VERSION__}"
+          class="text-emerald-500 hover:text-blue-400 cursor-pointer"
+          target="_blank">
+          {window.__SVELTE5_ROUTER_VERSION__}
+        </a>
+      </div>
+    </div>
   </div>
-  <div class="flex-1 overflow-auto">
+  <div class="flex-1 gap-4 flex flex-col">
+    <div
+      class="text-slate-500 justify-end items-center text-sm flex gap-2 rounded-md border-2 border-slate-700/75 bg-black/30 px-2 py-1.5">
+      <MousePointerClick class="h-4 w-4 text-slate-500" />
+      change url mode:
+      <button
+        class="flex items-center gap-1 rounded-md border-2 border-purple-600 bg-slate-900/50 font-semibold px-3 py-0.5 cursor-pointer hover:bg-slate-800 hover:border-green-600"
+        class:text-orange-400={session.mode === "hash"}
+        class:text-green-400={session.mode === "path"}
+        onclick={() => {
+          session.mode = session.mode === "hash" ? "path" : "hash";
+        }}>
+        {session.mode === "hash" ? "path" : "hash"}
+      </button>
+    </div>
     <RouteWrapper
       name="main app router"
       title={{
@@ -215,11 +223,13 @@
           label: "/extras"
         }
       ]}>
-      <Router
-        id="my-main-router"
-        bind:instance={router}
-        {routes}
-        {...myDefaultRouterConfig} />
+      <div class="flex-1">
+        <Router
+          id="my-main-router"
+          bind:instance={router}
+          {routes}
+          {...myDefaultRouterConfig} />
+      </div>
     </RouteWrapper>
   </div>
 </div>
@@ -267,11 +277,3 @@
     </tbody>
   </table>
 </div>
-
-<style>
-  .logo {
-    background-image: url("https://github.com/mateothegreat/svelte5-router/raw/main/docs/logo.png");
-    background-size: contain;
-    background-repeat: no-repeat;
-  }
-</style>

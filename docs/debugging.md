@@ -58,4 +58,4 @@ Putting it all together:
 
 Example output:
 
-![debug](./debugging-logger.png)
+![debug](./assets/debugging-logger.png)

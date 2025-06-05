@@ -203,6 +203,7 @@ export class RouterInstance {
       }
 
       // Contact the downstream router component to apply the route:
+      console.error("applyFn", result);
       this.applyFn(result, span);
 
       // Run the route specific post hooks:

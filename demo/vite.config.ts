@@ -1,4 +1,5 @@
 import { svelte } from "@sveltejs/vite-plugin-svelte";
+import { svelteInspector } from "@sveltejs/vite-plugin-svelte-inspector";
 
 import tailwindcss from "@tailwindcss/vite";
 
@@ -14,6 +15,11 @@ export default defineConfig({
   plugins: [
     tsconfigPaths(),
     svelte(),
+    svelteInspector({
+      toggleKeyCombo: "alt-x",
+      showToggleButton: "always",
+      toggleButtonPos: "bottom-left"
+    }),
     tailwindcss(),
     vitePluginVersionMark({
       // name: 'test-app',
@@ -40,8 +46,8 @@ export default defineConfig({
        * If enabled, tracing will be enabled providing rich tracing capabilities.
        */
       tracing: {
-        enabled: true,
         level: 3,
+        enabled: true,
         console: true
       },
       /**
@@ -51,7 +57,7 @@ export default defineConfig({
         /**
          * The logging level that is applied.
          */
-        level: process.env.NODE_ENV === "development" ? 1 : 4,
+        level: 4,
         /**
          * Whether to log the trace to the browser console (optional).
          */

@@ -32,6 +32,9 @@
         result: r
       }
     });
+
+    RenderableComponent = null;
+
     if (typeof r.result.component === "function" && r.result.component.constructor.name === "AsyncFunction") {
       // Handle async component by first awaiting the import:
       const module = await r.result.component();
@@ -40,7 +43,6 @@
       // Handle regular component by directly assigning the component:
       RenderableComponent = r.result.component;
     }
-
     additionalProps = route.route?.props;
   };
 

@@ -2,7 +2,7 @@
   "$schema": "https://typedoc.org/schema.json",
   "out": "tmp/build",
   "entryPoints": [
-    "./src/lib/index.ts",
+    "./src/lib/index.ts"
   ],
   "exclude": [
     "**/*+(.spec|.e2e).ts"

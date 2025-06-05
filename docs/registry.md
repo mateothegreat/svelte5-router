@@ -6,7 +6,7 @@ instances and their associated routing configuration.
 This registry updates as you navigate through your application and as `<Router />` components
 are mounted and unmounted dynamically.
 
-![registry](./registry.png)
+![registry](./assets/registry.png)
 
 ## Usage
 

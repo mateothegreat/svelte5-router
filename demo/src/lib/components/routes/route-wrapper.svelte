@@ -19,7 +19,7 @@
   let { router = $bindable(), name, route, title, links, children, end = $bindable() }: RouteWrapperProps = $props();
 </script>
 
-<div class="flex flex-col justify-between gap-3 overflow-hidden rounded-lg border-2 bg-black p-3">
+<div class="flex flex-col gap-3 border-2 rounded-md h-full p-2.5">
   <div class="flex flex-col gap-4">
     <RouteTitle
       {router}
@@ -37,8 +37,8 @@
         <RouteLink {...link} />
       {/each}
     </div>
-    <div class="bg-black">
-      {@render children?.()}
-    </div>
+  </div>
+  <div class="flex-1">
+    {@render children?.()}
   </div>
 </div>

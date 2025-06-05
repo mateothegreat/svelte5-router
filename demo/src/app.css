@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@import "./../node_modules/svelte-highlight/styles/horizon-dark.css";
 @config '../tailwind.config.ts';
 
 /*
@@ -53,7 +53,7 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 0 0% 0%;
     --foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
@@ -88,6 +88,6 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground min-h-screen overflow-hidden;
+    @apply bg-background text-foreground;
   }
 }

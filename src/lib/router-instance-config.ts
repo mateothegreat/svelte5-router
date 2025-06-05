@@ -1,7 +1,7 @@
 import { type Component } from "svelte";
 
 import type { Hook } from "./hooks";
-import { Route, RouteConfig } from "./route.svelte";
+import { RouteConfig } from "./route.svelte";
 import type { Statuses } from "./statuses";
 
 /**
@@ -60,13 +60,6 @@ export class RouterInstanceConfig {
   notFoundComponent?: Component<any>;
 
   /**
-   * The children for the router instance.
-   *
-   * @type {Route[]}
-   */
-  children?: Route[];
-
-  /**
    * The default components rendered when a route is not found and
    * the status code is in one of the following:
    * 400, 401, 403, 404, 500
@@ -92,7 +85,6 @@ export class RouterInstanceConfig {
     this.initialPath = config.initialPath;
     this.notFoundComponent = config.notFoundComponent;
     this.statuses = config.statuses;
-    console.log("config", config);
     this.routes = config.routes.map(
       (route) =>
         new RouteConfig({
@@ -100,8 +92,6 @@ export class RouterInstanceConfig {
           ...config
         })
     );
-
-    console.log("routes 22", this.routes);
   }
 
   toJSON(): any {
