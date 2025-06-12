@@ -235,7 +235,7 @@
 </div>
 <div
   class="fixed bottom-0 right-10 overflow-hidden rounded-t-md border-2 border-b-0 bg-neutral-950 text-xs text-gray-400">
-  <p class="flex items-center gap-1.5 bg-black/80 p-2 text-sm font-medium text-slate-400">
+  <p class="flex items-center gap-1.5 bg-black/80 p-2.5 text-sm font-medium text-slate-400">
     <a
       href="https://github.com/mateothegreat/svelte5-router/blob/main/docs/registry.md"
       class="text-yellow-300/70 hover:text-pink-500"

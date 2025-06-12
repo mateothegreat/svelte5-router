@@ -6,7 +6,6 @@
   import { CirclePlay, Lightbulb, MousePointerClick } from "lucide-svelte";
   import { writable, type Writable } from "svelte/store";
   import Dump from "./dump.svelte";
-  import Dump2 from "./dump2.svelte";
 
   type Component = {
     name: string;
@@ -68,7 +67,7 @@
     },
     {
       path: "single-path",
-      component: Dump2
+      component: Dump
     }
   ];
 </script>

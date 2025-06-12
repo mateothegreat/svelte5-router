@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "./../node_modules/svelte-highlight/styles/horizon-dark.css";
 @config '../tailwind.config.ts';
 
 /*
