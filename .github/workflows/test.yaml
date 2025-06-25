@@ -2,11 +2,6 @@ name: ⚡ Test Runner
 on:
   workflow_dispatch:
   workflow_call:
-  push:
-    branches:
-      - "**"
-    tags:
-      - "*"
 permissions:
   contents: write
 jobs:
