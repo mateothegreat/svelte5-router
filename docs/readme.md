@@ -1,6 +1,6 @@
 # Svelte 5 SPA Router 🚀 🔥
 
-![logo](/docs/assets/logo-1000px.png)
+![logo](https://raw.githubusercontent.com/mateothegreat/svelte5-router/refs/heads/dev/docs/assets/logo-1000px.png)
 
 <img src="https://raw.githubusercontent.com/mateothegreat/svelte5-router/refs/heads/dev/docs/assets/coverage.svg?sanitize=true" />
 

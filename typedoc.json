@@ -14,12 +14,14 @@
   "searchInComments": true,
   "searchInDocuments": true,
   "plugin": [
+    "@droppedcode/typedoc-plugin-copy-assets",
     "typedoc-github-theme",
     "typedoc-plugin-inline-sources",
     "typedoc-plugin-extras",
     "typedoc-plugin-include-example",
     "typedoc-plugin-mermaid",
-    "typedoc-plugin-coverage"
+    "typedoc-plugin-coverage",
+    "typedoc-plugin-custom-validation"
   ],
   "navigationLinks": {
     "Demo": "https://demo.router.svelte.spa",
@@ -110,5 +112,22 @@
   "coverageLabel": "Documentation Coverage",
   "coverageSvgWidth": 190,
   "coverageOutputType": "all",
-  "coverageOutputPath": "docs/assets/coverage.svg"
+  "coverageOutputPath": "docs/assets/coverage.svg",
+  "customValidation": {
+    "byKind": [
+      {
+        "kinds": "Function",
+        "summary": true,
+        "tags": ["example"]
+      }
+    ]
+  },
+  "copyAssets": {
+    "onlyImages": true,
+    "include": [],
+    "exclude": [],
+    "includePath": [".(png|md)$"],
+    "excludePath": [".*?exclude/.*?$"],
+    "copyHtmlImgTag": true
+  }
 }
