@@ -28,6 +28,7 @@ jobs:
         run: npm install --legacy-peer-deps
   test:
     name: 🏃 Test
+    needs: setup
     environment:
       name: dev
     runs-on: ubuntu-latest
