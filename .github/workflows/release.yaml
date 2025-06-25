@@ -1,9 +1,9 @@
+name: 🚀 Release
 on:
   workflow_dispatch:
   push:
     tags:
       - "*"
-name: release
 concurrency:
   group: release
   cancel-in-progress: true

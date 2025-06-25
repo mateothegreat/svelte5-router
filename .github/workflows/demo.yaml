@@ -1,3 +1,4 @@
+name: 📱 Demo
 on:
   workflow_dispatch:
   workflow_call:
@@ -7,7 +8,6 @@ on:
   push:
     tags:
       - "*"
-name: demo
 concurrency:
   group: demo
   cancel-in-progress: true

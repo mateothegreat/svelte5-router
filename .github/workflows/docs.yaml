@@ -1,4 +1,4 @@
-name: docs
+name: 📚 Docs
 on:
   workflow_dispatch:
   workflow_call:
@@ -12,7 +12,9 @@ jobs:
   setup:
     name: "🔧 Setup"
     uses: ./.github/workflows/setup.yaml
-  typedoc-github-pages:
+  build:
+    name: "📚 Build Docs"
+    needs: setup
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -24,7 +26,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: "package.json"
-          cache: "npm"        
+          cache: "npm"    
+      - run: |
+          ls -la
+          npm list
       - name: Build documentation
         run: npm run docs:build
       - name: Upload Pages artifact
