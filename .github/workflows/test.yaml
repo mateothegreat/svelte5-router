@@ -62,4 +62,4 @@ jobs:
               --label "Test Coverage"  \
               --output docs/assets/coverage-badge.svg
       - name: ⬆️ Push badges branch
-        run: git push origin badges
+        run: git push
