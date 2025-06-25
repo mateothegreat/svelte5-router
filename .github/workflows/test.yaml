@@ -58,7 +58,7 @@ jobs:
       # Generate coverage badge from vitest coverage report.
       # https://github.com/marketplace/actions/vitest-badge-action
       - name: ⚙️ Generating coverage badges
-        uses: jpb06/coverage-badges-action@v1.3.2
+        uses: jpb06/coverage-badges-action@v1.3.1
         with:
           branches: "*"
           badges-labels-prefix: "Test Coverage"
