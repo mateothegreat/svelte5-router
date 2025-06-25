@@ -1,8 +1,6 @@
 name: 🔧 Setup
 on:
   workflow_call:
-# permissions:
-#   contents: write
 jobs:
   node:
     name: "Runtime"  
