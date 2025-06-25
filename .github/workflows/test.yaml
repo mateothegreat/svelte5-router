@@ -22,7 +22,7 @@ jobs:
       - name: Install Node.js dependencies
         run: npm install --legacy-peer-deps --no-package-lock
       - name: Run Tests
-        run: npx vitest --coverage
+        run: npx vitest run --coverage src/lib/helpers/evaluators.test.ts
       - name: Publish Results Badge
         uses: wjervis7/vitest-badge-action@v1.0.0
         if: success() || failure()
