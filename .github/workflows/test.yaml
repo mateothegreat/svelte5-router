@@ -54,7 +54,7 @@ jobs:
         run: npm run test:ci
       - name: ⚙️ Generating coverage badges
         run: |
-          npx --no coverage-badges-cli \
+          npx --yes coverage-badges-cli \
               --source tmp/coverage/coverage-summary.json \
               --style plastic \
               --type statements \
