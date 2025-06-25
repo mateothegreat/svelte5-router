@@ -9,6 +9,8 @@ permissions:
   id-token: write
   pages: write
 jobs:
+  setup:
+    uses: ./.github/workflows/setup.yaml
   typedoc-github-pages:
     environment:
       name: github-pages

@@ -1,0 +1,29 @@
+name: 🔧 Setup
+on:
+  workflow_call:
+# permissions:
+#   contents: write
+jobs:
+  setup:
+    name: "🔧 Setup"
+    environment:
+      name: dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Check out repo
+        uses: actions/checkout@v4
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+      - name: 📦 Cache node_modules
+        uses: actions/cache@v3
+        id: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ hashFiles('package-lock.json') }}          
+      - name: 📦 Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: |
+          npm ci --legacy-peer-deps          
