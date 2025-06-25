@@ -4,8 +4,8 @@ on:
 # permissions:
 #   contents: write
 jobs:
-  setup:
-    name: "🔧 Setup"
+  node:
+    name: "Runtime"  
     environment:
       name: dev
     runs-on: ubuntu-latest
