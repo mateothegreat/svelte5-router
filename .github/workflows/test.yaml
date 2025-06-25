@@ -52,6 +52,9 @@ jobs:
         run: npm ci --legacy-peer-deps
       - name: 🧪 Run Tests
         run: npm run test:ci
+      - run: |
+          ls -lath
+          find tmp
       # Generate coverage badge from vitest coverage report.
       # https://github.com/marketplace/actions/vitest-badge-action
       - name: ⚙️ Generating coverage badges
@@ -59,5 +62,6 @@ jobs:
         with:
           branches: "*"
           badges-icon: vitest
+          coverage-summary-path: tmp/coverage/coverage-summary.json
       - name: ⬆️ Push badges branch
         run: git push origin badges
