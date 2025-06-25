@@ -62,4 +62,9 @@ jobs:
               --label "Test Coverage"  \
               --output docs/assets/coverage-badge.svg
       - name: ⬆️ Push badges branch
-        run: git push
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add docs/assets/coverage-badge.svg
+          git commit -m "chore: update coverage badge"
+          git push
