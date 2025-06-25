@@ -1,15 +1,9 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "out": "tmp/build",
-  "entryPoints": [
-    "./src/lib/index.ts"
-  ],
-  "exclude": [
-    "**/*+(.spec|.e2e).ts"
-  ],
-  "externalPattern": [
-    "**/*.md"
-  ],
+  "entryPoints": ["./src/lib/index.ts"],
+  "exclude": ["**/*+(.spec|.e2e).ts", "**/*.svg"],
+  "externalPattern": ["**/*.md"],
   "excludeNotDocumented": true,
   "excludeExternals": true,
   "excludeInternal": true,
@@ -24,7 +18,8 @@
     "typedoc-plugin-inline-sources",
     "typedoc-plugin-extras",
     "typedoc-plugin-include-example",
-    "typedoc-plugin-mermaid"
+    "typedoc-plugin-mermaid",
+    "typedoc-plugin-coverage"
   ],
   "navigationLinks": {
     "Demo": "https://demo.router.svelte.spa",
@@ -54,12 +49,7 @@
     "includeCategories": true
   },
   "categorizeByGroup": false,
-  "categoryOrder": [
-    "actions",
-    "components",
-    "hooks",
-    "utilities"
-  ],
+  "categoryOrder": ["actions", "components", "hooks", "utilities"],
   "visibilityFilters": {
     "protected": true,
     "private": true,
@@ -113,16 +103,12 @@
     "@note",
     "@todo"
   ],
-  "highlightLanguages": [
-    "typescript",
-    "javascript",
-    "svelte"
-  ],
-  "modifierTags": [
-    "@alpha",
-    "@beta",
-    "@experimental"
-  ],
+  "highlightLanguages": ["typescript", "javascript", "svelte", "bash", "shell", "shellscript"],
+  "modifierTags": ["@alpha", "@beta", "@experimental"],
   "groupReferencesByType": false,
-  "includeVersion": true
+  "includeVersion": true,
+  "coverageLabel": "Documentation Coverage",
+  "coverageSvgWidth": 190,
+  "coverageOutputType": "all",
+  "coverageOutputPath": "docs/assets/coverage.svg"
 }

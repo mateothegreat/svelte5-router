@@ -9,6 +9,8 @@ An SPA router for Svelte that allows you to divide & conquer your app with neste
 >
 > API documentation: <https://docs.router.svelte.spa>
 
+![documentation coverage](docs/assets/coverage.svg)
+
 ## Features
 
 - Built for Svelte 5 🚀!

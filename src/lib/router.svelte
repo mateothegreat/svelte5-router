@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, type Component } from "svelte";
+  import { onDestroy, unmount, type Component } from "svelte";
   import { createSpan, Span } from "./helpers/tracing.svelte";
   import { registry } from "./registry.svelte";
   import { type RouteResult } from "./route.svelte";
@@ -7,7 +7,7 @@
   import type { RouterInstance } from "./router-instance.svelte";
 
   let { instance = $bindable(), ...rest } = $props<
-    { instance?: RouterInstance } & RouterInstanceConfig & Record<string, any>
+    { instance?: RouterInstance } & Partial<RouterInstanceConfig> & Record<string, any>
   >();
 
   const span = createSpan(rest.id ? `[${rest.id}]` : "router");
@@ -32,8 +32,11 @@
         result: r
       }
     });
-
-    RenderableComponent = null;
+    if (RenderableComponent) {
+      console.log(RenderableComponent);
+      unmount(RenderableComponent, {});
+      RenderableComponent = null;
+    }
 
     if (typeof r.result.component === "function" && r.result.component.constructor.name === "AsyncFunction") {
       // Handle async component by first awaiting the import:

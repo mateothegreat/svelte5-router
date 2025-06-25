@@ -6,6 +6,7 @@
   import { CirclePlay, Lightbulb, MousePointerClick } from "lucide-svelte";
   import { writable, type Writable } from "svelte/store";
   import Dump from "./dump.svelte";
+  import ParameterExtraction from "./parameter-extraction.svelte";
 
   type Component = {
     name: string;
@@ -68,6 +69,10 @@
     {
       path: "single-path",
       component: Dump
+    },
+    {
+      path: /^\/parameter-extraction\/(?<child>.*)$/,
+      component: ParameterExtraction
     }
   ];
 </script>

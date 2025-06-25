@@ -61,7 +61,7 @@ export default defineConfig({
         /**
          * Whether to log the trace to the browser console (optional).
          */
-        console: true,
+        console: false,
         /**
          * This method is called when a new trace is created (optional).
          *
