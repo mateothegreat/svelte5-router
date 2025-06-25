@@ -24,10 +24,10 @@ jobs:
           node-version-file: "package.json"
           cache: "npm"
           # cache-dependency-path: "package-lock.json"
-      - name: 📥 Install dependencies
-        if: steps.cache-primes.outputs.cache-hit != 'true'
-        run: npm ci --legacy-peer-deps
-      - run: npm list
+      - name: 🧹 Clean install for cross-platform compatibility
+        run: |
+          rm  package-lock.json
+          npm install --legacy-peer-deps
   test:
     name: 🏃 Test
     needs: setup
@@ -51,8 +51,7 @@ jobs:
       - name: Install dependencies
         if: steps.hydrate.outputs.cache-hit != 'true'
         run: npm ci --legacy-peer-deps
-      - run: npm list
-      - name: 🔍 Run Tests
+      - name: 🧪 Run Tests
         run: npm run test:ci
       # Generate coverage badge from vitest coverage report.
       # https://github.com/marketplace/actions/vitest-badge-action
