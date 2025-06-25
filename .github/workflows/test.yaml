@@ -26,6 +26,7 @@ jobs:
           cache-dependency-path: "package-lock.json"
       - name: 📥 Install Node.js dependencies
         run: npm install --legacy-peer-deps
+      - run: npm list
   test:
     name: 🏃 Test
     needs: setup
@@ -33,6 +34,7 @@ jobs:
       name: dev
     runs-on: ubuntu-latest
     steps:
+      - run: npm list
       - name: ⬇️ Check out repo
         uses: actions/checkout@v4
       - name: ⎔ Setup node (reuse cache from setup)
