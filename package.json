@@ -3,6 +3,9 @@
   "version": "2.15.3",
   "type": "module",
   "moduleResolution": "bundler",
+  "engines": {
+    "node": ">=24.2.0"
+  },
   "license": "MIT",
   "types": "./router.svelte.d.ts",
   "exports": {
