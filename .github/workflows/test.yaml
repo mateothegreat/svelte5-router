@@ -52,18 +52,14 @@ jobs:
         run: npm ci --legacy-peer-deps
       - name: 🧪 Run Tests
         run: npm run test:ci
-      - run: |
-          ls -lath
-          find tmp
-      # Generate coverage badge from vitest coverage report.
-      # https://github.com/marketplace/actions/vitest-badge-action
       - name: ⚙️ Generating coverage badges
-        uses: jpb06/coverage-badges-action@v1.3.1
-        with:
-          branches: "*"
-          badges-labels-prefix: "Test Coverage"
-          badges-icon: vitest
-          coverage-summary-path: tmp/coverage/coverage-summary.json
-          output-folder: docs/assets
+        run: |
+          npx --no coverage-badges-cli \
+              --source tmp/coverage/coverage-summary.json \
+              --style plastic \
+              --type statements \
+              --iconWidth 190 \
+              --label "Test Coverage"  \
+              --output docs/assets/coverage-badge.svg
       - name: ⬆️ Push badges branch
         run: git push origin badges
