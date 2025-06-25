@@ -20,7 +20,7 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
       - name: Install Node.js dependencies
-        run: npm install --legacy-peer-deps
+        run: npm install --legacy-peer-deps --no-package-lock
       - name: Run Tests
         run: npx vitest --coverage
       - name: Publish Results Badge
