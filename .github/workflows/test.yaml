@@ -23,9 +23,10 @@ jobs:
         with:
           node-version-file: "package.json"
           cache: "npm"
-          cache-dependency-path: "package-lock.json"
-      - name: 📥 Install Node.js dependencies
-        run: npm install --legacy-peer-deps
+          # cache-dependency-path: "package-lock.json"
+      - name: 📥 Install dependencies
+        if: steps.cache-primes.outputs.cache-hit != 'true'
+        run: npm ci
       - run: npm list
   test:
     name: 🏃 Test
@@ -41,10 +42,16 @@ jobs:
         with:
           node-version-file: "package.json"
           cache: "npm"
-          cache-dependency-path: "package-lock.json"
-          registry-url: "https://registry.npmjs.org"
+      - name: Hydrate npm module cache
+        uses: actions/cache@v3
+        id: hydrate
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies
+        if: steps.hydrate.outputs.cache-hit != 'true'
+        run: npm ci
       - run: npm list
-
       - name: 🔍 Run Tests
         run: npm run test:ci
       # Generate coverage badge from vitest coverage report.
