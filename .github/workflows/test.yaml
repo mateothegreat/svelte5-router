@@ -34,7 +34,6 @@ jobs:
       name: dev
     runs-on: ubuntu-latest
     steps:
-      - run: npm list
       - name: ⬇️ Check out repo
         uses: actions/checkout@v4
       - name: ⎔ Setup node (reuse cache from setup)
@@ -44,8 +43,10 @@ jobs:
           cache: "npm"
           cache-dependency-path: "package-lock.json"
           registry-url: "https://registry.npmjs.org"
+      - run: npm list
+
       - name: 🔍 Run Tests
-        run: npx vitest run --coverage src/lib/helpers/evaluators.test.ts
+        run: npm run test:ci
       # Generate coverage badge from vitest coverage report.
       # https://github.com/marketplace/actions/vitest-badge-action
       - name: ⚙️ Generating coverage badges
