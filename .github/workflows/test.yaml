@@ -8,8 +8,7 @@ on:
     tags:
       - "*"
 permissions:
-  id-token: write
-  pages: write
+  contents: write
 jobs:
   test:
     environment:
