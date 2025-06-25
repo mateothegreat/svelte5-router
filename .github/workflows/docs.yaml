@@ -20,6 +20,11 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "package.json"
+          cache: "npm"        
       - name: Build documentation
         run: npm run docs:build
       - name: Upload Pages artifact
