@@ -26,8 +26,7 @@ jobs:
           # cache-dependency-path: "package-lock.json"
       - name: 🧹 Clean install for cross-platform compatibility
         run: |
-          rm  package-lock.json
-          npm install --legacy-peer-deps
+          npm ci --legacy-peer-deps
   test:
     name: 🏃 Test
     needs: setup
