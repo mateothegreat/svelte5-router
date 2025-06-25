@@ -2,14 +2,14 @@
 
 ![logo](/docs/assets/logo-1000px.png)
 
+<img src="https://raw.githubusercontent.com/mateothegreat/svelte5-router/refs/heads/dev/docs/assets/coverage.svg?sanitize=true" />
+
 An SPA router for Svelte that allows you to divide & conquer your app with nested routers, snippets, and more.
 
 > [!NOTE]
 > Live demo: <https://demo.router.svelte.spa>
 >
 > API documentation: <https://docs.router.svelte.spa>
-
-<img src="https://raw.githubusercontent.com/mateothegreat/svelte5-router/refs/heads/dev/docs/assets/coverage.svg?sanitize=true" />
 
 ## Features
 
