@@ -10,6 +10,7 @@ permissions:
   pages: write
 jobs:
   setup:
+    name: "🔧 Setup"
     uses: ./.github/workflows/setup.yaml
   typedoc-github-pages:
     environment:
@@ -19,8 +20,6 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
-      - name: Install Node.js dependencies
-        run: npm install
       - name: Build documentation
         run: npm run docs:build
       - name: Upload Pages artifact
