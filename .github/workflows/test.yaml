@@ -51,7 +51,7 @@ jobs:
       - name: ⚙️ Generating coverage badges
         uses: jpb06/coverage-badges-action@latest
         with:
-          branches: master,preprod,staging
+          branches: "*"
           badges-icon: vitest
       - name: ⬆️ Push badges branch
         run: git push origin badges
