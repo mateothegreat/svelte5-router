@@ -1,0 +1,37 @@
+name: test
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "*"
+permissions:
+  id-token: write
+  pages: write
+jobs:
+  typedoc-github-pages:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+      - name: Install Node.js dependencies
+        run: npm install
+      - name: Run Tests
+        run: npx vitest --coverage
+      - name: Publish Results Badge
+        uses: wjervis7/vitest-badge-action@v1.0.0
+        if: success() || failure()
+        with:
+          result-type: statements
+          upload-badge: false
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          summary-path: "tmp/coverage/coverage-summary.json"
+          badge-text: "coverage"
+          badge-path: "docs/assets/coverage-tests.svg"
