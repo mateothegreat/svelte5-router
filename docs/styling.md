@@ -9,6 +9,11 @@ As the routes change, the router will apply the class to the active route while 
 
 This property can be a string or an array of strings:
 
+> [!NOTE]
+> This is a convenience feature and is not required. You can apply the class to the active route manually in your component.
+>
+> See <https://docs.router.svelte.spa/classes/RouteOptions.html> for more information.
+
 Using a string:
 
 ```ts
