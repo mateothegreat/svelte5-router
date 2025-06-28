@@ -1,3 +1,4 @@
+// https://app.studyraid.com/en/courses/15016/typedoc-automated-api-documentation-for-typescript
 {
   "$schema": "https://typedoc.org/schema.json",
   "blockTags": [
@@ -85,7 +86,8 @@
   "includeVersion": true,
   "modifierTags": ["@alpha", "@beta", "@experimental"],
   "navigation": {
-    "includeCategories": true
+    "includeCategories": true,
+    "compactFolders": true
   },
   "navigationLinks": {
     "Demo": "https://demo.router.svelte.spa",
@@ -103,8 +105,13 @@
     "typedoc-plugin-include-example",
     "typedoc-plugin-mermaid",
     "typedoc-plugin-coverage",
-    "typedoc-plugin-custom-validation"
+    "typedoc-plugin-custom-validation",
+    "typedoc-plugin-dt-links",
+    "@vpalmisano/typedoc-plugin-ga",
+    "typedoc-plugin-version-header"
   ],
+  "versionHeaderFormat": "{{major}}.{{minor}}.{{patch}}",
+  "gaID": "G-FTT7485E5D",
   "readme": "docs/readme.md",
   "searchInComments": true,
   "searchInDocuments": true,
