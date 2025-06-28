@@ -115,8 +115,12 @@
      * property "child" will contain the value extracted from the path.
      */
     {
+      path: "extensions/(?<extension>.*)/(?<page>[^/]+)(?:/(?<rest>.*))?",
+      component: DisplayParams
+    },
+    {
       name: "fancy-regex-capture-group",
-      path: /^\/(?<child>(foo|bar))$/,
+      path: "(foo|bar).*",
       component: DisplayParams,
       props: {
         randomId: Math.random().toString(36).substring(2, 15),

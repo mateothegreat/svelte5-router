@@ -8,7 +8,6 @@ import type { Component, Snippet } from "svelte";
 import type { Hook } from "./hooks";
 import { paths, type PathType } from "./path";
 import { Query } from "./query.svelte";
-import type { RouterInstance } from "./router-instance.svelte";
 
 import { evaluators, type Condition, type Evaluation } from "./helpers/evaluators";
 import { Identities } from "./helpers/identify";
@@ -50,16 +49,6 @@ import { urls, type ReturnParam } from "./helpers/urls";
  * ```
  */
 export class RouteResult {
-  /**
-   * The router instance that the route result belongs to.
-   *
-   * @since 2.0.0
-   * @readonly
-   * @remarks This establishes the relationship between the route result and its parent router.
-   * @see {@link RouterInstance}
-   */
-  router: RouterInstance;
-
   /**
    * The route that was evaluated to render this result.
    *
@@ -275,25 +264,8 @@ export class RouteResult {
    * @param result The result of the route evaluation.
    */
   constructor(result: RouteResult) {
-    this.router = result.router;
     this.route = result.route;
     this.result = result.result;
-  }
-
-  /**
-   * The absolute path of the route by combining the router's base path and
-   * the route's path.
-   */
-  absolute?(basePath = this.router.config.basePath): string {
-    /**
-     * If the router has a base path, we need to combine it with the route's path
-     * otherwise it will have "undefined" as the base path and the path will be
-     * incorrect:
-     */
-    if (basePath) {
-      return `${basePath}${this.result.path.original}`;
-    }
-    return this.result.path.original;
   }
 
   /**
@@ -313,7 +285,7 @@ export class RouteResult {
       querystring = String(this.result.querystring.original);
     }
 
-    return `${this.absolute()}${querystring ? `?${querystring}` : ""}`;
+    return `${this.result.path.original}${querystring ? `?${querystring}` : ""}`;
   }
 }
 

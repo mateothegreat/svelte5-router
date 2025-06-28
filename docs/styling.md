@@ -50,7 +50,7 @@ Import the common configuration:
 <a
   use:route={myDefaultRouteConfig}
   href="/props"
-  class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
+  class="py-1 hover:bg-blue-800 rounded bg-blue-600 px-3">
   /props
 </a>
 ```
@@ -63,20 +63,19 @@ You can also be more prescriptive and pass in the active class as an object.
 > This is functionally equivalent to using `use:route` with the same configuration.
 > It is just a convenience method for when you don't need to pass in any other options.
 
-{% raw %}
-
 ```svelte
 <a
   use:route
   use:active={{ active: { class: "bg-pink-500" } }}
   href="/baz"
-  class="py-1hover:bg-blue-800 rounded bg-blue-600 px-3 py-1">
+  class="py-1 hover:bg-blue-800 rounded bg-blue-600 px-3">
   Click Me
 </a>
 ```
 
-{% endraw %}
-
-We used two actions:
+Here we used two actions:
 
 - `use:route`
+  - This is the default action and is used to apply the active class to the active route.
+- `use:active`
+  - This is a convenience action that is used to apply the active class to the active route.

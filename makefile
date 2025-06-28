@@ -15,3 +15,10 @@ clean:
 
 demo/build:
 	cd demo && npm run build
+
+
+docs/watch: ## Build the docs and watch for changes.
+	trap 'kill 0' SIGINT; \
+	npm run docs:watch & \
+	(sleep 4 && npm run docs:serve) & \
+	wait

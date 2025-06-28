@@ -1,6 +1,8 @@
+export * from "./actions";
 export { active } from "./actions/active.svelte";
 export { RouteOptions } from "./actions/options";
 export { route } from "./actions/route.svelte";
+export * from "./helpers";
 export type { Condition, Evaluation, EvaluationResult } from "./helpers/evaluators";
 export { goto } from "./helpers/goto";
 export { identify, type Identities, type Identity } from "./helpers/identify";

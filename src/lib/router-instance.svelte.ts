@@ -284,7 +284,6 @@ export class RouterInstance {
 
       if (defaultRoute) {
         return new RouteResult({
-          router: this,
           route: defaultRoute,
           result: {
             path: {
@@ -374,7 +373,6 @@ export class RouterInstance {
               }
             });
             candidate = new RouteResult({
-              router: this,
               route,
               result: {
                 path: {
@@ -396,7 +394,6 @@ export class RouterInstance {
            * use the querystring from the inbound path.
            */
           candidate = new RouteResult({
-            router: this,
             route,
             result: {
               path: {
@@ -437,7 +434,6 @@ export class RouterInstance {
           result: {
             ...status(
               {
-                router: this,
                 result: {
                   path: {
                     condition: "permitted-no-conditions",
@@ -463,8 +459,7 @@ export class RouterInstance {
               params: query?.toJSON()
             },
             status: StatusCode.NotFound
-          },
-          router: this
+          }
         };
       } else {
         return {
@@ -480,8 +475,7 @@ export class RouterInstance {
               params: query?.toJSON()
             },
             status: StatusCode.NotFound
-          },
-          router: this
+          }
         };
       }
     }

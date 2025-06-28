@@ -12,7 +12,7 @@ import type { RouteOptions } from "./options";
  *
  * @param {HTMLAnchorElement} node The anchor element to handle.
  * @param {RouteOptions} options Options for the route action (optional).
- * @category actions
+ * @category Actions
  * @includeExample demo/src/app.svelte
  * @source
  */
