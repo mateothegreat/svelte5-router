@@ -33,7 +33,6 @@
       }
     });
     if (RenderableComponent) {
-      console.log(RenderableComponent);
       unmount(RenderableComponent, {});
       RenderableComponent = null;
     }

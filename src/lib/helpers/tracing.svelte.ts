@@ -6,7 +6,7 @@ import { runtime } from "./runtime";
 /**
  * A span is a single trace in a trace collection.
  *
- * @category helpers
+ * @category Helpers
  */
 export class Span {
   prefix?: string;
@@ -44,7 +44,7 @@ export class Span {
 /**
  * A trace is a collection of spans.
  *
- * @category helpers
+ * @category Helpers
  */
 export class Trace {
   prefix?: string;
@@ -70,7 +70,7 @@ export class Trace {
   /**
    * Wrapper method for logging a trace to the browser console.
    *
-   * @category helpers
+   * @category Helpers
    */
   toConsole?(level?: logging.LogLevel): void {
     const out = [
@@ -125,14 +125,14 @@ export class Trace {
 /**
  * A reactive map of spans.
  *
- * @category helpers
+ * @category Helpers
  */
 export const spans = new ReactiveMap<string, Span>();
 
 /**
  * Helper method for creating a new span.
  *
- * @category helpers
+ * @category Helpers
  */
 export const createSpan = (name: string, metadata?: Record<string, any>) => {
   if (runtime.current.tracing) {

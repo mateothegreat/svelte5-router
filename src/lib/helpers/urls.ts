@@ -16,7 +16,7 @@ import { normalize } from "./normalize";
  * Params are extracted and converted to the appropriate type
  * later in the route lifecycle
  *
- * @category router
+ * @category Router
  */
 export type Param = string | number | boolean;
 
@@ -33,7 +33,7 @@ export type Param = string | number | boolean;
  * Params are extracted and converted to the appropriate type
  * later in the route lifecycle
  *
- * @category router
+ * @category Router
  */
 export type ReturnParam =
   | RegExp

@@ -5,7 +5,7 @@
  *
  * @returns The value of the query parameter, or null if it doesn't exist
  *
- * @category helpers
+ * @category Helpers
  */
 export const query = (key: string): string | null => {
   return new URLSearchParams(window.location.search).get(key);

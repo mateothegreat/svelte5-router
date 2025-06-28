@@ -3,7 +3,7 @@ import { logging } from "./logging";
 /**
  * Runtime level configuration functionality.
  *
- * @category helpers
+ * @category Helpers
  */
 export namespace runtime {
   /**

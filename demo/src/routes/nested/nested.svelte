@@ -12,7 +12,13 @@
     },
     {
       path: "level-1",
-      component: Level_1
+      component: Level_1,
+      hooks: {
+        pre: () => {
+          console.log(`Route "/nested/level-1" matched (I'm a pre hook in the nested.svelte route)`);
+          return true;
+        }
+      }
     }
   ];
 

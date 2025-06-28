@@ -9,7 +9,7 @@ import type { Span } from "./helpers/tracing.svelte";
  * handler mapping.
  *
  * @see {@link Statuses}
- * @category router
+ * @category Router
  */
 export enum StatusCode {
   OK = 200,
@@ -52,7 +52,7 @@ export enum StatusCode {
  * @see {@link Route}
  * @see {@link StatusCode}
  * @see {@link getStatusByValue}
- * @category router
+ * @category Router
  */
 export type Statuses = Partial<{
   [K in StatusCode]: (
@@ -68,7 +68,7 @@ export type Statuses = Partial<{
  * @returns {StatusCode} The status.
  *
  * @see {@link StatusCode}
- * @category router
+ * @category Router
  */
 export const getStatusByValue = (value: number) => {
   return Object.keys(StatusCode)[Object.values(StatusCode).indexOf(value)];

@@ -5,11 +5,11 @@
  *
  * @returns {string} The normalized path.
  *
- * @category helpers
+ * @category Helpers
  */
 export const normalize = (path: string): string => {
   if (path && !path.startsWith("/")) {
     path = "/" + path;
   }
   return path;
-}
+};

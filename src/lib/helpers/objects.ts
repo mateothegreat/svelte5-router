@@ -1,5 +1,5 @@
 /**
- * @category helpers
+ * @category Helpers
 
 * Convert a value to a primitive value.
  *

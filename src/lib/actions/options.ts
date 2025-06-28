@@ -22,7 +22,7 @@ export type RouteOptionState = {
 /**
  * Options for the route action.
  *
- * @category router
+ * @category Router
  */
 export class RouteOptions {
   /**

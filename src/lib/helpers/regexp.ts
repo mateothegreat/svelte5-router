@@ -2,7 +2,7 @@
  * Regular expression utilities.
  *
  * @module regexp
- * @category helpers
+ * @category Helpers
  */
 export namespace regexp {
   /**

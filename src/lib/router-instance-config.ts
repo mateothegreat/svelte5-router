@@ -11,7 +11,7 @@ import type { Statuses } from "./statuses";
  * This class should rarely be used directly. Instead, use the `Router` component
  * to create a new router instance.
  *
- * @category router
+ * @category Router
  */
 export class RouterInstanceConfig {
   /**

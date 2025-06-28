@@ -4,7 +4,7 @@
  * @param path - The path to navigate to (excluding the base URL).
  * @param queryParams - The query parameters to add to the URL.
  *
- * @category helpers
+ * @category Helpers
  */
 export const goto = (path: string, queryParams?: Record<string, unknown>): void => {
   const url = new URL(path, window.location.origin);

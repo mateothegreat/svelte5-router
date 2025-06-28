@@ -7,14 +7,14 @@ import type { ReturnParam } from "./helpers/urls";
 /**
  * The types of values that can be used as a query.
  *
- * @category router
+ * @category Router
  */
 export type QueryType<T = unknown> = Record<string, string | number | RegExp | Function | Promise<T>>;
 
 /**
  * The types of values that the {Query} test method can return.
  *
- * @category router
+ * @category Router
  */
 export type QueryEvaluationResult = {
   condition: Condition;
@@ -24,7 +24,7 @@ export type QueryEvaluationResult = {
 /**
  * Query string operations.
  *
- * @category helpers
+ * @category Helpers
  */
 export class Query {
   params: Record<string, ReturnParam> = {};

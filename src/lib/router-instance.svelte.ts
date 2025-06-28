@@ -11,7 +11,7 @@ import { urls } from "./helpers/urls";
 /**
  * The default routes that are used when no routes match.
  *
- * @category router
+ * @category Router
  */
 export const defaultRoutes = ["", "/", "/*", "/^.*$/", "/.*/"];
 
@@ -21,7 +21,7 @@ export const defaultRoutes = ["", "/", "/*", "/^.*$/", "/.*/"];
  * This is used to restore the original history methods when the last instance is destroyed
  * and to register & unregister the event listeners for the router instances to prevent memory leaks.
  *
- * @category router
+ * @category Router
  */
 export type RouterHandlers = {
   /**
@@ -52,7 +52,7 @@ export type RouterHandlers = {
  * This class should rarely be used directly. Instead, use the `Router` component
  * to create a new router instance.
  *
- * @category router
+ * @category Router
  */
 export class RouterInstance {
   /**
@@ -203,7 +203,6 @@ export class RouterInstance {
       }
 
       // Contact the downstream router component to apply the route:
-      console.error("applyFn", result);
       this.applyFn(result, span);
 
       // Run the route specific post hooks:

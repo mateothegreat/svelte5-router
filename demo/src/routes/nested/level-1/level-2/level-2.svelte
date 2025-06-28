@@ -9,7 +9,13 @@
   const routes: Route[] = [
     {
       path: "level-3",
-      component: Level_3
+      component: Level_3,
+      hooks: {
+        pre: () => {
+          console.log(`Route "/nested/level-1/level-2" matched (I'm a pre hook in the level-2.svelte route)`);
+          return true;
+        }
+      }
     },
     {
       component: snippet

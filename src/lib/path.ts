@@ -7,7 +7,7 @@ import { Query } from "./query.svelte";
 /**
  * The types of values that can be used as a path.
  *
- * @category router
+ * @category Router
  */
 export type PathType = string | number | RegExp | Function | Promise<unknown>;
 

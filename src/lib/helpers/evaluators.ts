@@ -4,6 +4,8 @@ import type { ReturnParam } from "./urls";
 
 /**
  * Path or querystring evaluation result.
+ *
+ * @category Router
  */
 export type Condition =
   | "exact-match"
@@ -15,6 +17,8 @@ export type Condition =
 
 /**
  * The conditions that are considered successful.
+ *
+ * @category Router
  */
 export const SuccessfulConditions: Condition[] = [
   "exact-match",
@@ -25,17 +29,26 @@ export const SuccessfulConditions: Condition[] = [
 
 /**
  * The conditions that are considered failed.
+ *
+ * @category Router
  */
 export const FailedConditions: Condition[] = ["no-match", "one-or-more-missing"];
 
 /**
  * The evaluation results of the route.
+ *
+ * @category Router
  */
 export type Evaluation = {
   condition: Condition;
   params?: ReturnParam;
 };
 
+/**
+ * The evaluation results of the route.
+ *
+ * @category Router
+ */
 export type EvaluationResult = {
   path: Evaluation;
   querystring: Evaluation;
@@ -106,6 +119,8 @@ export namespace evaluators {
 
   /**
    * Evaluator function that checks if a value is empty recursively.
+   *
+   * @category Router
    */
   export const valid: Record<string, (a: any) => boolean> = {
     [Identities.string]: (a) => a.length > 0,

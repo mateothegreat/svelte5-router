@@ -69,7 +69,13 @@
     routes={[
       {
         path: "level-2",
-        component: Level_2
+        component: Level_2,
+        hooks: {
+          pre: () => {
+            console.log(`Route "/nested/level-1/level-2" matched (I'm a pre hook in the level-1.svelte route)`);
+            return true;
+          }
+        }
       },
       /**
        * Default routes can be placed anywhere in the routes array
