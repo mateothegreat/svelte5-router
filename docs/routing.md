@@ -4,6 +4,9 @@ We provide an array of `RouteConfig` objects to the `Router` component.
 
 Each `RouteConfig` object describes a route and its associated component.
 
+> [!NOTE]
+> If you are using the same component for multiple routes, you must add the `renavigation` prop to the
+
 ## Pattern Matching
 
 You can simply use static paths like `/foo` or dynamic paths like `/foo/(.*?)` with regex.
@@ -173,3 +176,38 @@ const globalAuthGuardHook = async (route: RouteResult): Promise<boolean> => {
   return true;
 };
 ```
+
+## Renavigation
+
+If you are using the same component for multiple routes, you must add the `renavigation` prop to the `<Router />` component. This is required for the same component to be used for multiple routes.
+
+For example, if you have the following routes:
+
+```typescript
+<script>
+  import Router, { type RouteConfig } from "@mateothegreat/svelte5-router/router.svelte";
+
+  const routes: RouteConfig[] = [
+    {
+      path: "/foo",
+      component: SameComponent
+    },
+    {
+      path: "/bar",
+      component: SameComponent
+    }
+  ];
+</script>
+```
+
+You must add the `renavigation` prop to the `<Router />` component:
+
+```svelte
+<Router
+  id="renavigation-router"
+  basePath="/renavigation"
+  renavigation={true} // This is required for the same component to be used for multiple routes.
+  {routes} />
+```
+
+This will allow the same component to be used for multiple routes effectively being re-rendered when the route changes.
