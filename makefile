@@ -1,4 +1,4 @@
-.PHONY: demo
+.PHONY: demo docs/llms.txt
 
 install:
 	npm install
@@ -22,3 +22,6 @@ docs/watch: ## Build the docs and watch for changes.
 	npm run docs:watch & \
 	(sleep 4 && npm run docs:serve) & \
 	wait
+
+docs/llms.txt:
+	cat docs/*.md docs/llms.txt > llms.txt
