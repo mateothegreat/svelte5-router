@@ -31,16 +31,20 @@ npm install @mateothegreat/svelte5-router
 
 ## Table of Contents
 
-- [Getting Started](https://github.com/mateothegreat/svelte5-router/blob/main/docs/getting-started.md)
-- [Routing](https://github.com/mateothegreat/svelte5-router/blob/main/docs/routing.md)
-- [Hooks](https://github.com/mateothegreat/svelte5-router/blob/main/docs/hooks.md)
-- [Actions](https://github.com/mateothegreat/svelte5-router/blob/main/docs/actions.md)
-- [Helper Methods](https://github.com/mateothegreat/svelte5-router/blob/main/docs/helpers.md)
-- [Default Status Mapping](https://github.com/mateothegreat/svelte5-router/blob/main/docs/statuses.md)
-- [The Router Registry](https://github.com/mateothegreat/svelte5-router/blob/main/docs/registry.md)
-- [Route Styling](https://github.com/mateothegreat/svelte5-router/blob/main/docs/styling.md)
-- [Accessing Props](https://github.com/mateothegreat/svelte5-router/blob/main/docs/props.md)
-- [Debugging](https://github.com/mateothegreat/svelte5-router/blob/main/docs/debugging.md)
+- [Getting Started](./getting-started.md)
+- [Routing](./routing.md)
+- [Hooks](./hooks.md)
+- [Actions](./actions.md)
+- [Helper Methods](./helpers.md)
+- [Default Status Mapping](./statuses.md)
+- [The Router Registry](./registry.md)
+- [Route Styling](./styling.md)
+- [Accessing Props](./props.md)
+- [Debugging](./debugging.md)
+- [Diagrams](./diagrams.md)
+
+> [!NOTE]
+> Include [llms.txt](./llms.txt) to your local LLM to get add rich context to your tasks by referencing `https://raw.githubusercontent.com/mateothegreat/svelte5-router/refs/heads/main/llms.txt`.
 
 ## How it works
 
@@ -95,4 +99,4 @@ flowchart TD
 </div>
 
 > [!NOTE]
-> You can view more diagrams in [diagrams.md](./docs/diagrams.md).
+> You can view more diagrams in [diagrams.md](./diagrams.md).
