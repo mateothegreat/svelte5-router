@@ -1,0 +1,26 @@
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#2563eb',
+    'primaryTextColor': '#fff',
+    'primaryBorderColor': '#1e40af',
+    'lineColor': '#64748b',
+    'secondaryColor': '#4ade80',
+    'tertiaryColor': '#f472b6'
+  }
+}}%%
+graph TD
+    A[Router Component] -->|Creates| B[RouterInstance]
+    B -->|Registers with| C[Registry]
+    B -->|Manages| D[Route Collection]
+    D -->|Contains| E[Route Configurations]
+    E -->|Has| F[Path Patterns]
+    E -->|Has| G[Query Patterns]
+    E -->|Has| H[Hooks]
+    E -->|Renders| I[Route Components]
+    
+    style A fill:#3b82f6,stroke:#1d4ed8
+    style B fill:#4ade80,stroke:#16a34a
+    style C fill:#f472b6,stroke:#db2777
+    style D fill:#4ade80,stroke:#16a34a
+    style E fill:#f472b6,stroke:#db2777 

@@ -56,10 +56,10 @@
     "includePath": [".(png|md)$"],
     "onlyImages": true
   },
-  "coverageLabel": "Documentation Coverage",
-  "coverageOutputPath": "docs/assets/coverage.svg",
-  "coverageOutputType": "all",
-  "coverageSvgWidth": 190,
+  // "coverageLabel": "Documentation Coverage",
+  // "coverageOutputPath": "docs/assets/coverage.svg",
+  // "coverageOutputType": "all",
+  // "coverageSvgWidth": 190,
   "customValidation": {
     "byKind": [
       {
@@ -104,7 +104,7 @@
     "typedoc-plugin-extras",
     "typedoc-plugin-include-example",
     "typedoc-plugin-mermaid",
-    "typedoc-plugin-coverage",
+    // "typedoc-plugin-coverage",
     "typedoc-plugin-custom-validation",
     "typedoc-plugin-dt-links",
     "@vpalmisano/typedoc-plugin-ga",

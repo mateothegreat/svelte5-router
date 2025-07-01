@@ -2,43 +2,14 @@
   "name": "@mateothegreat/svelte5-router",
   "version": "2.15.3",
   "type": "module",
-  "moduleResolution": "bundler",
-  "engines": {
-    "node": ">=24.2.0"
-  },
-  "license": "MIT",
-  "types": "./router.svelte.d.ts",
-  "exports": {
-    ".": {
-      "types": "./index.js",
-      "import": "./index.js",
-      "svelte": "./index.js"
-    }
-  },
-  "files": [
-    "./**/*"
-  ],
-  "readme": "README.md",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mateothegreat/svelte5-router.git"
-  },
-  "keywords": [
-    "svelte 5",
-    "svelte 5 router",
-    "svelte 5 spa router"
-  ],
   "scripts": {
-    "check": "svelte-check --tsconfig ./tsconfig.json",
-    "build": "npm run check && rm -rf dist && npx svelte-package && cp -r src/lib dist && cp package.json docs/logo.png dist && cp docs/readme.md dist/README.md && cd dist npm version from-git",
     "docs:build": "typedoc --footerLastModified --customTitle \"svelte 5 router\" ",
     "docs:watch": "typedoc --watch --footerLastModified --customTitle \"svelte 5 router\" ",
-    "docs:serve": "cd tmp/build && npx httpserver -p 20000",
-    "test:ci": "npx vitest run --coverage",
-    "test:watch": "npx vitest"
+    "docs:serve": "cd tmp/build && npx httpserver -p 20000"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.5",
+    "@mermaid-js/mermaid-cli": "^11.6.0",
     "@sveltejs/package": "^2.3.11",
     "@sveltejs/vite-plugin-svelte": "^5.1.0",
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",

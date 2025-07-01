@@ -53,7 +53,6 @@ export class RouteResult {
    * The route that was evaluated to render this result.
    *
    * @since 2.0.0
-   * @readonly
    * @remarks This may be undefined if the route result was created without an associated route.
    * @see {@link Route}
    */
@@ -66,7 +65,6 @@ export class RouteResult {
    * including path evaluation, querystring parsing, component resolution, and status determination.
    *
    * @since 2.0.0
-   * @readonly
    * @remarks The result object is immutable once created and represents a snapshot of the routing state.
    *
    * @example

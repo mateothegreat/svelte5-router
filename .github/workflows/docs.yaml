@@ -8,6 +8,10 @@ on:
 permissions:
   id-token: write
   pages: write
+defaults:
+  run:
+    shell: bash
+    working-directory: ./docs
 jobs:
   setup:
     name: 🔧 Request
@@ -31,16 +35,29 @@ jobs:
         id: hydrate-node-modules
         with:
           path: node_modules
-          key: ${{ hashFiles('package-lock.json') }}          
-      - run: |
-          ls -la
-          npm list
-      - name: Build documentation
+          key: ${{ hashFiles('package-lock.json') }}
+      - name: 📊 Generate diagrams
+        run: make diagrams
+      - name: 📚 Build documentation
         run: npm run docs:build
-      - name: Upload Pages artifact
+      - name: 📤 Upload Pages artifact
         uses: actions/upload-pages-artifact@v3.0.1
         with:
           path: tmp/build
       - id: deployment
-        name: Deploy documentation to GitHub Pages
+        name: 📤 Deploy documentation to GitHub Pages
         uses: actions/deploy-pages@v4.0.5
+      - name: cicd app auth
+        id: app
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.CICD_APP_ID }}
+          private-key: ${{ secrets.CICD_APP_PRIVATE_KEY }}
+      - name: 🔧 Commit and push diagrams
+        run: |
+          git config --global user.name "svelte5-router[bot]"
+          git config --global user.email "svelte5-router[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ steps.app.outputs.token }}@github.com/${{ github.repository }}.git
+          git add .
+          git commit -am "chore(docs): update diagrams"
+          git push origin HEAD:main

@@ -1,0 +1,31 @@
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#2563eb',
+    'primaryTextColor': '#fff',
+    'primaryBorderColor': '#1e40af',
+    'lineColor': '#64748b',
+    'secondaryColor': '#4ade80',
+    'tertiaryColor': '#f472b6'
+  }
+}}%%
+graph TB
+    A[Browser URL Change] -->|Triggers| B[RouterInstance]
+    B -->|Registers| C[Registry]
+    B -->|Evaluates| D[Route Matching]
+    D -->|Checks| E[Path Matching]
+    D -->|Checks| F[Query Matching]
+    E --> G[Route Resolution]
+    F --> G
+    G -->|Pre Hooks| H[Route Guards]
+    H -->|Success| I[Component Rendering]
+    H -->|Failure| J[Redirect/Deny]
+    I -->|Post Hooks| K[Final Render]
+    
+    style A fill:#3b82f6,stroke:#1d4ed8
+    style B fill:#4ade80,stroke:#16a34a
+    style C fill:#f472b6,stroke:#db2777
+    style D fill:#4ade80,stroke:#16a34a
+    style G fill:#f472b6,stroke:#db2777
+    style H fill:#3b82f6,stroke:#1d4ed8
+    style I fill:#4ade80,stroke:#16a34a 

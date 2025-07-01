@@ -1,0 +1,34 @@
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#2563eb',
+    'primaryTextColor': '#fff',
+    'primaryBorderColor': '#1e40af',
+    'lineColor': '#64748b',
+    'secondaryColor': '#4ade80',
+    'tertiaryColor': '#f472b6'
+  }
+}}%%
+sequenceDiagram
+    participant U as User/Browser
+    participant R as Router
+    participant RI as RouterInstance
+    participant RG as Registry
+    participant H as Hooks
+    participant C as Component
+
+    U->>R: URL Change
+    R->>RG: Check Registration
+    RG-->>R: Return Instance
+    R->>RI: Handle State Change
+    RI->>RI: Evaluate Route
+    RI->>H: Execute Pre-Hooks
+    alt Hook Success
+        H-->>RI: Continue
+        RI->>C: Render Component
+        RI->>H: Execute Post-Hooks
+        H-->>RI: Complete
+    else Hook Failure
+        H-->>RI: Abort/Redirect
+        RI->>U: Navigate Away
+    end 

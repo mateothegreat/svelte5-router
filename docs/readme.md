@@ -23,6 +23,20 @@ An SPA router for Svelte that allows you to divide & conquer your app with neste
 - Helper methods 🛠️ to make your life easier.
 - Debugging tools included 🔍.
 
+## Latest News
+
+### July 1, 2025
+
+Version 2.15.4 released! 🎉 with some healthy updates!
+
+- 🔧 Added support for passing your own props down to the routed component ([#70](https://github.com/mateothegreat/svelte5-router/issues/70) - thanks [@inZaCz](https://github.com/inZaCz)).
+- 🐛 Fixed a bug where the router would not re-render the same component when the route changes.
+- 📊 Added [Router Architecture Diagrams](./diagrams.md) to give you a better understanding of how the router works.
+- 🎉 New demos for more patterns and use cases at <https://demo.router.svelte.spa/patterns>.
+
+> [!NOTE]
+> I'd like to share what svelte5-router is doing in the wild! If you're using it, please share your project with me by sending me a message on discord at [@mateothegreat](https://discord.com/users/505520869246763009) or just create a [new issue](https://github.com/mateothegreat/svelte5-router/issues/new) and I'll add it to the list. 🙏
+
 ## Installation
 
 ```bash
@@ -51,51 +65,7 @@ npm install @mateothegreat/svelte5-router
 When the browser URL changes, the router instance is triggered. It then registers the route in the registry, evaluates the route matching, and resolves the route.
 
 <div align="center">
-
-```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#2563eb',
-    'primaryTextColor': '#fff',
-    'primaryBorderColor': '#1e40af',
-    'lineColor': '#64748b',
-    'secondaryColor': '#4ade80',
-    'tertiaryColor': '#f472b6'
-  }
-}}%%
-flowchart TD
-    A[Route Evaluation Start] --> B{Check Path Type}
-    B -->|String| C[Direct Match]
-    B -->|RegExp| D[Pattern Match]
-    B -->|Function| E[Custom Match]
-    
-    C --> F{Path Matches?}
-    D --> F
-    E --> F
-    
-    F -->|Yes| G[Check Query Parameters]
-    F -->|No| H[Try Next Route]
-    
-    G --> I{Query Matches?}
-    I -->|Yes| J[Create Route Result]
-    I -->|No| H
-    
-    H --> K{More Routes?}
-    K -->|Yes| B
-    K -->|No| L[Use Default Route]
-    
-    J --> M[Execute Pre Hooks]
-    L --> M
-    
-    style A fill:#3b82f6,stroke:#1d4ed8
-    style B fill:#4ade80,stroke:#16a34a
-    style F fill:#f472b6,stroke:#db2777
-    style I fill:#f472b6,stroke:#db2777
-    style J fill:#4ade80,stroke:#16a34a
-    style M fill:#3b82f6,stroke:#1d4ed8 
-```
-
+  <img src="./diagrams/router-architecture.png" alt="Router Architecture" />
 </div>
 
 > [!NOTE]
