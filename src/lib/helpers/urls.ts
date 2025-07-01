@@ -64,7 +64,8 @@ export namespace urls {
     if (url === undefined || url.length === 0) {
       throw new Error(`invalid URL: ${url}`);
     }
-    const isAbsoluteUrl = url.includes("://");
+    const isFileUrl = url.startsWith("file:///");
+    const isAbsoluteUrl = url.includes("://") && !isFileUrl;
     if (isAbsoluteUrl) {
       const [protocol, remaining] = url.split("://");
       const hostPortMatch = remaining.match(/^([^/:]+)(?::(\d+))?(.*)$/);
@@ -79,6 +80,33 @@ export namespace urls {
         port,
         path: normalize(before) || "/",
         query: new Query(queryString),
+        hash: hashed
+      };
+    } else if (isFileUrl) {
+      const [protocol, remaining] = url.split("://");
+      const posHash = remaining.indexOf("#");
+      const posFirstQuestionmark = remaining.indexOf("?");
+      let host = "";
+      let path = "/";
+      let query : Query;
+      if (posHash > posFirstQuestionmark && posFirstQuestionmark != -1) {
+        host = remaining.slice(0, posFirstQuestionmark);
+        path = normalize(remaining.slice(posFirstQuestionmark));
+        query = new Query(path);
+      } else {
+        host = remaining.slice(0, posHash);
+        path = normalize(remaining.slice(posHash));
+        const [_, queryString] =  (path || "").split("?");
+        query = new Query(queryString);
+      }
+      const hashed = hash.parse(remaining);
+
+      return {
+        protocol,
+        host,
+        port: "",
+        path,
+        query,
         hash: hashed
       };
     } else {

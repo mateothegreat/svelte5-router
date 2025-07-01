@@ -7,8 +7,15 @@ test.only("parses with no query parameters", () => {
     protocol: "http",
     host: "localhost",
     port: "5173",
-    path: "/foo/bar",
-    hash: "/foo/bar",
+    path: "/#/foo/bar",
+    hash: {
+      hash: "/foo/bar",
+      path: "/foo/bar",
+      query: {
+        original: "",
+        params: {}
+      },
+    },
     query: {
       original: "",
       params: {}
@@ -17,20 +24,90 @@ test.only("parses with no query parameters", () => {
 });
 
 test.only("parses key-value query parameters", () => {
-  expect(urls.parse("http://localhost:5173/#/foo/bar?negative=-123&a=1&str=string&b=true")).toEqual({
+  let result = urls.parse("http://localhost:5173/#/foo/bar?negative=-123&a=1&str=string&b=true");
+  expect(result).toEqual({
     protocol: "http",
     host: "localhost",
     port: "5173",
-    path: "/foo/bar",
+    path: "/#/foo/bar",
     query: {
       params: {
-        a: "1",
+        negative: -123,
+        a: 1,
         str: "string",
-        b: "true",
-        negative: "-123"
-      }
+        b: true,
+      },
+      original: "negative=-123&a=1&str=string&b=true",
     },
-    hash: "/foo/bar?negative=-123&a=1&str=string&b=true"
+    hash: {
+      path: "/foo/bar",
+      query: {
+        params: {
+          negative: -123,
+          a: 1,
+          str: "string",
+          b: true,
+        },
+        original: "negative=-123&a=1&str=string&b=true",
+      },
+      hash: "/foo/bar?negative=-123&a=1&str=string&b=true",
+    },
+  });
+});
+
+test.only("file url without query parameters", () => {
+  let result = urls.parse("file:///C:/Users/user1/projects/app1/index.html#/foo/bar");
+  expect(result).toEqual({
+    protocol: "file",
+    host: "/C:/Users/user1/projects/app1/index.html",
+    port: "",
+    path: "/#/foo/bar",
+    query: {
+      params: {
+      },
+      original: undefined,
+    },
+    hash: {
+      path: "/foo/bar",
+      query: {
+        params: {
+        },
+        original: "",
+      },
+      hash: "/foo/bar",
+    },
+  });
+});
+
+test.only("file url with key-value query parameters", () => {
+  let result = urls.parse("file:///C:/Users/user1/projects/app1/index.html#/foo/bar?negative=-123&a=1&str=string&b=true");
+  expect(result).toEqual({
+    protocol: "file",
+    host: "/C:/Users/user1/projects/app1/index.html",
+    port: "",
+    path: "/#/foo/bar?negative=-123&a=1&str=string&b=true",
+    query: {
+      params: {
+        negative: -123,
+        a: 1,
+        str: "string",
+        b: true,
+      },
+      original: "negative=-123&a=1&str=string&b=true",
+    },
+    hash: {
+      path: "/foo/bar",
+      query: {
+        params: {
+          negative: -123,
+          a: 1,
+          str: "string",
+          b: true,
+        },
+        original: "negative=-123&a=1&str=string&b=true",
+      },
+      hash: "/foo/bar?negative=-123&a=1&str=string&b=true",
+    },
   });
 });
 
