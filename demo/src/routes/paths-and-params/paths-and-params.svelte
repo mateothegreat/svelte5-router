@@ -5,29 +5,12 @@
   import { getStatusByValue, RouterInstance, StatusCode } from "@mateothegreat/svelte5-router";
   import type { RouteConfig, RouteResult } from "@mateothegreat/svelte5-router/route.svelte";
   import Router from "@mateothegreat/svelte5-router/router.svelte";
-  import { onDestroy } from "svelte";
   import CustomNotFound from "./custom-not-found.svelte";
   import DisplayParams from "./display-params.svelte";
   import QuerystringMatching from "./querystring-matching.svelte";
 
   let router: RouterInstance = $state();
   let { route } = $props();
-
-  let randoms = $state({
-    float: (Math.random() * 1000).toFixed(2),
-    int: (Math.random() * 1000).toFixed(0),
-    string: (Math.random() * 1000).toFixed(2).toString()
-  });
-
-  const interval = setInterval(() => {
-    randoms.float = (Math.random() * 1000).toFixed(2);
-    randoms.int = (Math.random() * 1000).toFixed(0);
-    randoms.string = (Math.random() * 1000).toFixed(2).toString();
-  }, 750);
-
-  onDestroy(() => {
-    clearInterval(interval);
-  });
 
   const routes: RouteConfig[] = [
     /**
@@ -170,16 +153,11 @@
     {
       href: "/paths-and-params/query-matcher?pagination=2,23&company=123",
       label: "query-matcher?pagination=2,23&company=123"
-    },
-    {
-      href: `/paths-and-params/query-matcher?string=123&float=${randoms.float}`,
-      label: `query-matcher?string=123&float=${randoms.float}`
     }
   ]}>
   <Router
     id="props-router"
     basePath="/paths-and-params"
-    renavigation={true}
     bind:instance={router}
     {routes}
     hooks={{

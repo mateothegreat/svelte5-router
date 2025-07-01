@@ -179,7 +179,10 @@ const globalAuthGuardHook = async (route: RouteResult): Promise<boolean> => {
 
 ## Renavigation
 
-If you are using the same component for multiple routes, you must add the `renavigation` prop to the `<Router />` component. This is required for the same component to be used for multiple routes.
+If you are using the same component for multiple routes, the `renavigation` prop is required to be set to `true` on the `<Router />` component.
+
+> [!NOTE]
+> This is now the default behavior. If you want to disable it, you can set the `renavigation` prop to `false` explicitly.
 
 For example, if you have the following routes:
 
@@ -200,14 +203,14 @@ For example, if you have the following routes:
 </script>
 ```
 
-You must add the `renavigation` prop to the `<Router />` component:
+And you want to disable it, you can do the following by setting the `renavigation` prop to `false`:
 
 ```svelte
 <Router
   id="renavigation-router"
   basePath="/renavigation"
-  renavigation={true} // This is required for the same component to be used for multiple routes.
+  renavigation={false}
   {routes} />
 ```
 
-This will allow the same component to be used for multiple routes effectively being re-rendered when the route changes.
+This will prevent the same component to be used for multiple routes effectively being re-rendered when the route changes.
