@@ -4,7 +4,7 @@
   "type": "module",
   "moduleResolution": "bundler",
   "engines": {
-    "node": ">=24.2.0"
+    "node": ">=22"
   },
   "license": "MIT",
   "types": "./router.svelte.d.ts",
