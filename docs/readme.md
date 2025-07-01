@@ -27,7 +27,7 @@ An SPA router for Svelte that allows you to divide & conquer your app with neste
 
 ### July 1, 2025
 
-Version 2.15.4 released! 🎉 with some healthy updates!
+Version 2.16.7 released! 🎉 with some healthy updates!
 
 - 🔧 Added support for passing your own props down to the routed component ([#70](https://github.com/mateothegreat/svelte5-router/issues/70) - thanks [@inZaCz](https://github.com/inZaCz)).
 - 🐛 Fixed a bug where the router would not re-render the same component when the route changes.
