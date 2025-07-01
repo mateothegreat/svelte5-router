@@ -210,6 +210,8 @@ export class RouterInstance {
       const shouldApply = this.config.renavigation !== false;
       
       if (shouldApply) {
+        this.current = undefined;
+        
         span?.trace({
           prefix: isSameRoute ? "🔄" : "✅",
           name: "router-instance.applyRoute",
@@ -230,6 +232,8 @@ export class RouterInstance {
         
         // Contact the downstream router component to apply the route:
         this.applyFn(result, span);
+        
+        this.current = result;
       } else {
         span?.trace({
           prefix: "⏭️",
@@ -246,6 +250,8 @@ export class RouterInstance {
             result
           }
         });
+        
+        this.current = result;
       }
 
       // Run the route specific post hooks:

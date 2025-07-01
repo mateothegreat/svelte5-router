@@ -33,7 +33,7 @@
       }
     });
     
-    // Safely unmount the current component if it exists and is mounted
+    // Force unmount and remount for all navigations to ensure fresh component state
     // This prevents double unmount errors while ensuring re-mounting
     if (RenderableComponent) {
       try {
@@ -44,8 +44,8 @@
           throw error;
         }
       }
-      RenderableComponent = null;
     }
+    RenderableComponent = null;
 
     if (typeof r.result.component === "function" && r.result.component.constructor.name === "AsyncFunction") {
       // Handle async component by first awaiting the import:
@@ -55,6 +55,9 @@
       // Handle regular component by directly assigning the component:
       RenderableComponent = r.result.component;
     }
+    
+    // Force reactivity by updating route state after component assignment
+    route = { ...r };
     additionalProps = route.route?.props;
   };
 
