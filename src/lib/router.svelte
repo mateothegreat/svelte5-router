@@ -33,19 +33,8 @@
       }
     });
     
-    // Force unmount and remount for all navigations to ensure fresh component state
-    // This prevents double unmount errors while ensuring re-mounting
-    if (RenderableComponent) {
-      try {
-        unmount(RenderableComponent, {});
-      } catch (error) {
-        // Ignore double unmount errors - component was already unmounted
-        if (!(error as Error).message?.includes('lifecycle_double_unmount')) {
-          throw error;
-        }
-      }
-    }
-    RenderableComponent = null;
+    // The {#key} block handles component lifecycle automatically
+    // No manual unmounting needed - Svelte manages this for us
 
     if (typeof r.result.component === "function" && r.result.component.constructor.name === "AsyncFunction") {
       // Handle async component by first awaiting the import:
@@ -93,7 +82,9 @@
   const { routes, basePath, ...restWithoutRoutes } = rest;
 </script>
 
-<RenderableComponent
-  {route}
-  {...additionalProps}
-  {...restWithoutRoutes} />
+{#key route?.result?.path?.original || Math.random()}
+  <RenderableComponent
+    {route}
+    {...additionalProps}
+    {...restWithoutRoutes} />
+{/key}
