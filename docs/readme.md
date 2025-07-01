@@ -44,7 +44,7 @@ npm install @mateothegreat/svelte5-router
 - [Diagrams](./diagrams.md)
 
 > [!NOTE]
-> Include [llms.txt](./llms.txt) to your local LLM to get add rich context to your tasks by referencing `https://raw.githubusercontent.com/mateothegreat/svelte5-router/refs/heads/main/llms.txt`.
+> Include [llms.txt](../llms.txt) to your local LLM to get add rich context to your tasks by referencing `https://raw.githubusercontent.com/mateothegreat/svelte5-router/refs/heads/main/llms.txt`.
 
 ## How it works
 
