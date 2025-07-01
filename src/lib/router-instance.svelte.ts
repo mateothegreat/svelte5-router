@@ -202,8 +202,50 @@ export class RouterInstance {
         }
       }
 
-      // Contact the downstream router component to apply the route:
-      this.applyFn(result, span);
+      const isSameRoute = this.current && 
+        this.current.result.path.original === result.result.path.original &&
+        JSON.stringify(this.current.result.querystring.params) === JSON.stringify(result.result.querystring.params);
+      
+      const shouldApply = !isSameRoute || this.config.renavigation !== false;
+      
+      if (shouldApply) {
+        span?.trace({
+          prefix: isSameRoute ? "🔄" : "✅",
+          name: "router-instance.applyRoute",
+          description: isSameRoute ? 
+            `re-mounting same route "${result.result.path.original}" (renavigation enabled)` :
+            `applying new route "${result.result.path.original}"`,
+          metadata: {
+            location: "/src/lib/router-instance.svelte:handleStateChange()",
+            router: {
+              id: this.config.id,
+              basePath: this.config.basePath
+            },
+            isSameRoute,
+            renavigation: this.config.renavigation,
+            result
+          }
+        });
+        
+        // Contact the downstream router component to apply the route:
+        this.applyFn(result, span);
+      } else {
+        span?.trace({
+          prefix: "⏭️",
+          name: "router-instance.skipRenavigation",
+          description: `skipping same route "${result.result.path.original}" (renavigation disabled)`,
+          metadata: {
+            location: "/src/lib/router-instance.svelte:handleStateChange()",
+            router: {
+              id: this.config.id,
+              basePath: this.config.basePath
+            },
+            isSameRoute,
+            renavigation: this.config.renavigation,
+            result
+          }
+        });
+      }
 
       // Run the route specific post hooks:
       if (result && result.route?.hooks?.post) {

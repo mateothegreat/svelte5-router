@@ -32,6 +32,9 @@
         result: r
       }
     });
+    
+    // Always unmount the current component to ensure re-mounting
+    // This is essential for same-route navigation when renavigation is enabled
     if (RenderableComponent) {
       unmount(RenderableComponent, {});
       RenderableComponent = null;

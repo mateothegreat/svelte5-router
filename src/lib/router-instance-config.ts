@@ -5,6 +5,23 @@ import { RouteConfig } from "./route.svelte";
 import type { Statuses } from "./statuses";
 
 /**
+ * Configuration interface for creating a new router instance.
+ */
+export interface RouterInstanceConfigOptions {
+  id?: string;
+  basePath?: string;
+  routes: any[];
+  hooks?: {
+    pre?: Hook | Hook[];
+    post?: Hook | Hook[];
+  };
+  initialPath?: string;
+  notFoundComponent?: Component<any>;
+  statuses?: Statuses;
+  renavigation?: boolean;
+}
+
+/**
  * The configuration for a new router instance.
  *
  * @remarks
@@ -70,6 +87,8 @@ export class RouterInstanceConfig {
   /**
    * Whether to allow the same route to be rendered if the conditions are the
    * same (taking in to account the path, query, and status code).
+   * 
+   * @default true - Components will re-mount when navigating to the same route
    */
   renavigation?: boolean;
 
@@ -78,13 +97,14 @@ export class RouterInstanceConfig {
    *
    * @param {RouterInstanceConfig} config The config for this router instance.
    */
-  constructor(config: RouterInstanceConfig) {
+  constructor(config: RouterInstanceConfigOptions) {
     this.id = config.id || Math.random().toString(36).substring(2, 15);
     this.basePath = config.basePath;
     this.hooks = config.hooks;
     this.initialPath = config.initialPath;
     this.notFoundComponent = config.notFoundComponent;
     this.statuses = config.statuses;
+    this.renavigation = config.renavigation;
     this.routes = config.routes.map(
       (route) =>
         new RouteConfig({
