@@ -119,6 +119,7 @@
   <div class="flex flex-1 flex-col gap-2">
     <Router
       basePath="/patterns"
+      renavigation={true}
       myExtraRouterProp={{
         calledFrom: "patterns <Router />"
       }}

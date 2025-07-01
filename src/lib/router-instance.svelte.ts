@@ -206,7 +206,8 @@ export class RouterInstance {
         this.current.result.path.original === result.result.path.original &&
         JSON.stringify(this.current.result.querystring.params) === JSON.stringify(result.result.querystring.params);
       
-      const shouldApply = !isSameRoute || this.config.renavigation !== false;
+      // This ensures components re-mount for both same routes and different routes using same component
+      const shouldApply = this.config.renavigation !== false;
       
       if (shouldApply) {
         span?.trace({

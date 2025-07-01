@@ -19,7 +19,7 @@ describe('Router Remount Configuration', () => {
       ]
     });
 
-    expect(config.renavigation).toBeUndefined();
+    expect(config.renavigation).toBe(true);
   });
 
   it('should create RouterInstanceConfig with renavigation explicitly disabled', () => {

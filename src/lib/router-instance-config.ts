@@ -85,10 +85,11 @@ export class RouterInstanceConfig {
   statuses?: Statuses;
 
   /**
-   * Whether to allow the same route to be rendered if the conditions are the
-   * same (taking in to account the path, query, and status code).
+   * Whether to allow components to re-mount when navigating to routes.
+   * When true, components will re-mount for both same routes and different routes using the same component.
+   * This ensures fresh component state for each navigation.
    * 
-   * @default true - Components will re-mount when navigating to the same route
+   * @default true - Components will re-mount when navigating to any route
    */
   renavigation?: boolean;
 
@@ -104,7 +105,7 @@ export class RouterInstanceConfig {
     this.initialPath = config.initialPath;
     this.notFoundComponent = config.notFoundComponent;
     this.statuses = config.statuses;
-    this.renavigation = config.renavigation;
+    this.renavigation = config.renavigation ?? true;
     this.routes = config.routes.map(
       (route) =>
         new RouteConfig({

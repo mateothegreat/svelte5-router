@@ -33,10 +33,17 @@
       }
     });
     
-    // Always unmount the current component to ensure re-mounting
-    // This is essential for same-route navigation when renavigation is enabled
+    // Safely unmount the current component if it exists and is mounted
+    // This prevents double unmount errors while ensuring re-mounting
     if (RenderableComponent) {
-      unmount(RenderableComponent, {});
+      try {
+        unmount(RenderableComponent, {});
+      } catch (error) {
+        // Ignore double unmount errors - component was already unmounted
+        if (!(error as Error).message?.includes('lifecycle_double_unmount')) {
+          throw error;
+        }
+      }
       RenderableComponent = null;
     }
 
