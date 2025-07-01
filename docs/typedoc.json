@@ -69,7 +69,7 @@
       }
     ]
   },
-  "entryPoints": ["./src/lib/index.ts"],
+  "entryPoints": ["../src/lib/index.ts"],
   "exclude": ["**/*+(.spec|.e2e).ts", "**/*.svg"],
   "excludeExternals": true,
   "excludeInternal": true,
@@ -96,7 +96,7 @@
     "Releases": "https://github.com/mateothegreat/svelte5-router/releases",
     "Report Issue": "https://github.com/mateothegreat/svelte5-router/issues"
   },
-  "out": "tmp/build",
+  "out": "../tmp/build",
   "plugin": [
     "@droppedcode/typedoc-plugin-copy-assets",
     "typedoc-github-theme",
@@ -112,7 +112,7 @@
   ],
   "versionHeaderFormat": "{{major}}.{{minor}}.{{patch}}",
   "gaID": "G-FTT7485E5D",
-  "readme": "docs/readme.md",
+  "readme": "readme.md",
   "searchInComments": true,
   "searchInDocuments": true,
   "sidebarLinks": {
