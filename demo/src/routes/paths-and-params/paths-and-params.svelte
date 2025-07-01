@@ -179,6 +179,7 @@
   <Router
     id="props-router"
     basePath="/paths-and-params"
+    renavigation={true}
     bind:instance={router}
     {routes}
     hooks={{
