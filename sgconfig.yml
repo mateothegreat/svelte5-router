@@ -1,6 +1,0 @@
-ruleDirs:
-- /Users/matthewdavis/workspace/svelte5-router/.vscode/ast-grep
-testConfigs:
-- testDir: /Users/matthewdavis/workspace/svelte5-router/.vscode/ast-grep
-utilDirs:
-- /Users/matthewdavis/workspace/svelte5-router/utils
