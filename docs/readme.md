@@ -43,8 +43,9 @@ Version 2.16.7 released! 🎉 with some healthy updates!
 npm install @mateothegreat/svelte5-router
 ```
 
-> [!NOTE]
-> Want the easy button? Here ya go! [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/mateothegreat/svelte5-router)
+Want the easy button? Here ya go!
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/mateothegreat/svelte5-router)
 
 ## Table of Contents
 
