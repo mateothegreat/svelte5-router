@@ -150,33 +150,6 @@ export class RouterInstance {
       span = createSpan("detected history change event");
     }
 
-    if (this.config.basePath && this.config.basePath !== '/') {
-      
-      const isExactMatch = path === this.config.basePath;
-      const isChildPath = path.startsWith(this.config.basePath + '/');
-      
-      if (!isExactMatch && !isChildPath) {
-        span?.trace({
-          prefix: "⏭️",
-          name: "router-instance.handleStateChange",
-          description: `skipping URL "${path}" - does not match basePath "${this.config.basePath}"`,
-          metadata: {
-            router: {
-              id: this.config.id,
-              basePath: this.config.basePath
-            },
-            location: "/src/lib/router-instance.svelte:handleStateChange()",
-            path,
-            url,
-            isExactMatch,
-            isChildPath
-          }
-        });
-        this.navigating = false;
-        return;
-      }
-    }
-
     span?.trace({
       prefix: "🔍",
       name: "router-instance.handleStateChange",
@@ -193,6 +166,33 @@ export class RouterInstance {
         url
       }
     });
+
+    if (this.config.basePath && this.config.basePath !== '/') {
+      const isExactMatch = path === this.config.basePath;
+      const isDirectChild = path.startsWith(this.config.basePath + '/') && 
+                           !path.substring(this.config.basePath.length + 1).includes('/');
+      
+      if (!isExactMatch && !isDirectChild) {
+        span?.trace({
+          prefix: "⏭️",
+          name: "router-instance.handleStateChange",
+          description: `skipping URL "${path}" - not a direct child of basePath "${this.config.basePath}"`,
+          metadata: {
+            router: {
+              id: this.config.id,
+              basePath: this.config.basePath
+            },
+            location: "/src/lib/router-instance.svelte:handleStateChange()",
+            path,
+            url,
+            isExactMatch,
+            isDirectChild
+          }
+        });
+        this.navigating = false;
+        return;
+      }
+    }
 
     const result = await this.get(path, query, span);
 
