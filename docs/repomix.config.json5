@@ -1,0 +1,47 @@
+{
+  "$schema": "https://repomix.com/schemas/latest/schema.json",
+  "input": {
+    "maxFileSize": 52428800,
+  },
+  "output": {
+    "filePath": "llms.txt",
+    "instructionFilePath": "docs/llms-instructions.md",
+    "headerText": "@mateothegreat/svelte5-router LLM instructions",
+    "style": "plain",
+    "parsableStyle": false,
+    "fileSummary": false,
+    "directoryStructure": false,
+    "includeEmptyDirectories": false,
+    "files": true,
+    "removeComments": false,
+    "removeEmptyLines": true,
+    "compress": false,
+    "topFilesLength": 100,
+    "showLineNumbers": false,
+    "copyToClipboard": false,
+    "git": {
+      "sortByChanges": false,
+      "sortByChangesMaxCommits": 100,
+      "includeDiffs": false
+    }
+  },
+  "include": [
+    "src/lib/**/*.{ts,svelte.ts}",
+    "demo/**/*.{svelte,svelte.ts}",
+    "docs/**/*.md",
+    "package.json"
+  ],
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      "**/changelog.md",
+    ]
+  },
+  "security": {
+    "enableSecurityCheck": true
+  },
+  "tokenCount": {
+    "encoding": "o200k_base"
+  }
+}
