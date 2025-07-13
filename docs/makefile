@@ -11,5 +11,5 @@ llms.txt:
 
 diagrams:
 	for file in diagrams/*.mmd; do \
-		npx mmdc -t dark -b transparent -i $$file -o $${file%.mmd}.png; \
+		node_modules/.bin/mmdc -t dark -b transparent -i $$file -o $${file%.mmd}.png; \
 	done
