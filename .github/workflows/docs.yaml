@@ -38,8 +38,8 @@ jobs:
       #     key: ${{ hashFiles('package-lock.json') }}
       - name: Install dependencies
         run: npm install --legacy-peer-deps
-      - name: 📊 Generate diagrams
-        run: make diagrams
+      # - name: 📊 Generate diagrams
+      #   run: make diagrams
       - name: 📚 Build documentation
         run: npm run docs:build
       - name: 📤 Upload Pages artifact
