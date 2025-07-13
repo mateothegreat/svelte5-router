@@ -30,12 +30,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version-file: "package.json"
-      - name: 📦 Hydrate node_modules
-        uses: actions/cache@v3
-        id: hydrate-node-modules
-        with:
-          path: node_modules
-          key: ${{ hashFiles('package-lock.json') }}
+      # - name: 📦 Hydrate node_modules
+      #   uses: actions/cache@v3
+      #   id: hydrate-node-modules
+      #   with:
+      #     path: node_modules
+      #     key: ${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
       - name: 📊 Generate diagrams
         run: make diagrams
       - name: 📚 Build documentation
