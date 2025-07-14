@@ -269,7 +269,7 @@ export class RouteResult {
   /**
    * The string representation of the route including the querystring.
    */
-  toString?(): string {
+  toString(): string {
     let querystring = "";
     if (this.result.querystring.original && typeof this.result.querystring.original === "object") {
       const params = new URLSearchParams();
