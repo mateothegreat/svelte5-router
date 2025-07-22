@@ -10,3 +10,4 @@ export * from "./regexp";
 export * from "./runtime";
 export * from "./tracing.svelte";
 export * from "./urls";
+export * from "./pop";
