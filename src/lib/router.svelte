@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onDestroy, unmount, type Component } from "svelte";
+  import { onDestroy, type Component } from "svelte";
   import { createSpan, Span } from "./helpers/tracing.svelte";
   import { registry } from "./registry.svelte";
   import { type RouteResult } from "./route.svelte";
