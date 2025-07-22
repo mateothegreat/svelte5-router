@@ -63,3 +63,34 @@ You can also pass a query object to the `goto` method:
 ```ts
 goto("/test", { foo: "baz" }); // Navigates to "/test?foo=baz"
 ```
+
+## `pop()`
+
+Easily go back to previous page
+
+```svelte
+<script>
+import { pop } from "@mateothegreat/svelte5-router";
+</script>
+
+<button onclick={pop}> Go back </button>
+```
+
+Or perform an action first
+
+```svelte
+<script>
+import { pop } from "@mateothegreat/svelte5-router";
+
+const save = async () => {
+  const result = await database.write("some data") // replace this with real code
+  if (result.success) {
+    pop() // Return to previous page after data is saved
+  }
+}
+</script>
+
+<button onclick={save}>
+  Save and return
+</button>
+```
