@@ -85,7 +85,7 @@ import { pop } from "@mateothegreat/svelte5-router";
 const save = async () => {
   const result = await database.write("some data") // replace this with real code
   if (result.success) {
-    pop() // Return to previous page after data is saved
+    await pop() // Return to previous page after data is saved
   }
 }
 </script>
