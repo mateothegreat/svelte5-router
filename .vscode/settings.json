@@ -1,6 +1,0 @@
-{
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "files.insertFinalNewline": true,
-  "bevel.java": "/Users/matthewdavis/.cursor/extensions/bevel-software.bevel-1.3.0-universal/backend/amazon-corretto-17.jdk/Contents/Home/bin/java",
-  "bevel.largeLanguageModel": "OPENAI"
-}
