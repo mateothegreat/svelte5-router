@@ -43,6 +43,16 @@ Version 2.15.4 released! 🎉 with some healthy updates!
 npm install @mateothegreat/svelte5-router
 ```
 
+Now you can simply:
+
+```svelte
+<a href="/dashboard" use:route>Dashboard</a>
+```
+
+and `/ship-it`!
+
+> See [actions.md#route](actions.md#route) for the deets..
+
 ## Table of Contents
 
 - [Getting Started](./getting-started.md)
