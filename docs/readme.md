@@ -49,6 +49,11 @@ Now you can simply:
 <a href="/dashboard" use:route>Dashboard</a>
 ```
 
+By adding `use:route` you will prevent the page from reloading and instead let the router take the wheel 🤸. Peruse the rest of the documentation at [docs/](docs/) for more details.
+
+> [!NOTE]
+> Without `use:route` the website will be reloaded after opening a new route. To prevent this use `goto()` or `use:route` so only the Route element get's changed.
+
 and `/ship-it`!
 
 > See [actions.md#route](actions.md#route) for the deets..
