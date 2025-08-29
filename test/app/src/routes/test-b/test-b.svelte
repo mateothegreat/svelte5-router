@@ -2,8 +2,8 @@
   import { pop } from "@mateothegreat/svelte5-router";
 
   setTimeout(() => {
-    pop();
-  }, 2000);
+    pop(1);
+  }, 200);
 </script>
 
 <div class="flex flex-col gap-4 rounded-md bg-emerald-300 p-2">
