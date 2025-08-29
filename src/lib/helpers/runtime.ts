@@ -6,7 +6,7 @@ import { logging } from "./logging";
  * @category Helpers
  */
 export namespace runtime {
-  // Helper to safely read from import.meta.env or process.env
+  // Helper to safely read from "import\.meta\.env" or "process\.env"
   const getEnvVar = <T = unknown>(path: string[], fallback?: T): T | undefined => {
     try {
       // Try Vite-style env first
