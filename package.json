@@ -1,6 +1,6 @@
 {
   "name": "@mateothegreat/svelte5-router",
-  "version": "2.16.11",
+  "version": "2.16.12",
   "type": "module",
   "moduleResolution": "bundler",
   "sideEffects": false,
