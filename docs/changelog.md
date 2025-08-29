@@ -11,6 +11,28 @@
 
 <div><em>Here are the last 100~ commits ✌️</em></div>
 
+## [2.16.18](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.18) - 2025-08-29
+
+### 📊 Release Summary
+- **Version**: `2.16.18`
+- **Released**: August 29, 2025
+- **Total Changes**: 3 commits
+
+### 🚀 Features
+
+-   Pop() helper ✨  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`f9258d2`](https://github.com/mateothegreat/svelte5-router/commit/f9258d2ca6ee55ebecdd3b8c11776e498142a7f7))
+
+-   Pop() helper ✨  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`ea1a2b9`](https://github.com/mateothegreat/svelte5-router/commit/ea1a2b98bb95382cb3e50ebef4fae7c03f96ca03))
+
+### 📋 Other Changes
+
+-   :wrench: update svelte5-router to version 2.16.17  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`f96168f`](https://github.com/mateothegreat/svelte5-router/commit/f96168f68051208831809f64b02d9188e6132831))
+
+### 👥 Contributors
+
+Thanks ❤️‍🔥 to the following people who contributed to this release:
+
+- [@mateothegreat](https://github.com/mateothegreat)
 ## [2.16.17](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.17) - 2025-08-29
 
 ### 📊 Release Summary
@@ -118,20 +140,9 @@ Thanks ❤️‍🔥 to the following people who contributed to this release:
 ### 📊 Release Summary
 - **Version**: `2.16.12`
 - **Released**: August 29, 2025
-- **Total Changes**: 4 commits
-
-### 🐛 Bug Fixes
-
--   Fix esm exports  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`e1a84e0`](https://github.com/mateothegreat/svelte5-router/commit/e1a84e009ba3dadbba9a73385a66c7dce617e633))
-
--   Fix esm exports  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`aa6ca81`](https://github.com/mateothegreat/svelte5-router/commit/aa6ca81ad4f9cdf533fd27a3839f9e369e5f7b54))
-
--   Fix esm exports  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`c330fe0`](https://github.com/mateothegreat/svelte5-router/commit/c330fe052e94925328030f63dab6e43b6ff7975a))
-
--   Fix cicd  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`5eb4f5c`](https://github.com/mateothegreat/svelte5-router/commit/5eb4f5c4f167480d5b3d4601b6cd99bbdd05f54e))
+- **Total Changes**: 0 commits
 
 ### 👥 Contributors
 
 Thanks ❤️‍🔥 to the following people who contributed to this release:
 
-- [@mateothegreat](https://github.com/mateothegreat)
