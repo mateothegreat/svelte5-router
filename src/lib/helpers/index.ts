@@ -5,6 +5,7 @@ export * from "./logging";
 export * from "./marshal";
 export * from "./normalize";
 export * from "./objects";
+export * from "./pop";
 export * from "./query";
 export * from "./regexp";
 export * from "./runtime";

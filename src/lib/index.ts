@@ -21,4 +21,4 @@ export type { ApplyFn, Route, RouteConfig, RouteResult } from "./route.svelte";
 export { RouterInstanceConfig } from "./router-instance-config";
 export { RouterInstance } from "./router-instance.svelte";
 export { default as Router } from "./router.svelte";
-export { getStatusByValue, StatusCode, type Statuses } from "./statuses";
+export { StatusCode, getStatusByValue, type Statuses } from "./statuses";
