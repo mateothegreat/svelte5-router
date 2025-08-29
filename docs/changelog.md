@@ -11,6 +11,22 @@
 
 <div><em>Here are the last 100~ commits ✌️</em></div>
 
+## [2.16.15](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.15) - 2025-08-29
+
+### 📊 Release Summary
+- **Version**: `2.16.15`
+- **Released**: August 29, 2025
+- **Total Changes**: 1 commit
+
+### 🔧 Maintenance
+
+-   Cleanup cicd  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`d2bf150`](https://github.com/mateothegreat/svelte5-router/commit/d2bf150aa6d8b7e799ac7258f42e34ed805db38d))
+
+### 👥 Contributors
+
+Thanks ❤️‍🔥 to the following people who contributed to this release:
+
+- [@mateothegreat](https://github.com/mateothegreat)
 ## [2.16.14](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.14) - 2025-08-29
 
 ### 📊 Release Summary
@@ -97,22 +113,6 @@ Thanks ❤️‍🔥 to the following people who contributed to this release:
 
 ### 📊 Release Summary
 - **Version**: `2.16.11`
-- **Released**: August 29, 2025
-- **Total Changes**: 1 commit
-
-### 🐛 Bug Fixes
-
--   Fix cicd  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`fca7db4`](https://github.com/mateothegreat/svelte5-router/commit/fca7db456a2be3cf70cb7bac9c6c271a55a57e62))
-
-### 👥 Contributors
-
-Thanks ❤️‍🔥 to the following people who contributed to this release:
-
-- [@mateothegreat](https://github.com/mateothegreat)
-## [2.16.10](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.10) - 2025-08-29
-
-### 📊 Release Summary
-- **Version**: `2.16.10`
 - **Released**: August 29, 2025
 - **Total Changes**: 0 commits
 
