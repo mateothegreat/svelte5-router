@@ -1,9 +1,6 @@
 name: 🚀 Release
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "*"
 concurrency:
   group: release
   cancel-in-progress: true
