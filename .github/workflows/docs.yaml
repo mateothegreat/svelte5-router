@@ -2,9 +2,6 @@ name: 📚 Docs
 on:
   workflow_dispatch:
   workflow_call:
-  push:
-    tags:
-      - "*"
 permissions:
   id-token: write
   pages: write
