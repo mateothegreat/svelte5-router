@@ -29,6 +29,19 @@ pop(); // Navigate back 1 page
 pop(2); // Navigate back 2 pages
 ```
 
+## `replace(path: string, queryParams?: Record<string, unknown>)`
+
+Navigates to the given path by calling `replace("/path")` and replacing the current browser history entry instead of adding a new one.
+
+Example:
+
+```ts
+import { replace } from "@mateothegreat/svelte5-router";
+
+replace("/foo"); // Navigates to "/foo"
+replace("/foo", { bar: "baz" }); // Navigates to "/foo?bar=baz"
+```
+
 ## `query(key: string): string | null`
 
 Returns the value of the query parameter for the given key or null if the key does not exist.

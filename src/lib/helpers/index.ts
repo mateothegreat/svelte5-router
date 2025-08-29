@@ -8,6 +8,7 @@ export * from "./objects";
 export * from "./pop";
 export * from "./query";
 export * from "./regexp";
+export * from "./replace";
 export * from "./runtime";
 export * from "./tracing.svelte";
 export * from "./urls";

@@ -1,8 +1,10 @@
 <script lang="ts">
-  import { pop } from "@mateothegreat/svelte5-router";
+  import { replace } from "@mateothegreat/svelte5-router";
 
   setTimeout(() => {
-    pop(1);
+    replace("/test-a", {
+      foo: "bar"
+    });
   }, 200);
 </script>
 
