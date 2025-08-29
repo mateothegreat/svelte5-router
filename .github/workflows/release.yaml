@@ -2,6 +2,11 @@ name: 🚀 Release
 on:
   workflow_dispatch:
     inputs:
+      label:
+        description: "The label to add to the release"
+        required: false
+        default: "standard release"
+        type: string
       build_docs:
         description: "Release the docs?"
         required: false
@@ -17,6 +22,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   release:
+    name: 🚀 Release ${{ github.event.inputs.label }}
     runs-on: ubuntu-latest
     permissions:
       contents: write

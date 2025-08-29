@@ -27,10 +27,12 @@ header = """
   </p>
 </div>
 
-<div><em>Here are the last 20~ commits ✌️</em></div>
+<div><em>Here are the last 100~ commits ✌️</em></div>
+
 """
 
 body = """
+
 {%- macro remote_url() -%}
   https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
 {%- endmacro -%}
