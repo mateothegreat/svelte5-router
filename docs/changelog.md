@@ -11,6 +11,44 @@
 
 <div><em>Here are the last 100~ commits ✌️</em></div>
 
+## [2.16.14](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.14) - 2025-08-29
+
+### 📊 Release Summary
+- **Version**: `2.16.14`
+- **Released**: August 29, 2025
+- **Total Changes**: 7 commits
+
+### 🐛 Bug Fixes
+
+-   Fix esm exports  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`13e2c5e`](https://github.com/mateothegreat/svelte5-router/commit/13e2c5ebb862d6e7a0b93ff4b3ba40211209b810))
+
+### 📦 Dependencies
+
+- **deps**:   Bump the npm_and_yarn group across 2 directories with 4 updates  by [@dependabot[bot]](https://github.com/dependabot[bot])  ([`f7c30e8`](https://github.com/mateothegreat/svelte5-router/commit/f7c30e89b0c38f7e20b767042eace272a94eb637))
+
+- **deps-dev**:   Bump esbuild  by [@dependabot[bot]](https://github.com/dependabot[bot])  ([`d879c2c`](https://github.com/mateothegreat/svelte5-router/commit/d879c2c4a8f4cf96ce64bccc5924f7c62a4ca254))
+
+### 📋 Other Changes
+
+-   Merge pull request #107 from mateothegreat/dependabot/npm_and_yarn/test/app/npm_and_yarn-037d2236c4
+
+chore(deps-dev): bump esbuild from 0.25.8 to 0.25.9 in /test/app in the npm_and_yarn group across 1 directory  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`9e7aeda`](https://github.com/mateothegreat/svelte5-router/commit/9e7aeda5059d707eaf62febd9c3fdcb459dc0d2c))
+
+-   Merge branch 'main' into dependabot/npm_and_yarn/test/app/npm_and_yarn-037d2236c4  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`36b3fe0`](https://github.com/mateothegreat/svelte5-router/commit/36b3fe0901807f95da063327dd4b811ec0e9bee1))
+
+-   Merge pull request #111 from mateothegreat/dependabot/npm_and_yarn/npm_and_yarn-c8c34112a0
+
+chore(deps): bump the npm_and_yarn group across 2 directories with 4 updates  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`ad07412`](https://github.com/mateothegreat/svelte5-router/commit/ad07412c37173ccff7fba939ec556a93f9f5697d))
+
+-   Create dependabot.yml  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`9203170`](https://github.com/mateothegreat/svelte5-router/commit/92031701dc52f71ecae7e987662a67c20909f7f0))
+
+### 👥 Contributors
+
+Thanks ❤️‍🔥 to the following people who contributed to this release:
+
+- [@mateothegreat](https://github.com/mateothegreat)
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
 ## [2.16.13](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.13) - 2025-08-29
 
 ### 📊 Release Summary
@@ -76,48 +114,9 @@ Thanks ❤️‍🔥 to the following people who contributed to this release:
 ### 📊 Release Summary
 - **Version**: `2.16.10`
 - **Released**: August 29, 2025
-- **Total Changes**: 4 commits
-
-### 🐛 Bug Fixes
-
--   Fix cicd  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`8c83c26`](https://github.com/mateothegreat/svelte5-router/commit/8c83c263e33cef8699a099f4760065fe1fed3854))
-
--   Fix cicd  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`aa7fea6`](https://github.com/mateothegreat/svelte5-router/commit/aa7fea6e7f968dd811942015739a760fdd4dcadf))
-
--   Fix cicd  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`60cb23f`](https://github.com/mateothegreat/svelte5-router/commit/60cb23f8049e5aad87a9b18689ef4c4a9fcfcdc2))
-
-### 📋 Other Changes
-
--   2.16.9  by [@svelte5-router[bot]](https://github.com/svelte5-router[bot])  ([`dc65991`](https://github.com/mateothegreat/svelte5-router/commit/dc65991cf78836f13935017dc3705b8d202530d2))
+- **Total Changes**: 0 commits
 
 ### 👥 Contributors
 
 Thanks ❤️‍🔥 to the following people who contributed to this release:
 
-- [@mateothegreat](https://github.com/mateothegreat)
-## [2.16.9](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.9) - 2025-08-29
-
-### 📊 Release Summary
-- **Version**: `2.16.9`
-- **Released**: August 29, 2025
-- **Total Changes**: 3 commits
-
-### 📋 Other Changes
-
--   Isolate vite from build for dev vs. prod  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`75ea5ee`](https://github.com/mateothegreat/svelte5-router/commit/75ea5ee0c06c6c9fcb283b9c787f1a492006b74f))
-
--   Merge pull request #98 from gurbaxani/patch-1
-
-Update index.html  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`1621178`](https://github.com/mateothegreat/svelte5-router/commit/1621178385470a4af44f710c3a927c4f153076f4))
-
--   Update index.html
-
-Changed the default title tag to the name of the project.  by [@Ashwini Gurbaxani](https://github.com/Ashwini Gurbaxani)  ([`8a9bf30`](https://github.com/mateothegreat/svelte5-router/commit/8a9bf30e6df0b880a5cda9551bfaf2ae4c9b3a77))
-
-### 👥 Contributors
-
-Thanks ❤️‍🔥 to the following people who contributed to this release:
-
-- [@mateothegreat](https://github.com/mateothegreat)
-
-- [@gurbaxani](https://github.com/gurbaxani)
