@@ -7,7 +7,7 @@
     "docs:watch": "typedoc --watch --footerLastModified --customTitle \"svelte 5 router\" "
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.5",
+    "@changesets/cli": "^2.29.6",
     "@mermaid-js/mermaid-cli": "^11.6.0",
     "@sveltejs/package": "^2.3.11",
     "@sveltejs/vite-plugin-svelte": "^5.1.0",
