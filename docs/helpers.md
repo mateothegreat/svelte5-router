@@ -9,10 +9,25 @@ Navigates to the given path by calling `goto("/path")`.
 Example:
 
 ```ts
+import { goto } from "@mateothegreat/svelte5-router";
+
 goto("/foo", { bar: "baz" });
 ```
 
 This will navigate to `/foo?bar=baz`.
+
+## `pop(delta?: number)`
+
+Navigates backwards in the browser history N pages.
+
+Example:
+
+```ts
+import { pop } from "@mateothegreat/svelte5-router";
+
+pop(); // Navigate back 1 page
+pop(2); // Navigate back 2 pages
+```
 
 ## `query(key: string): string | null`
 
@@ -22,14 +37,7 @@ Returns the value of the query parameter for the given key or null if the key do
 
 A helper class for working with the query string.
 
-> Check it out at [src/lib/query.svelte.ts](../src/lib/query.svelte.ts).
-> or import it with:
->
-> ```ts
-> import { QueryString } from "@mateothegreat/svelte5-router";
-> ```
->
-> and start using it now!
+> Check it out at [src/lib/query.svelte.ts](../src/lib/query.svelte.ts) and start using it now!
 
 Basic usage:
 
@@ -40,7 +48,7 @@ const query = new QueryString();
 
 query.get("foo", "bar"); // "bar"
 query.set("baz", "qux");
-query.toString();        // "foo=bar&baz=qux"
+query.toString(); // "foo=bar&baz=qux"
 ```
 
 Using it with navigation:
