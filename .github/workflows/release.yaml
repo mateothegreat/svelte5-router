@@ -2,8 +2,11 @@ name: 🚀 Release
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "*"
+    branches:
+      - main
+    paths-ignore:
+      - package*.json
+      - docs/changelog.md
 concurrency:
   group: release
   cancel-in-progress: true
@@ -14,82 +17,96 @@ jobs:
       contents: write
       packages: write
     steps:
+      # [setup] authenticate with the cicd app to get proper credentials for pushing to the repo later.
       - name: cicd app auth
         id: app
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v2.1.1
         with:
           app-id: ${{ secrets.CICD_APP_ID }}
           private-key: ${{ secrets.CICD_APP_PRIVATE_KEY }}
-      - uses: actions/checkout@v4
+      # [setup] checkout the repo.
+      - uses: actions/checkout@v5.0.0
         with:
           fetch-depth: 0
           persist-credentials: false
+      # [setup] setup node.js.
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: 20.x
+      # [setup] configure git for later changelog generation, commit, and the finalpush.
+      - name: configure git
+        run: |
+          git config --global user.name "mateothegreat[bot]"
+          git config --global user.email "mateothegreat[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ steps.app.outputs.token }}@github.com/${{ github.repository }}.git
+      # [build] install dependencies first.
+      - name: install
+        run: npm install
+      # [build] build the package which outputs to the dist/ directory.
+      - name: build
+        run: npm run build
+      # [version] bump the version.asdf
+      - name: npm version
+        id: version
+        run: |
+          version=$(npm version patch --no-git-tag-version --json | sed 's/^v//' || {
+            echo "npm version patch failed, git is dirty"
+            exit 1
+          })
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "version is now: $version"
+      # [version] generate the new changelog.
       - name: generate changelog
-        uses: orhun/git-cliff-action@v4.4.2
+        uses: orhun/git-cliff-action@98c93442bb05a455a77bee982867857ae748eeea
         id: git-cliff
         with:
           config: ./docs/cliff.toml
-          args: -vv --latest --strip header
+          args: --tag ${{ steps.version.outputs.version }}
         env:
-          OUTPUT: tmp/changelog.md
-          GITHUB_REPO: ${{ github.repository }}
-      - name: bump version and push tag
-        id: tag
-        uses: mathieudutour/github-tag-action@v6.2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag_prefix: ""
-      - name: configure git
-        run: |
-          git config --global user.name "svelte5-router[bot]"
-          git config --global user.email "svelte5-router[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ steps.app.outputs.token }}@github.com/${{ github.repository }}.git
-      - name: npm version
-        run: npm version ${{ steps.tag.outputs.new_tag }} --force
-      - name: concat changelogs
-        run: |
-          cat ${{ steps.git-cliff.outputs.changelog }} > tmp/new_changelog.md
-          cat docs/changelog.md >> tmp/new_changelog.md
-          mv tmp/new_changelog.md docs/changelog.md
+          OUTPUT: docs/changelog.md
+      # [version] commit the changelog and package.json.
       - name: commit
         run: |
           git add docs/changelog.md package.json
-          git commit -am "chore(release): update changelog and bumping package.json"
+          git commit -am "chore(release): update of changelog and bumping package.json for ${{ steps.version.outputs.version }}"
           git push origin HEAD:main
+          git tag -a ${{ steps.version.outputs.version }} -m "release: ${{ steps.version.outputs.version }}"
+          git push origin ${{ steps.version.outputs.version }}
+      # [publish] prepare to publish by setting up credentials.
       - name: write to .npmrc
         run: echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > ~/.npmrc
-      - name: install
-        run: npm install
-      - name: build
-        run: npm run build
+      # [publish] release publicly only if the build was successful above.
       - name: publish
-        run: cd dist && npm publish
+        run: npm publish --access public
+      # [publish] create a github release.
       - name: create github release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.3.2
         with:
           body: ${{ steps.git-cliff.outputs.content }}
-          tag_name: ${{ steps.tag.outputs.new_tag }}
+          tag_name: ${{ steps.version.outputs.version }}
   docs:
     needs: build
+    continue-on-error: true
     permissions:
       id-token: write
       pages: write
     uses: ./.github/workflows/docs.yaml
   demo:
     needs: build
+    continue-on-error: true
     uses: ./.github/workflows/demo.yaml
     secrets: inherit
   notify:
     if: always()
+    continue-on-error: true
     needs:
       - build
     runs-on: ubuntu-latest
     steps:
-      - uses: sarisia/actions-status-discord@v1
+      - uses: Ilshidur/action-discord@ad5235de713df3ef38022185499b02ffe93b7efe
         with:
           status: ${{ needs.build.result }}
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
