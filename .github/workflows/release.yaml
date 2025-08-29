@@ -8,7 +8,7 @@ concurrency:
   group: release
   cancel-in-progress: true
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -83,22 +83,19 @@ jobs:
           body: ${{ steps.git-cliff.outputs.content }}
           tag_name: ${{ steps.version.outputs.version }}
   docs:
-    needs: build
-    continue-on-error: true
+    needs: release
     permissions:
       id-token: write
       pages: write
     uses: ./.github/workflows/docs.yaml
   demo:
-    needs: build
-    continue-on-error: true
+    needs: release
     uses: ./.github/workflows/demo.yaml
     secrets: inherit
   notify:
     if: always()
     continue-on-error: true
-    needs:
-      - build
+    needs: release
     runs-on: ubuntu-latest
     steps:
       - uses: Ilshidur/action-discord@ad5235de713df3ef38022185499b02ffe93b7efe
