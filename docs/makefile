@@ -18,5 +18,5 @@ llms.txt: setup
 diagrams: setup
 	@for file in diagrams/*.mmd; do \
 		echo "Generating diagram $$file"; \
-		node_modules/.bin/mmdc -t dark -b transparent -i $$file -o $${file%.mmd}.png; \
+		node_modules/.bin/mmdc -t dark -b transparent -i $$file -o $${file%.mmd}.png --puppeteerConfigFile puppeteer.config.cjs; \
 	done
