@@ -7,9 +7,9 @@
   "types": "./router.svelte.d.ts",
   "exports": {
     ".": {
-      "types": "./index.js",
-      "import": "./index.js",
-      "svelte": "./index.js"
+      "types": "./dist/index.js",
+      "import": "./dist/index.js",
+      "svelte": "./dist/index.js"
     }
   },
   "files": [
