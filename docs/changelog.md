@@ -9,7 +9,24 @@
 </p>
 </div>
 
-<div><em>Here are the last 20~ commits ✌️</em></div>
+<div><em>Here are the last 100~ commits ✌️</em></div>
+
+## [2.16.13](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.13) - 2025-08-29
+
+### 📊 Release Summary
+- **Version**: `2.16.13`
+- **Released**: August 29, 2025
+- **Total Changes**: 1 commit
+
+### 🐛 Bug Fixes
+
+-   Fix esm exports  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`7d59ac3`](https://github.com/mateothegreat/svelte5-router/commit/7d59ac34bba8991791f0f997bd2e29db0ae54704))
+
+### 👥 Contributors
+
+Thanks ❤️‍🔥 to the following people who contributed to this release:
+
+- [@mateothegreat](https://github.com/mateothegreat)
 ## [2.16.12](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.12) - 2025-08-29
 
 ### 📊 Release Summary
@@ -83,7 +100,7 @@ Thanks ❤️‍🔥 to the following people who contributed to this release:
 ### 📊 Release Summary
 - **Version**: `2.16.9`
 - **Released**: August 29, 2025
-- **Total Changes**: 5 commits
+- **Total Changes**: 3 commits
 
 ### 📋 Other Changes
 
@@ -96,12 +113,6 @@ Update index.html  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`162
 -   Update index.html
 
 Changed the default title tag to the name of the project.  by [@Ashwini Gurbaxani](https://github.com/Ashwini Gurbaxani)  ([`8a9bf30`](https://github.com/mateothegreat/svelte5-router/commit/8a9bf30e6df0b880a5cda9551bfaf2ae4c9b3a77))
-
--   Merge pull request #100 from mateothegreat/mateothegreat-patch-1
-
-Update readme.md  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`696907f`](https://github.com/mateothegreat/svelte5-router/commit/696907fc5697ed8d301f00a07e04ba17bd908f26))
-
--   Update readme.md  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`15c316f`](https://github.com/mateothegreat/svelte5-router/commit/15c316fbed936bb5ad5214860d08e8501ffb5988))
 
 ### 👥 Contributors
 
