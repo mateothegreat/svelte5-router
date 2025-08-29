@@ -2,11 +2,8 @@ name: 🚀 Release
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-    paths-ignore:
-      - package*.json
-      - docs/changelog.md
+    tags:
+      - "*"
 concurrency:
   group: release
   cancel-in-progress: true
