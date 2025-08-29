@@ -6,6 +6,41 @@ import { logging } from "./logging";
  * @category Helpers
  */
 export namespace runtime {
+  // Helper to safely read from import.meta.env or process.env
+  const getEnvVar = <T = unknown>(path: string[], fallback?: T): T | undefined => {
+    try {
+      // Try Vite-style env first
+      let env: any = (import.meta as any)?.env;
+      for (const key of path) {
+        if (env && key in env) env = env[key];
+        else {
+          env = undefined;
+          break;
+        }
+      }
+      if (env !== undefined) return env as T;
+    } catch {
+      /* ignore */
+    }
+
+    try {
+      // Try process.env for Electron main/preload
+      let env: any = process?.env;
+      for (const key of path) {
+        if (env && key in env) env = env[key];
+        else {
+          env = undefined;
+          break;
+        }
+      }
+      if (env !== undefined) return env as T;
+    } catch {
+      /* ignore */
+    }
+
+    return fallback;
+  };
+
   /**
    * Runtime configuration.
    */
@@ -30,11 +65,11 @@ export namespace runtime {
    */
   export const config = (config?: Config): Config => {
     return {
-      tracing: config?.tracing || import.meta?.env?.SPA_ROUTER?.tracing || false,
+      tracing: config?.tracing ?? getEnvVar(["SPA_ROUTER", "tracing"], { enabled: false }),
       logging: {
-        level: config?.logging?.level || import.meta?.env?.SPA_ROUTER?.logging?.level || 4,
-        console: config?.logging?.console || import.meta?.env?.SPA_ROUTER?.logging?.console,
-        sink: config?.logging?.sink || import.meta?.env?.SPA_ROUTER?.logging?.sink
+        level: config?.logging?.level ?? getEnvVar(["SPA_ROUTER", "logging", "level"], 4),
+        console: config?.logging?.console ?? getEnvVar(["SPA_ROUTER", "logging", "console"]),
+        sink: config?.logging?.sink ?? getEnvVar(["SPA_ROUTER", "logging", "sink"])
       }
     };
   };
