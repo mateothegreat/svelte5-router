@@ -56,21 +56,8 @@ jobs:
         run: npm install
       # [build] build the package which outputs to the dist/ directory.
       - name: build
-        run: |
-          ls -la
-          cat tsconfig.json
-          echo "checking..."
-          npx svelte-check
-          echo "building..."
-          rm -rf dist
-          npx svelte-package -v
-          npx svelte-package --tsconfig tsconfig.json
-          npx svelte-package 
-          echo "copying..."
-          cp -r src/lib dist
-          cp package.json docs/assets/logo.png dist
-          cp docs/readme.md dist/README.md
-      # [version] bump the version.asdf
+        run: npm run build
+      # [version] bump the version
       - name: npm version
         id: version
         run: |
@@ -102,6 +89,7 @@ jobs:
         run: echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > ~/.npmrc
       # [publish] release publicly only if the build was successful above.
       - name: publish
+        working-directory: dist
         run: npm publish --access public
       # [publish] create a github release.
       - name: create github release
