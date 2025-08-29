@@ -90,7 +90,9 @@ jobs:
       # [publish] release publicly only if the build was successful above.
       - name: publish
         working-directory: dist
-        run: npm publish --access public
+        run: |
+          cp package.json dist
+          npm publish --access public
       # [publish] create a github release.
       - name: create github release
         uses: softprops/action-gh-release@v2.3.2
