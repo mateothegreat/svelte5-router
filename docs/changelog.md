@@ -11,6 +11,22 @@
 
 <div><em>Here are the last 100~ commits ✌️</em></div>
 
+## [2.16.17](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.17) - 2025-08-29
+
+### 📊 Release Summary
+- **Version**: `2.16.17`
+- **Released**: August 29, 2025
+- **Total Changes**: 1 commit
+
+### 🔧 Maintenance
+
+-   Fix package.json versioning  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`da3bf33`](https://github.com/mateothegreat/svelte5-router/commit/da3bf3346faf4e4dd517777dcf89dba517319577))
+
+### 👥 Contributors
+
+Thanks ❤️‍🔥 to the following people who contributed to this release:
+
+- [@mateothegreat](https://github.com/mateothegreat)
 ## [2.16.16](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.16) - 2025-08-29
 
 ### 📊 Release Summary
@@ -102,7 +118,7 @@ Thanks ❤️‍🔥 to the following people who contributed to this release:
 ### 📊 Release Summary
 - **Version**: `2.16.12`
 - **Released**: August 29, 2025
-- **Total Changes**: 6 commits
+- **Total Changes**: 4 commits
 
 ### 🐛 Bug Fixes
 
@@ -113,10 +129,6 @@ Thanks ❤️‍🔥 to the following people who contributed to this release:
 -   Fix esm exports  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`c330fe0`](https://github.com/mateothegreat/svelte5-router/commit/c330fe052e94925328030f63dab6e43b6ff7975a))
 
 -   Fix cicd  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`5eb4f5c`](https://github.com/mateothegreat/svelte5-router/commit/5eb4f5c4f167480d5b3d4601b6cd99bbdd05f54e))
-
--   Fix cicd  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`2513b8a`](https://github.com/mateothegreat/svelte5-router/commit/2513b8a67f7eeaa2002adcf5605240b7678fcd25))
-
--   Fix cicd  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`67d2dbf`](https://github.com/mateothegreat/svelte5-router/commit/67d2dbfefb8d67d7946818aaf3179d997afa1092))
 
 ### 👥 Contributors
 
