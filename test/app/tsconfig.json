@@ -7,16 +7,15 @@
     "strictNullChecks": false,
     "sourceMap": true,
     "target": "ESNext",
-    "lib": ["ESNext"],
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "allowJs": false,
-    "checkJs": false,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": true,
+    "isolatedModules": true,
     "strict": true,
     "noEmit": true,
-    "isolatedModules": true,
-    "moduleResolution": "bundler",
-    "allowArbitraryExtensions": true
+    "moduleResolution": "bundler"
   },
   "include": ["src"]
 }

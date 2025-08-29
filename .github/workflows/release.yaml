@@ -1,6 +1,17 @@
 name: 🚀 Release
 on:
   workflow_dispatch:
+    inputs:
+      build_docs:
+        description: "Release the docs?"
+        required: false
+        default: false
+        type: boolean
+      build_demo:
+        description: "Release the demo?"
+        required: false
+        default: false
+        type: boolean
 concurrency:
   group: release
   cancel-in-progress: true
@@ -80,12 +91,14 @@ jobs:
           body: ${{ steps.git-cliff.outputs.content }}
           tag_name: ${{ steps.version.outputs.version }}
   docs:
+    if: ${{ github.event.inputs.build_docs == true }}
     needs: release
     permissions:
       id-token: write
       pages: write
     uses: ./.github/workflows/docs.yaml
   demo:
+    if: ${{ github.event.inputs.build_demo == true }}
     needs: release
     uses: ./.github/workflows/demo.yaml
     secrets: inherit
