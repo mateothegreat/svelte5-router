@@ -4,8 +4,7 @@
   "type": "module",
   "scripts": {
     "docs:build": "typedoc --footerLastModified --customTitle \"svelte 5 router\" ",
-    "docs:watch": "typedoc --watch --footerLastModified --customTitle \"svelte 5 router\" ",
-    "docs:serve": "cd tmp/build && npx httpserver -p 20000"
+    "docs:watch": "typedoc --watch --footerLastModified --customTitle \"svelte 5 router\" "
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.5",

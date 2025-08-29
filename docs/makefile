@@ -1,15 +1,21 @@
 .PHONY: llms.txt diagrams
 
-watch: ## Build the docs and watch for changes.
+setup:
+	@if [ ! -d "node_modules" ]; then \
+		echo "Installing dependencies..."; \
+		npm install --legacy-peer-deps; \
+	fi
+
+watch: setup ## Build the docs and watch for changes.
 	trap 'kill 0' SIGINT; \
 	npm run docs:watch & \
-	(sleep 4 && npm run docs:serve) & \
+	(sleep 4 && cd ../tmp/build && npx httpserver -p 20000) & \
 	wait
 
-llms.txt:
-	cat docs/*.md docs/llms.txt > llms.txt
+llms.txt: setup
+	cat docs/*.md docs/llms.txt > ../llms.txt
 
-diagrams:
+diagrams: setup
 	for file in diagrams/*.mmd; do \
-		npx mmdc -t dark -b transparent -i $$file -o $${file%.mmd}.png; \
+		node_modules/.bin/mmdc -t dark -b transparent -i $$file -o $${file%.mmd}.png; \
 	done
