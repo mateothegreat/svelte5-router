@@ -16,6 +16,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [2.16.11](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.11) - 2025-08-29
+
+### 📊 Release Summary
+- **Version**: `2.16.11`
+- **Released**: August 29, 2025
+- **Total Changes**: 1 commit
+
+### 🐛 Bug Fixes
+
+- Fix cicd by [@Matthew Davis](https://github.com/Matthew Davis) ([`fca7db4`](https://github.com/mateothegreat/svelte5-router/commit/fca7db456a2be3cf70cb7bac9c6c271a55a57e62))
+
+### 👥 Contributors
+
+Thanks ❤️‍🔥 to the following people who contributed to this release:
+
+- [@mateothegreat](https://github.com/mateothegreat)
 ## [2.16.10](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.10) - 2025-08-29
 
 ### 📊 Release Summary
@@ -40,7 +56,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Thanks ❤️‍🔥 to the following people who contributed to this release:
 
 - [@mateothegreat](https://github.com/mateothegreat)
-
 ## [2.16.9](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.9) - 2025-08-29
 
 ### 📊 Release Summary
@@ -231,7 +246,7 @@ Thanks ❤️‍🔥 to the following people who contributed to this release:
 ### 📊 Release Summary
 - **Version**: `2.16.0`
 - **Released**: July 01, 2025
-- **Total Changes**: 64 commits
+- **Total Changes**: 62 commits
 
 ### 🚀 Features
 
@@ -353,8 +368,6 @@ Thanks ❤️‍🔥 to the following people who contributed to this release:
 
 - Test coverage; doc coverage by [@Matthew Davis](https://github.com/Matthew Davis) ([`69642ba`](https://github.com/mateothegreat/svelte5-router/commit/69642ba641d723dbb3d3b635fed8f2c6b4c6ec64))
 
-- Test coverage; doc coverage by [@Matthew Davis](https://github.com/Matthew Davis) ([`b8a259b`](https://github.com/mateothegreat/svelte5-router/commit/b8a259b262072e5e3f20d3a7ddd444b76d526bff))
-
 ### 📋 Other Changes
 
 - Merge pull request #89 from jurica/fix_file_urls
@@ -370,8 +383,6 @@ fix url parsing for local file urls and add tests by [@Matthew Davis](https://gi
 - Merge branch 'dev' of github.com:mateothegreat/svelte5-router into dev by [@Matthew Davis](https://github.com/Matthew Davis) ([`be168ad`](https://github.com/mateothegreat/svelte5-router/commit/be168ad962cdbafe3ff202b764a0cf2fa7968978))
 
 - Apply automatic changes by [@mateothegreat](https://github.com/mateothegreat) ([`42c0a6a`](https://github.com/mateothegreat/svelte5-router/commit/42c0a6a76d1cdc0947650d04fb06e01d7de98a2d))
-
-- Merge branch 'main' into dev by [@Matthew Davis](https://github.com/Matthew Davis) ([`2233b7c`](https://github.com/mateothegreat/svelte5-router/commit/2233b7c98abaafc74ec1fb398388f3d852056036))
 
 ### 👥 Contributors
 
