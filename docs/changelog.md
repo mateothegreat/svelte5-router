@@ -11,6 +11,24 @@
 
 <div><em>Here are the last 100~ commits ✌️</em></div>
 
+## [2.16.19](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.19) - 2025-08-29
+
+### 📊 Release Summary
+- **Version**: `2.16.19`
+- **Released**: August 29, 2025
+- **Total Changes**: 2 commits
+
+### 🚀 Features
+
+-   Replace() helper ✨; closes #86  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`41801c1`](https://github.com/mateothegreat/svelte5-router/commit/41801c15b65e2b2478a6037a13c2bf4e8729fa3a))
+
+-   Pop() helper ✨  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`0fce87c`](https://github.com/mateothegreat/svelte5-router/commit/0fce87c345e53b4965a0199de33de23fbbf36f3f))
+
+### 👥 Contributors
+
+Thanks ❤️‍🔥 to the following people who contributed to this release:
+
+- [@mateothegreat](https://github.com/mateothegreat)
 ## [2.16.18](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.18) - 2025-08-29
 
 ### 📊 Release Summary
@@ -119,30 +137,3 @@ Thanks ❤️‍🔥 to the following people who contributed to this release:
 - [@mateothegreat](https://github.com/mateothegreat)
 
 - [@dependabot[bot]](https://github.com/dependabot[bot])
-## [2.16.13](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.13) - 2025-08-29
-
-### 📊 Release Summary
-- **Version**: `2.16.13`
-- **Released**: August 29, 2025
-- **Total Changes**: 1 commit
-
-### 🐛 Bug Fixes
-
--   Fix esm exports  by [@Matthew Davis](https://github.com/Matthew Davis)  ([`7d59ac3`](https://github.com/mateothegreat/svelte5-router/commit/7d59ac34bba8991791f0f997bd2e29db0ae54704))
-
-### 👥 Contributors
-
-Thanks ❤️‍🔥 to the following people who contributed to this release:
-
-- [@mateothegreat](https://github.com/mateothegreat)
-## [2.16.12](https://github.com/mateothegreat/svelte5-router/releases/tag/2.16.12) - 2025-08-29
-
-### 📊 Release Summary
-- **Version**: `2.16.12`
-- **Released**: August 29, 2025
-- **Total Changes**: 0 commits
-
-### 👥 Contributors
-
-Thanks ❤️‍🔥 to the following people who contributed to this release:
-
