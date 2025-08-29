@@ -1,4 +1,5 @@
 name: 🚀 Release
+run-name: 🚀 Release (${{ github.event.inputs.label }})
 on:
   workflow_dispatch:
     inputs:
@@ -91,7 +92,7 @@ jobs:
       - name: publish
         working-directory: dist
         run: |
-          cp package.json dist
+          cp ../package.json .
           npm publish --access public
       # [publish] create a github release.
       - name: create github release
