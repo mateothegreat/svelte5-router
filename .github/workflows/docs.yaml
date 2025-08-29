@@ -24,18 +24,16 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-      - name: ⎔ Setup node
-        uses: actions/setup-node@v4
+      # [setup] checkout the repo.
+      - uses: actions/checkout@v5.0.0
         with:
-          node-version-file: "package.json"
-      - name: 📦 Hydrate node_modules
-        uses: actions/cache@v3
-        id: hydrate-node-modules
+          fetch-depth: 0
+          persist-credentials: false
+      # [setup] setup node.js.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.4.0
         with:
-          path: node_modules
-          key: ${{ hashFiles('package-lock.json') }}
+          node-version: 20.x
       - name: 📊 Generate diagrams
         run: make diagrams
       - name: 📚 Build documentation
@@ -47,16 +45,18 @@ jobs:
       - id: deployment
         name: 📤 Deploy documentation to GitHub Pages
         uses: actions/deploy-pages@v4.0.5
+      # [setup] authenticate with the cicd app to get proper credentials for pushing to the repo later.
       - name: cicd app auth
         id: app
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v2.1.1
         with:
           app-id: ${{ secrets.CICD_APP_ID }}
           private-key: ${{ secrets.CICD_APP_PRIVATE_KEY }}
+      # [setup] configure git for later changelog generation, commit, and the finalpush.
       - name: 🔧 Commit and push diagrams
         run: |
-          git config --global user.name "svelte5-router[bot]"
-          git config --global user.email "svelte5-router[bot]@users.noreply.github.com"
+          git config --global user.name "mateothegreat[bot]"
+          git config --global user.email "mateothegreat[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${{ steps.app.outputs.token }}@github.com/${{ github.repository }}.git
           git add .
           git commit -am "chore(docs): update diagrams"

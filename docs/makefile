@@ -16,6 +16,7 @@ llms.txt: setup
 	cat docs/*.md docs/llms.txt > ../llms.txt
 
 diagrams: setup
-	for file in diagrams/*.mmd; do \
+	@for file in diagrams/*.mmd; do \
+		echo "Generating diagram $$file"; \
 		node_modules/.bin/mmdc -t dark -b transparent -i $$file -o $${file%.mmd}.png; \
 	done
