@@ -38,7 +38,7 @@
     "svelte 5 spa router"
   ],
   "scripts": {
-    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "check": "svelte-check",
     "build": "npm run check && rm -rf dist && npx svelte-package && cp -r src/lib dist && cp package.json docs/assets/logo.png dist && cp docs/readme.md dist/README.md",
     "build:esm+cjs": "npm run check && rm -rf dist && npx vite build && cp package.json docs/assets/logo.png dist && cp docs/readme.md dist/README.md",
     "docs:build": "typedoc --footerLastModified --customTitle \"svelte 5 router\" ",

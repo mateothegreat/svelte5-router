@@ -50,7 +50,20 @@ jobs:
         run: npm install
       # [build] build the package which outputs to the dist/ directory.
       - name: build
-        run: npm run build
+        run: |
+          ls -la
+          cat tsconfig.json
+          echo "checking..."
+          npx svelte-check
+          echo "building..."
+          rm -rf dist
+          npx svelte-package -v
+          npx svelte-package --tsconfig tsconfig.json
+          npx svelte-package 
+          echo "copying..."
+          cp -r src/lib dist
+          cp package.json docs/assets/logo.png dist
+          cp docs/readme.md dist/README.md
       # [version] bump the version.asdf
       - name: npm version
         id: version
