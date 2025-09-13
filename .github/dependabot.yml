@@ -8,3 +8,18 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+
+  - package-ecosystem: npm
+    directory: /demo
+    schedule:
+      interval: daily
+
+  - package-ecosystem: npm
+    directory: /docs
+    schedule:
+      interval: daily
+
+  - package-ecosystem: npm
+    directory: /test/app
+    schedule:
+      interval: daily
