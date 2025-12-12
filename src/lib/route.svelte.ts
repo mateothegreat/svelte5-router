@@ -29,7 +29,6 @@ import { urls, type ReturnParam } from "./helpers/urls";
  * @example
  * ```ts
  * const routeResult = new RouteResult({
- *   router: myRouter,
  *   route: myRoute,
  *   result: {
  *     path: {
