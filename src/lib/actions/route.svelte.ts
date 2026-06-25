@@ -1,6 +1,6 @@
 import { urls } from "../helpers/urls";
 
-import { applyActiveClass } from "./apply-classes";
+import { applyActive } from "./apply-active";
 import type { RouteOptions } from "./options";
 
 /**
@@ -20,7 +20,7 @@ export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
   let url = urls.parse(node.href);
 
   const apply = () => {
-    applyActiveClass(url, options, node);
+    applyActive(url, options, node);
   };
 
   /**
@@ -30,7 +30,7 @@ export const route = (node: HTMLAnchorElement, options: RouteOptions = {}) => {
   const handleClick = (event: Event) => {
     event.preventDefault();
     window.history.pushState({}, "", node.href);
-    applyActiveClass(url, options, node);
+    applyActive(url, options, node);
   };
 
   apply();

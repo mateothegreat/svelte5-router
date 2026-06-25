@@ -1,6 +1,6 @@
 import { urls } from "../helpers/urls";
 
-import { applyActiveClass } from "./apply-classes";
+import { applyActive } from "./apply-active";
 import type { RouteOptions } from "./options";
 
 /**
@@ -19,7 +19,7 @@ export const active = (node: HTMLAnchorElement, options: Pick<RouteOptions, "act
   let url = urls.parse(node.href);
 
   const apply = () => {
-    applyActiveClass(url, options, node);
+    applyActive(url, options, node);
   };
 
   apply();

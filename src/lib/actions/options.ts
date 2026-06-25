@@ -22,6 +22,11 @@ export type RouteOptionState = {
    * The css class(es) to add when this state is currently active.
    */
   class?: string | string[];
+
+  /**
+   * The [aria-current](https://developer.mozilla.org/en-US/docs/Web/API/Element/ariaCurrent) value to set when this state is currently active.
+   */
+  ariaCurrent?: "page"|"step"|"location"|"date"|"time"|"true"|"false";
 };
 
 /**

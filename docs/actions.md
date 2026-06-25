@@ -89,21 +89,25 @@ The `route` action accepts an options object with the following configuration:
     absolute?: boolean;
     querystring?: boolean;
     class?: string | string[];
+    ariaCurrent?: "page" | "step" | "location" | "date" | "time" | "true" | "false";
   },
   active?: {
     absolute?: boolean;
     querystring?: boolean;
     class?: string | string[];
+    ariaCurrent?: "page" | "step" | "location" | "date" | "time" | "true" | "false";
   },
   loading?: {
     absolute?: boolean;
     querystring?: boolean;
     class?: string | string[];
+    ariaCurrent?: "page" | "step" | "location" | "date" | "time" | "true" | "false";
   },
   disabled?: {
     absolute?: boolean;
     querystring?: boolean;
     class?: string | string[];
+    ariaCurrent?: "page" | "step" | "location" | "date" | "time" | "true" | "false";
   }
 }
 ```
@@ -118,6 +122,7 @@ Each state accepts the following properties:
 - `absolute`: When `true`, effects only apply on exact path matches.
 - `querystring`: When `true`, effects only apply when querystring exactly matches.
 - `class`: CSS class(es) to apply when the state is active.
+- `ariaCurrent`: [`aria-current`](https://developer.mozilla.org/en-US/docs/Web/API/Element/ariaCurrent) attribute to apply when the state is active.
 
 Example with options:
 
@@ -128,6 +133,7 @@ Example with options:
     default: { class: 'text-gray-600' },
     active: { 
       class: 'text-blue-600 font-bold',
+      ariaCurrent: 'page',
       absolute: true 
     }
   }}
@@ -152,6 +158,7 @@ The `active` action accepts a subset of the route options, focusing only on the 
     absolute?: boolean;
     querystring?: boolean;
     class?: string | string[];
+    ariaCurrent?: "page" | "step" | "location" | "date" | "time" | "true" | "false";
   }
 }
 ```
@@ -164,6 +171,7 @@ Example with options:
   use:active={{
     active: {
       class: ['text-blue-600', 'font-bold'],
+      ariaCurrent: 'page',
       absolute: true,
       querystring: true
     }
