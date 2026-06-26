@@ -34,7 +34,7 @@ export const applyActive = (href: URL, options: RouteOptions, node: HTMLAnchorEl
     if (options.active?.class) {
       node.classList.add(...(Array.isArray(options.active.class) ? options.active.class : [options.active.class]));
     }
-    node.ariaCurrent = options.active.ariaCurrent;
+    node.ariaCurrent = options.active?.ariaCurrent;
   } else {
     // Default/not active state!
 
@@ -47,6 +47,6 @@ export const applyActive = (href: URL, options: RouteOptions, node: HTMLAnchorEl
     if (options.default?.class) {
       node.classList.add(...(Array.isArray(options.default.class) ? options.default.class : [options.default.class]));
     }
-    node.ariaCurrent = options.default.ariaCurrent;
+    node.ariaCurrent = options.default?.ariaCurrent;
   }
 };
